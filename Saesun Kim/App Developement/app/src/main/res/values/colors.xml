@@ -4,7 +4,7 @@
     <color name="colorAccent">#081B60</color>
     <color name="colorPrimaryDark">#00574B</color>
 
-
+    <color name="shadow">#C0C0C0</color>
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>

@@ -16,7 +16,7 @@ class LoginActivity : AppCompatActivity() {
     private val firebaseAuthListener = FirebaseAuth.AuthStateListener {
         val user = firebaseAuth.currentUser
         if (user != null) {
-            startActivity(MainActivity.newIntent(this))
+            startActivity(TinderActivity.newIntent(this))
             finish()
         }
     }
