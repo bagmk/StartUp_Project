@@ -2,4 +2,8 @@
     <string name="app_name">TinderClone</string>
     <string name="startup_button_login">Log in</string>
     <string name="startup_button_signup">Sign Up</string>
+    <string name="hint_email">Email</string>
+    <string name="hint_password">Password</string>
+    <string name="login_button_text">Login</string>
+    <string name="signup_button_text">Sign up</string>
 </resources>
