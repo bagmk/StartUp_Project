@@ -18,7 +18,7 @@
         android:paddingBottom="16dp">
 
         <ImageView
-            android:id="@+id/photoIW"
+            android:id="@+id/photoIV"
             android:layout_width="@dimen/standard_width"
             android:layout_height="@dimen/standard_width"
             android:paddingBottom="8dp"
@@ -29,7 +29,7 @@
             android:id="@+id/nameTIL"
             android:layout_width="@dimen/standard_width"
             android:layout_height="wrap_content"
-            android:layout_below="@id/photoIW"
+            android:layout_below="@id/photoIV"
             android:paddingBottom="8dp">
 
 
@@ -182,6 +182,7 @@
             android:layout_height="@dimen/standard_height"
             android:layout_below="@+id/radio2Layout"
             style="@style/StandardButton"
+
             android:text="@string/button_apply"
             />
 
@@ -202,7 +203,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:visibility="gone"
         android:background="#aaaaaaaa">
 
         <ProgressBar
