@@ -9,4 +9,6 @@
     <dimen name="standard_button_margin">5dp</dimen>
     <dimen name="standard_button_radius">50dp</dimen>
     <dimen name="navigation_height">50dp</dimen>
+    <dimen name="like_dislike_height">100dp</dimen>
+    <dimen name="like_dislike_button_height">75dp</dimen>
 </resources>
