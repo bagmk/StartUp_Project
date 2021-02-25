@@ -190,7 +190,7 @@
             android:layout_width="@dimen/standard_width"
             android:layout_height="@dimen/standard_height"
             android:layout_below="@+id/applyButton"
-            style="@style/StandardButton"
+            style="@style/StandardButtonGrey"
             android:text="@string/button_signout"/>
 
     </RelativeLayout>
