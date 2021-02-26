@@ -11,11 +11,11 @@ import android.provider.MediaStore
 import android.widget.TableLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import com.devtides.tinderclone.fragments.SwipeFragment
 import com.example.tinderclone.R
 import com.example.tinderclone.fragments.MatchesFragment
 import com.example.tinderclone.fragments.ProfileFragment
-import com.example.tinderclone.util.DATA_USERS
+import com.example.tinderclone.fragments.SwipeFragment
+import com.example.tinderclone.util.Data_USERS
 import com.google.android.material.tabs.TabLayout
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
@@ -52,7 +52,7 @@ class TinderActivity : AppCompatActivity(), TinderCallback {
             onSignout()
         }
 
-        userDatabase = FirebaseDatabase.getInstance().reference.child(DATA_USERS)
+        userDatabase = FirebaseDatabase.getInstance().reference.child(Data_USERS)
 
         profileTab = navigationTabs.newTab()
         swipeTab = navigationTabs.newTab()
