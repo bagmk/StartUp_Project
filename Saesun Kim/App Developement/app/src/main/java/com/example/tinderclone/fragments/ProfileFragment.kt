@@ -25,14 +25,12 @@ class ProfileFragment : Fragment() {
 
     private lateinit var userId: String
     private lateinit var userDatabase: DatabaseReference
-
     private var callback: TinderCallback? = null
 
     fun setCallback(callback: TinderCallback) {
         this.callback = callback
         userId = callback.onGetUserId()
         userDatabase = callback.getUserDatabase().child(userId)
-
     }
 
     override fun onCreateView(
@@ -44,74 +42,65 @@ class ProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         progressLayout.setOnTouchListener { view, event -> true }
 
-        populateInfo()
-        photoIV.setOnClickListener{callback?.startActivityForPhoto()}
-
-        applyButton.setOnClickListener { onApply() }
-        signoutButton.setOnClickListener { callback?.onSignout() }
-
-
-    }
-
-
-    fun populateInfo() {
-        progressLayout.visibility = View.VISIBLE
-        userDatabase.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onCancelled(error: DatabaseError) {
-                progressLayout.visibility = View.GONE
-            }
-
-            override fun onDataChange(p0: DataSnapshot) {
-                if (isAdded) {
-                    val user = p0.getValue(User::class.java)
-                    nameET.setText(user?.name, TextView.BufferType.EDITABLE)
-                    emailET.setText(user?.email, TextView.BufferType.EDITABLE)
-                    ageET.setText(user?.age, TextView.BufferType.EDITABLE)
-                    if (user?.gender == GENDER_MALE) {
-                        radioMan1.isChecked = true
-                    }
-
-                    if (user?.gender == GENDER_FEMALE) {
-                        radioWoman1.isChecked = true
-                    }
-                    if (user?.preferredGender == GENDER_MALE) {
-                        radioMan2.isChecked = true
-                    }
-                    if (user?.preferredGender == GENDER_FEMALE) {
-                        radioWoman2.isChecked = true
-                    }
-                    if(!user?.imageUrl.isNullOrEmpty()){
-                        populateImage(user?.imageUrl!!)
-                    }
+        fun populateInfo() {
+            progressLayout.visibility = View.VISIBLE
+            userDatabase.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onCancelled(p0: DatabaseError) {
                     progressLayout.visibility = View.GONE
                 }
-            }
 
-        })
+                override fun onDataChange(p0: DataSnapshot) {
+                    if (isAdded) {
+                        val user = p0.getValue(User::class.java)
+                        nameET.setText(user?.name, TextView.BufferType.EDITABLE)
+                        emailET.setText(user?.email, TextView.BufferType.EDITABLE)
+                        ageET.setText(user?.age, TextView.BufferType.EDITABLE)
+                        if (user?.gender == GENDER_MALE) {
+                            radioMan1.isChecked = true
+                        }
+                        if (user?.gender == GENDER_FEMALE) {
+                            radioWoman1.isChecked = true
+                        }
+                        if (user?.preferredGender == GENDER_MALE) {
+                            radioMan2.isChecked = true
+                        }
+                        if (user?.preferredGender == GENDER_FEMALE) {
+                            radioWoman2.isChecked = true
+                        }
+                        if (!user?.imageUrl.isNullOrEmpty()) {
+                            populateImage(user?.imageUrl!!)
+                        }
+                        progressLayout.visibility = View.GONE
+                    }
+                }
+
+            })
+        }
     }
 
     fun onApply() {
-        if (nameET.text.toString().isNullOrEmpty()
-            || emailET.text.toString().isNullOrEmpty()
-            || radioGroup1.checkedRadioButtonId == -1
-            || radioGroup2.checkedRadioButtonId == -1
+        if (nameET.text.toString().isNullOrEmpty() ||
+            emailET.text.toString().isNullOrEmpty() ||
+            radioGroup1.checkedRadioButtonId == -1 ||
+            radioGroup2.checkedRadioButtonId == -1
         ) {
             Toast.makeText(
                 context,
                 getString(R.string.error_profile_incomplete),
                 Toast.LENGTH_SHORT
             ).show()
-        }else{
-            val name= nameET.text.toString()
-            val age= ageET.text.toString()
-            val email= emailET.text.toString()
-            val gender=
-                if(radioMan1.isChecked) GENDER_MALE
+        } else {
+            val name = nameET.text.toString()
+            val age = ageET.text.toString()
+            val email = emailET.text.toString()
+            val gender =
+                if (radioMan1.isChecked) GENDER_MALE
                 else GENDER_FEMALE
             val preferredGender =
-                if(radioMan2.isChecked) GENDER_MALE
+                if (radioMan2.isChecked) GENDER_MALE
                 else GENDER_FEMALE
 
             userDatabase.child(DATA_NAME).setValue(name)
@@ -134,7 +123,6 @@ class ProfileFragment : Fragment() {
         Glide.with(this)
             .load(uri)
             .into(photoIV)
-
     }
 
 }

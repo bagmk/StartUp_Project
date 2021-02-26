@@ -1,16 +1,22 @@
-package com.example.tinderclone.fragments
+package com.devtides.tinderclone.fragments
+
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.Toast
+import androidx.fragment.app.Fragment
 import com.example.tinderclone.R
+
 import com.example.tinderclone.User
 import com.example.tinderclone.activity.TinderCallback
 import com.example.tinderclone.adapters.CardsAdapter
-import com.example.tinderclone.util.*
+import com.example.tinderclone.util.DATA_GENDER
+import com.example.tinderclone.util.DATA_MATCHES
+import com.example.tinderclone.util.DATA_SWIPES_LEFT
+import com.example.tinderclone.util.DATA_SWIPES_RIGHT
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -18,15 +24,18 @@ import com.google.firebase.database.ValueEventListener
 import com.lorentzos.flingswipe.SwipeFlingAdapterView
 import kotlinx.android.synthetic.main.fragment_swipe.*
 
-
 class SwipeFragment : Fragment() {
-    private var callback: TinderCallback? = null
 
+    private var callback: TinderCallback? = null
     private lateinit var userId: String
     private lateinit var userDatabase: DatabaseReference
+    private lateinit var chatDatabase: DatabaseReference
     private var cardsAdapter: ArrayAdapter<User>? = null
     private var rowItems = ArrayList<User>()
+
     private var preferredGender: String? = null
+    private var userName: String? = null
+    private var imageUrl: String? = null
 
     fun setCallback(callback: TinderCallback) {
         this.callback = callback
@@ -41,7 +50,6 @@ class SwipeFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_swipe, container, false)
     }
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -52,11 +60,14 @@ class SwipeFragment : Fragment() {
             override fun onDataChange(p0: DataSnapshot) {
                 val user = p0.getValue(User::class.java)
                 preferredGender = user?.preferredGender
+                userName = user?.name
+                imageUrl = user?.imageUrl
                 populateItems()
             }
         })
 
         cardsAdapter = CardsAdapter(context, R.layout.item, rowItems)
+
         frame.adapter = cardsAdapter
         frame.setFlingListener(object : SwipeFlingAdapterView.onFlingListener {
             override fun removeFirstObjectInAdapter() {
@@ -72,12 +83,11 @@ class SwipeFragment : Fragment() {
             }
 
             override fun onAdapterAboutToEmpty(p0: Int) {
-
             }
 
             override fun onScroll(p0: Float) {
-
             }
+
         })
     }
 
