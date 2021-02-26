@@ -23,7 +23,6 @@ class CardsAdapter(context: Context?, resourceId: Int, users: List<User>) :
         var name = finalView.findViewById<TextView>(R.id.nameTV)
         var image = finalView.findViewById<ImageView>(R.id.photoIV)
 
-
         name.text = "${user?.name}, ${user?.age}"
         Glide.with(context)
             .load(user?.imageUrl)
