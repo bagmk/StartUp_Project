@@ -10,10 +10,7 @@ import com.example.tinderclone.R
 import com.example.tinderclone.User
 import com.example.tinderclone.activity.TinderCallback
 import com.example.tinderclone.adapters.CardsAdapter
-import com.example.tinderclone.util.DATA_GENDER
-import com.example.tinderclone.util.DATA_MATHES
-import com.example.tinderclone.util.DATA_SWIPTES_LEFT
-import com.example.tinderclone.util.DATA_SWIPTES_RIGHT
+import com.example.tinderclone.util.*
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -86,22 +83,20 @@ class SwipeFragment : Fragment() {
 
     fun populateItems() {
         noUserLayout.visibility = View.GONE
-        progressLayout.visibility=View.VISIBLE
-
-        val cardQuery = userDatabase.orderByChild(DATA_GENDER).equalTo(preferredGender)
-        cardQuery.addListenerForSingleValueEvent(object : ValueEventListener {
+        progressLayout.visibility = View.VISIBLE
+        val cardsQuery = userDatabase.orderByChild(DATA_GENDER).equalTo(preferredGender)
+        cardsQuery.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onCancelled(p0: DatabaseError) {
-
             }
 
             override fun onDataChange(p0: DataSnapshot) {
                 p0.children.forEach { child ->
-                    val user = child.getValue((User::class.java))
+                    val user = child.getValue(User::class.java)
                     if (user != null) {
                         var showUser = true
-                        if (child.child(DATA_SWIPTES_LEFT).hasChild(userId) &&
-                            child.child(DATA_SWIPTES_RIGHT).hasChild(userId) &&
-                            child.child(DATA_MATHES).hasChild(userId)
+                        if (child.child(DATA_SWIPES_LEFT).hasChild(userId) ||
+                            child.child(DATA_SWIPES_RIGHT).hasChild(userId) ||
+                            child.child(DATA_MATCHES).hasChild(userId)
                         ) {
                             showUser = false
                         }
@@ -109,15 +104,14 @@ class SwipeFragment : Fragment() {
                             rowItems.add(user)
                             cardsAdapter?.notifyDataSetChanged()
                         }
-
                     }
                 }
-                progressLayout.visibility=View.GONE
-
+                progressLayout.visibility = View.GONE
                 if (rowItems.isEmpty()) {
                     noUserLayout.visibility = View.VISIBLE
                 }
             }
         })
     }
+
 }
