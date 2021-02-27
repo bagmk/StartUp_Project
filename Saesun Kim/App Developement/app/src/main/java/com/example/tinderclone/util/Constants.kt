@@ -1,6 +1,6 @@
 package com.example.tinderclone.util
 
-val Data_USERS = "Users"
+val DATA_USERS = "Users"
 
 val DATA_NAME="name"
 
