@@ -37,29 +37,17 @@ class LoginActivity : AppCompatActivity() {
     }
 
     fun onLogin(v: View) {
-        if (!emailET.text.toString().isNullOrEmpty() && !passwordET.text.toString()
-                .isNullOrEmpty()
-        ) {
-            firebaseAuth.signInWithEmailAndPassword(
-                emailET.text.toString(),
-                passwordET.text.toString()
-            )
+        if(!emailET.text.toString().isNullOrEmpty() && !passwordET.text.toString().isNullOrEmpty()) {
+            firebaseAuth.signInWithEmailAndPassword(emailET.text.toString(), passwordET.text.toString())
                 .addOnCompleteListener { task ->
-                    if (!task.isSuccessful) {
-                        Toast.makeText(
-                            this,
-                            "Login error ${task.exception?.localizedMessage}",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                    if(!task.isSuccessful) {
+                        Toast.makeText(this, "Login error ${task.exception?.localizedMessage}", Toast.LENGTH_SHORT).show()
                     }
                 }
         }
-
     }
 
     companion object {
         fun newIntent(context: Context?) = Intent(context, LoginActivity::class.java)
-
-
     }
 }

@@ -182,7 +182,6 @@
             android:layout_height="@dimen/standard_height"
             android:layout_below="@+id/radio2Layout"
             style="@style/StandardButton"
-
             android:text="@string/button_apply"
             />
 

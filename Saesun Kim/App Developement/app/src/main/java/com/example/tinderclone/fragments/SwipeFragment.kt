@@ -13,10 +13,7 @@ import com.example.tinderclone.R
 import com.example.tinderclone.User
 import com.example.tinderclone.activity.TinderCallback
 import com.example.tinderclone.adapters.CardsAdapter
-import com.example.tinderclone.util.DATA_GENDER
-import com.example.tinderclone.util.DATA_MATCHES
-import com.example.tinderclone.util.DATA_SWIPES_LEFT
-import com.example.tinderclone.util.DATA_SWIPES_RIGHT
+import com.example.tinderclone.util.*
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -29,7 +26,6 @@ class SwipeFragment : Fragment() {
     private var callback: TinderCallback? = null
     private lateinit var userId: String
     private lateinit var userDatabase: DatabaseReference
-    private lateinit var chatDatabase: DatabaseReference
     private var cardsAdapter: ArrayAdapter<User>? = null
     private var rowItems = ArrayList<User>()
 
@@ -71,16 +67,45 @@ class SwipeFragment : Fragment() {
         frame.adapter = cardsAdapter
         frame.setFlingListener(object : SwipeFlingAdapterView.onFlingListener {
             override fun removeFirstObjectInAdapter() {
-
+                rowItems.removeAt(0)
+                cardsAdapter?.notifyDataSetChanged()
             }
 
             override fun onLeftCardExit(p0: Any?) {
-
+                var user = p0 as User
+                userDatabase.child(user.uid.toString()).child(DATA_SWIPES_LEFT).child(userId).setValue(true)
             }
 
             override fun onRightCardExit(p0: Any?) {
+                val selectedUser = p0 as User
+                val selectedUserId = selectedUser.uid
+                if(!selectedUserId.isNullOrEmpty()){
+                    userDatabase.child(userId).child(DATA_SWIPES_LEFT).addListenerForSingleValueEvent(object: ValueEventListener{
+                        override fun onDataChange(p0: DataSnapshot) {
+                            if(p0.hasChild(selectedUserId)) {
+                                Toast.makeText(context, "Match!", Toast.LENGTH_SHORT).show()
 
+                                userDatabase.child(userId).child(DATA_SWIPES_RIGHT)
+                                    .child(selectedUserId).removeValue()
+                                userDatabase.child(userId).child(DATA_MATCHES).child(selectedUserId)
+                                    .setValue(true)
+                                userDatabase.child(selectedUserId).child(DATA_MATCHES).child(userId)
+                                    .setValue(true)
+                            } else{
+                                userDatabase.child(selectedUserId).child(DATA_SWIPES_RIGHT).child(userId).setValue(true)
+                            }
+                        }
+
+                        override fun onCancelled(p0: DatabaseError) {
+
+                        }
+
+
+                    })
+                }
             }
+
+
 
             override fun onAdapterAboutToEmpty(p0: Int) {
             }
@@ -89,6 +114,19 @@ class SwipeFragment : Fragment() {
             }
 
         })
+        frame.setOnItemClickListener{position,data ->}
+
+        likebutton.setOnClickListener{
+        if(!rowItems.isEmpty()){
+            frame.topCardListener.selectRight()
+        }
+        }
+        dislikebutton.setOnClickListener{
+            if(!rowItems.isEmpty()){
+                frame.topCardListener.selectLeft()
+            }
+        }
+
     }
 
     fun populateItems() {

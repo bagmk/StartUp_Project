@@ -45,53 +45,57 @@ class ProfileFragment : Fragment() {
 
         progressLayout.setOnTouchListener { view, event -> true }
 
-        fun populateInfo() {
-            progressLayout.visibility = View.VISIBLE
-            userDatabase.addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onCancelled(p0: DatabaseError) {
-                    progressLayout.visibility = View.GONE
-                }
+        populateInfo()
 
-                override fun onDataChange(p0: DataSnapshot) {
-                    if (isAdded) {
-                        val user = p0.getValue(User::class.java)
-                        nameET.setText(user?.name, TextView.BufferType.EDITABLE)
-                        emailET.setText(user?.email, TextView.BufferType.EDITABLE)
-                        ageET.setText(user?.age, TextView.BufferType.EDITABLE)
-                        if (user?.gender == GENDER_MALE) {
-                            radioMan1.isChecked = true
-                        }
-                        if (user?.gender == GENDER_FEMALE) {
-                            radioWoman1.isChecked = true
-                        }
-                        if (user?.preferredGender == GENDER_MALE) {
-                            radioMan2.isChecked = true
-                        }
-                        if (user?.preferredGender == GENDER_FEMALE) {
-                            radioWoman2.isChecked = true
-                        }
-                        if (!user?.imageUrl.isNullOrEmpty()) {
-                            populateImage(user?.imageUrl!!)
-                        }
-                        progressLayout.visibility = View.GONE
-                    }
-                }
+        photoIV.setOnClickListener { callback?.startActivityForPhoto() }
 
-            })
-        }
+        applyButton.setOnClickListener { onApply() }
+        signoutButton.setOnClickListener { callback?.onSignout() }
     }
 
+    fun populateInfo() {
+        progressLayout.visibility = View.VISIBLE
+        userDatabase.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onCancelled(p0: DatabaseError) {
+                progressLayout.visibility = View.GONE
+            }
+
+            override fun onDataChange(p0: DataSnapshot) {
+                if (isAdded) {
+                    val user = p0.getValue(User::class.java)
+                    nameET.setText(user?.name, TextView.BufferType.EDITABLE)
+                    emailET.setText(user?.email, TextView.BufferType.EDITABLE)
+                    ageET.setText(user?.age, TextView.BufferType.EDITABLE)
+                    if (user?.gender == GENDER_MALE) {
+                        radioMan1.isChecked = true
+                    }
+                    if (user?.gender == GENDER_FEMALE) {
+                        radioWoman1.isChecked = true
+                    }
+                    if (user?.preferredGender == GENDER_MALE) {
+                        radioMan2.isChecked = true
+                    }
+                    if (user?.preferredGender == GENDER_FEMALE) {
+                        radioWoman2.isChecked = true
+                    }
+                    if (!user?.imageUrl.isNullOrEmpty()) {
+                        populateImage(user?.imageUrl!!)
+                    }
+                    progressLayout.visibility = View.GONE
+                }
+            }
+
+        })
+    }
+
+
     fun onApply() {
-        if (nameET.text.toString().isNullOrEmpty() ||
-            emailET.text.toString().isNullOrEmpty() ||
+        if (nameET.text.toString().isEmpty() ||
+            emailET.text.toString().isEmpty() ||
             radioGroup1.checkedRadioButtonId == -1 ||
             radioGroup2.checkedRadioButtonId == -1
         ) {
-            Toast.makeText(
-                context,
-                getString(R.string.error_profile_incomplete),
-                Toast.LENGTH_SHORT
-            ).show()
+            Toast.makeText(context, getString(R.string.error_profile_incomplete), Toast.LENGTH_SHORT).show()
         } else {
             val name = nameET.text.toString()
             val age = ageET.text.toString()

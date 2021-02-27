@@ -8,7 +8,7 @@ import android.view.View
 import android.widget.Toast
 import com.example.tinderclone.R
 import com.example.tinderclone.User
-import com.example.tinderclone.util.DATA_USERS
+import com.example.tinderclone.util.*
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.activity_login.*
