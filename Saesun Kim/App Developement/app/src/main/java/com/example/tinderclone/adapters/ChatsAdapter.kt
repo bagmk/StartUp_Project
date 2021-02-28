@@ -15,8 +15,10 @@ class ChatsAdapter(private var chats: ArrayList<Chat>) :
     RecyclerView.Adapter<ChatsAdapter.ChatsViewHolder>() {
 
 
-    override fun onCreateViewHolder(parent: ViewGroup, p1: Int)=
-        ChatsViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_chat, parent, false))
+    override fun onCreateViewHolder(parent: ViewGroup, p1: Int) =
+        ChatsViewHolder(
+            LayoutInflater.from(parent.context).inflate(R.layout.item_chat, parent, false)
+        )
 
     override fun onBindViewHolder(holder: ChatsViewHolder, position: Int) {
         holder.bind(chats[position])
@@ -24,21 +26,21 @@ class ChatsAdapter(private var chats: ArrayList<Chat>) :
 
     override fun getItemCount() = chats.size
 
-    class ChatsViewHolder(private val view: View) : RecyclerView.ViewHolder(view){
+    class ChatsViewHolder(private val view: View) : RecyclerView.ViewHolder(view) {
 
         private var layout = view.findViewById<View>(R.id.chatLayout)
-        private var image = view.findViewById<View>(R.id.chatPictureIV)
-        private var name = view.findViewById<View>(R.id.chatNameTV)
+        private var image = view.findViewById<ImageView>(R.id.chatPictureIV)
+        private var name = view.findViewById<TextView>(R.id.chatNameTV)
 
-        fun bind(chat:Chat) {
-            name.text =chat.name
-            if(image !=null){
+        fun bind(chat: Chat) {
+            name.text = chat.name
+            if (image != null) {
                 Glide.with(view)
                     .load(chat.imageUrl)
                     .into(image)
             }
 
-            layout.setOnClickListener{}
+            layout.setOnClickListener {}
         }
     }
 
