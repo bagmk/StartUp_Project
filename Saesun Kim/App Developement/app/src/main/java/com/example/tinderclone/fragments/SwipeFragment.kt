@@ -25,6 +25,7 @@ class SwipeFragment : Fragment() {
     private var callback: TinderCallback? = null
     private lateinit var userId: String
     private lateinit var userDatabase: DatabaseReference
+    private lateinit var chatDatabase: DatabaseReference
     private var cardsAdapter: ArrayAdapter<User>? = null
     private var rowItems = ArrayList<User>()
 
@@ -36,6 +37,7 @@ class SwipeFragment : Fragment() {
         this.callback = callback
         userId = callback.onGetUserId()
         userDatabase = callback.getUserDatabase()
+        chatDatabase = callback.getUserDatabase()
     }
 
     override fun onCreateView(
@@ -91,6 +93,31 @@ class SwipeFragment : Fragment() {
                             override fun onDataChange(p0: DataSnapshot) {
                                 if (p0.hasChild(selectedUserId)) {
                                     Toast.makeText(context, "Match!", Toast.LENGTH_SHORT).show()
+
+                                    val chatKey = chatDatabase.push().key
+
+                                    if(chatKey !=null) {
+                                        userDatabase.child(userId).child(DATA_SWIPES_RIGHT)
+                                            .child(selectedUserId).removeValue()
+                                        userDatabase.child(userId).child(DATA_MATCHES)
+                                            .child(selectedUserId).setValue(chatKey)
+                                        userDatabase.child(selectedUserId).child(DATA_MATCHES)
+                                            .child(userId).setValue(chatKey)
+
+                                        chatDatabase.child(chatKey).child(userId).child(DATA_NAME)
+                                            .setValue(userName)
+                                        chatDatabase.child(chatKey).child(userId).child(
+                                            DATA_IMAGE_URL)
+                                            .setValue(imageUrl)
+
+                                        chatDatabase.child(chatKey).child(selectedUserId).child(DATA_NAME)
+                                            .setValue(selectedUser.name)
+                                        chatDatabase.child(chatKey).child(selectedUserId).child(
+                                            DATA_IMAGE_URL)
+                                            .setValue(selectedUser.imageUrl)
+
+                                    }
+
 
                                 } else {
                                     userDatabase.child(selectedUserId).child(DATA_SWIPES_RIGHT)

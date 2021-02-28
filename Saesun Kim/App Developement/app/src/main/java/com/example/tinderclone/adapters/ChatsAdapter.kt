@@ -15,6 +15,12 @@ class ChatsAdapter(private var chats: ArrayList<Chat>) :
     RecyclerView.Adapter<ChatsAdapter.ChatsViewHolder>() {
 
 
+    fun addElement(chat:Chat){
+        chats.add(chat)
+        notifyDataSetChanged()
+
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, p1: Int) =
         ChatsViewHolder(
             LayoutInflater.from(parent.context).inflate(R.layout.item_chat, parent, false)
