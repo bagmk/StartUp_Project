@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activity.ChatActivity">
+
+    <LinearLayout
+        android:id="@+id/navigationLayout"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/navigation_height"
+        android:layout_margin="@dimen/chat_margin"
+        android:background="@color/shadow"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/topPhotoIV"
+            android:layout_width="@dimen/navigation_height"
+            android:layout_height="@dimen/navigation_height"
+            android:layout_marginRight="@dimen/chat_margin"
+            android:scaleType="centerInside"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:textSize="20sp"
+            android:paddingLeft="@dimen/chat_margin"/>
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/sendButton"
+        android:layout_width="@dimen/send_width"
+        android:layout_height="@dimen/send_height"
+        android:text="@string/Send_button_text"
+        android:layout_margin="@dimen/chat_margin"
+        android:onClick="onSend"/>
+
+
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

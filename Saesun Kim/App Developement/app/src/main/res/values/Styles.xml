@@ -11,7 +11,6 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
-
     <style name="StandardButton">
         <item name="android:background">@drawable/standard_button_rounded</item>
 
@@ -28,6 +27,11 @@
         <item name="android:background">@drawable/standard_button_rounded_grey</item>
     </style>
 
+    <style name="SendButton">
+        <item name="android:textColor">@color/green</item>
+        <item name="android:textSize">@dimen/standard_button_text_size</item>
+        <item name="background">@drawable/send_button_rounded</item>
+    </style>
 
 
 
