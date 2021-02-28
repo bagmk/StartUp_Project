@@ -33,6 +33,7 @@ class TinderActivity : AppCompatActivity(), TinderCallback {
     private var firebaseAuth = FirebaseAuth.getInstance()
     private var userId = firebaseAuth.currentUser?.uid
     private lateinit var userDatabase: DatabaseReference
+    private lateinit var chatDatabase: DatabaseReference
 
     private var profileFragment: ProfileFragment? = null
     private var swipeFragment: SwipeFragment? = null
@@ -53,6 +54,7 @@ class TinderActivity : AppCompatActivity(), TinderCallback {
         }
 
         userDatabase = FirebaseDatabase.getInstance().reference.child(DATA_USERS)
+        chatDatabase = FirebaseDatabase.getInstance().reference.child(DATA_CHATS)
 
         profileTab = navigationTabs.newTab()
         swipeTab = navigationTabs.newTab()
@@ -155,7 +157,7 @@ class TinderActivity : AppCompatActivity(), TinderCallback {
         finish()
     }
 
-
+    override fun getChatDatabase(): DatabaseReference = chatDatabase
     override fun onGetUserId(): String = userId!!
 
     override fun getUserDatabase(): DatabaseReference = userDatabase

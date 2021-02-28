@@ -13,4 +13,5 @@
     <dimen name="like_dislike_button_height">75dp</dimen>
     <dimen name="card_dimension">350dp</dimen>
     <dimen name="card_name_height">100dp</dimen>
+    <dimen name="chat_image_size">100dp</dimen>
 </resources>
