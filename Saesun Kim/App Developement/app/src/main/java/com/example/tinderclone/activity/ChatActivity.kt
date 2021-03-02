@@ -18,7 +18,7 @@ class ChatActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
-
+        d
         chatId=intent.extras?.getString(PARAM_CHAT_ID)
         userId=intent.extras?.getString(PARAM_USER_ID)
         imageUrl=intent.extras?.getString(PARAM_IMAGE_URL)
