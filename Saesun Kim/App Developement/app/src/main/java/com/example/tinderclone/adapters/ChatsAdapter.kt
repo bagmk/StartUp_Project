@@ -9,6 +9,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.example.tinderclone.Chat
 import com.example.tinderclone.R
+import com.example.tinderclone.activity.ChatActivity
 
 
 class ChatsAdapter(private var chats: ArrayList<Chat>) :
@@ -46,7 +47,10 @@ class ChatsAdapter(private var chats: ArrayList<Chat>) :
                     .into(image)
             }
 
-            layout.setOnClickListener {}
+            layout.setOnClickListener {
+                val intent = ChatActivity.newIntent(view.context,chat.chatId,chat.userId,chat.imageUrl,chat.otherUserId)
+                view.context.startActivity(intent)
+            }
         }
     }
 

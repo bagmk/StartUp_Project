@@ -34,13 +34,45 @@
 
     </LinearLayout>
 
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/messageRV"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/messageET"
+        app:layout_constraintTop_toBottomOf="@+id/navigationLayout" />
+
+
+
     <Button
         android:id="@+id/sendButton"
+        style="@style/SendButton"
         android:layout_width="@dimen/send_width"
         android:layout_height="@dimen/send_height"
-        android:text="@string/Send_button_text"
         android:layout_margin="@dimen/chat_margin"
-        android:onClick="onSend"/>
+
+        android:background="#20D127"
+        android:onClick="onSend"
+
+
+        android:text="@string/Send_button_text"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <EditText
+        android:id="@+id/messageET"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:maxHeight="@dimen/send_height_max"
+        android:minHeight="@dimen/send_height"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/sendButton"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_margin="@dimen/chat_margin"
+        android:gravity="center_vertical"
+        android:background="@drawable/chat_box_bg_rounded"
+        android:hint="@string/hint_message"
+        />
 
 
 

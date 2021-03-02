@@ -19,4 +19,5 @@
     <string name="error_profile_incomplete">Please Complete Your Profile</string>
     <string name="no_available_user">No available user</string>
     <string name="Send_button_text">Send</string>
+    <string name="hint_message">Message</string>
 </resources>

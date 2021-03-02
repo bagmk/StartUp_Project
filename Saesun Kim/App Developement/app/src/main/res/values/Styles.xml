@@ -28,7 +28,7 @@
     </style>
 
     <style name="SendButton">
-        <item name="android:textColor">@color/green</item>
+        <item name="android:textColor">@color/white</item>
         <item name="android:textSize">@dimen/standard_button_text_size</item>
         <item name="background">@drawable/send_button_rounded</item>
     </style>
