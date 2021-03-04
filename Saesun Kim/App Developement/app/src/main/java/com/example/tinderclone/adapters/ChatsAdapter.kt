@@ -20,6 +20,9 @@ class ChatsAdapter(private var chats: ArrayList<Chat>) :
         chats.add(chat)
         notifyDataSetChanged()
 
+
+
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, p1: Int) =
