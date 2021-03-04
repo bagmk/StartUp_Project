@@ -19,5 +19,7 @@
     <dimen name="send_width">100dp</dimen>
     <dimen name="send_height">75dp</dimen>
     <dimen name="send_height_max">150dp</dimen>
-
+    <dimen name="chat_text_size">18sp</dimen>
+    <dimen name="chat_standard_size">50dp</dimen>
+    <dimen name="chat_max_size">300dp</dimen>
 </resources>
