@@ -57,8 +57,6 @@ class MessageAdapter(private var messages: ArrayList<Message>, val userId: Strin
         }
     }
 
-    override fun getItemCount(): Int {
-
-    }
+    override fun getItemCount() = messages.size
 
 }
