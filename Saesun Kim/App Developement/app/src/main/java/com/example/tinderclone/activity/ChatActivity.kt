@@ -33,8 +33,8 @@ class ChatActivity : AppCompatActivity() {
             val message = p0.getValue(Message::class.java)
             if(message != null){
                 messageAdapter.addMessage(message)
-                messageRV.post{
-                    messageRV.smoothScrollToPosition(messageAdapter.itemCount-1)
+                messagesRV.post{
+                    messagesRV.smoothScrollToPosition(messageAdapter.itemCount-1)
                 }
             }
         }
@@ -76,7 +76,7 @@ class ChatActivity : AppCompatActivity() {
 
         chatDatabase=FirebaseDatabase.getInstance().reference.child(DATA_CHATS)
         messageAdapter= MessageAdapter(ArrayList(), userId!!)
-        messageRV.apply{
+        messagesRV.apply{
             setHasFixedSize(false)
             layoutManager = LinearLayoutManager(context)
             adapter = messageAdapter
