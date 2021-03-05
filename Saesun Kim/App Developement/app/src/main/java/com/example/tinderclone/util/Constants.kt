@@ -16,4 +16,5 @@ val DATA_SWIPES_LEFT = "swipesLeft"
 val DATA_SWIPES_RIGHT = "swipesRight"
 val DATA_MATCHES = "matches"
 
-val DATA_CHATS="data chat"
+val DATA_CHATS="Chat"
+val DATA_MESSAGES ="Messages"
