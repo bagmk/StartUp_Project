@@ -1,5 +1,5 @@
-# barter
+# StartUp_Project
 
-Each member has folder named by member's name. Please own folder to learn and modify. 
+This project is the fun startup project with passionate 10 members to innovate the current platform.
 
-Once we are comfortable with the programming, we will generate folder for the actual app.
+This project is funded by startup innovation fund to test the business plan. [SIF](https://www.ou.edu/innovationhub/startups/startup-fund).
