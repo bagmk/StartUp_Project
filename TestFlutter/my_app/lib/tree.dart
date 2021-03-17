@@ -10,6 +10,13 @@ class Tree extends StatefulWidget {
 
 class _TreeState extends State<Tree> {
   User user;
+
+  @override
+  void initState() {
+    super.initState();
+    onRefresh(FirebaseAuth.instance.currentUser);
+  }
+
   onRefresh(userCred) {
     setState(() {
       user = userCred;
