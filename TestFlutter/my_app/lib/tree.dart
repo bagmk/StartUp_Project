@@ -27,9 +27,11 @@ class _TreeState extends State<Tree> {
   Widget build(BuildContext context) {
     if (user == null) {
       return LoginPage(
-        onSignInAno: (userCred) => onRefresh(userCred),
+        onSignIn: (userCred) => onRefresh(userCred),
       );
     }
-    return HomePage();
+    return HomePage(
+      onSignOut: (userCred) => onRefresh(userCred),
+    );
   }
 }
