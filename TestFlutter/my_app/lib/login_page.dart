@@ -14,6 +14,21 @@ class _LoginPageState extends State<LoginPage> {
   TextEditingController _controllerpassword = TextEditingController();
 
   String error = "";
+  bool login = true;
+
+  Future<void> loginUser() async {
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(
+              email: _controllerEmail.text, password: _controllerpassword.text);
+      print(userCredential.user);
+      widget.onSignIn(userCredential.user);
+    } on FirebaseAuthException catch (e) {
+      setState(() {
+        error = e.message;
+      });
+    }
+  }
 
   Future<void> createUser() async {
     try {
@@ -29,12 +44,6 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  Future<void> login() async {
-    UserCredential userCredenntial =
-        await FirebaseAuth.instance.signInAnonymously();
-    widget.onSignIn(userCredenntial.user);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,7 +52,7 @@ class _LoginPageState extends State<LoginPage> {
           children: [
             RaisedButton(
               onPressed: () {
-                login();
+                loginUser();
               },
               child: Text("Sign In"),
             ),
@@ -57,9 +66,17 @@ class _LoginPageState extends State<LoginPage> {
             Text(error),
             RaisedButton(
               onPressed: () {
-                createUser();
+                login ? loginUser() : createUser();
               },
-              child: Text("Create User"),
+              child: Text(login ? "Login into Account" : "Create User"),
+            ),
+            OutlineButton(
+              onPressed: () {
+                setState(() {
+                  login = !login;
+                });
+              },
+              child: Text("Switch Login/Create Account"),
             )
           ],
         ));
