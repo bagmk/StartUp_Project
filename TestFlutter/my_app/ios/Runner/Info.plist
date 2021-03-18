@@ -16,6 +16,15 @@
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
 	<string>$(FLUTTER_BUILD_NAME)</string>
+
+	<!-- Add camera feature -->
+	<string>permission_Library</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>permission_Camera</string>
+	<key>NSCameraUsageDescription</key>	
+	<string>permission_mic</string>
+	<key>NSMicrophoneUsageDescription</key>		
+
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
