@@ -14,11 +14,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  Future<void> logout() async {
-    await FirebaseAuth.instance.signOut();
-    widget.onSignOut(null);
-  }
-
   PageController _pageController = PageController();
   List<Widget> _screens = [Profile(), Camera(), Swipe(), Sell(), Wish()];
 
@@ -42,13 +37,6 @@ class _HomePageState extends State<HomePage> {
           onPageChanged: _onPageChanged,
           physics: NeverScrollableScrollPhysics(),
         ),
-
-        //body: RaisedButton(
-        //onPressed: () {
-        //  logout();
-        //},
-        //child: Text("Log out"),
-
         bottomNavigationBar: BottomNavigationBar(
           currentIndex: _selectedIndex,
           onTap: _onItemTapped,

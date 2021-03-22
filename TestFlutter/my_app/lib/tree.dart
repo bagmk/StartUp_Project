@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'login_page.dart';
 import 'pages/home_page.dart';
+import 'pages/profile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class Tree extends StatefulWidget {
