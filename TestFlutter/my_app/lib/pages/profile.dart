@@ -27,13 +27,12 @@ class _ProfileState extends State<Profile> {
           children: [
             RaisedButton(
               onPressed: () {
+                logout();
                 Navigator.pushReplacement(context,
                         MaterialPageRoute(builder: (context) => MyApp()))
                     .then((value) {
                   setState(() {});
                 });
-
-                logout();
               },
               child: Text("Sign Out"),
             )

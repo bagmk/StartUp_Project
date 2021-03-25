@@ -35,7 +35,6 @@ dependencies:
   image_cropper : 1.0.2
   image_picker : 0.6.0+17
   permission_handler : 6.1.1
-  
   firebase_analytics: ^5.0.6
 
 dev_dependencies:
