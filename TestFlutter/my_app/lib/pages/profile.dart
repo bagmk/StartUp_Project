@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:my_app/login_page.dart';
 import 'package:my_app/main.dart';
 import 'package:my_app/pages/home_page.dart';
@@ -35,7 +36,13 @@ class _ProfileState extends State<Profile> {
                 });
               },
               child: Text("Sign Out"),
-            )
+            ),
+            RaisedButton(
+              onPressed: () async {
+                await ImagePicker().getImage(source: ImageSource.camera);
+              },
+              child: Text("Camera"),
+            ),
           ],
         ));
   }

@@ -37,7 +37,9 @@ dependencies:
   image_picker : 0.7.3
   permission_handler : 6.1.1
   firebase_analytics: 7.1.1
-  
+  flutter_icons: 1.1.0
+  google_sign_in: 5.0.1
+  get_it: 6.0.0
 
 dev_dependencies:
   flutter_test:
