@@ -17,6 +17,7 @@
     <exclude-output />
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/gen" isTestSource="false" generated="true" />
+      <excludeFolder url="file://$MODULE_DIR$/TestFlutter/my_app/.dart_tool" />
       <excludeFolder url="file://$MODULE_DIR$/TestFlutter/my_app/.pub" />
       <excludeFolder url="file://$MODULE_DIR$/TestFlutter/my_app/build" />
     </content>

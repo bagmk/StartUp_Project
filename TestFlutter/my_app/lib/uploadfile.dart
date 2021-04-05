@@ -7,7 +7,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
 import 'package:flutter/material.dart';
 
-import 'package:flutter/material.dart';
 import 'package:my_app/pages/camera.dart';
 
 import 'package:firebase_database/firebase_database.dart';
