@@ -37,12 +37,6 @@ class _ProfileState extends State<Profile> {
               },
               child: Text("Sign Out"),
             ),
-            RaisedButton(
-              onPressed: () async {
-                await ImagePicker().getImage(source: ImageSource.camera);
-              },
-              child: Text("Camera"),
-            ),
           ],
         ));
   }
