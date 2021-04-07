@@ -3,6 +3,10 @@
 
 Signing, Layout, camera function. 
 
-However, there is error on upload
+Currently Saesun Seowoo is setting up the userid 
+Minobo is setting up the importing the image to app
+Kiwon is working on the loginsetup
+Soochoon Splash Screen
+
 
 
