@@ -117,22 +117,6 @@ class _CameraState extends State<Camera> {
                 ),
                 color: new Color.fromRGBO(0, 153, 145, 1.0)),
           ),
-          new Padding(
-            padding: const EdgeInsets.only(top: 12.0),
-            child: new RaisedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    new MaterialPageRoute(
-                        builder: (context) => new ImageGalley()),
-                  );
-                },
-                child: new Text(
-                  "View Images",
-                  style: new TextStyle(color: Colors.white, fontSize: 16.0),
-                ),
-                color: new Color.fromRGBO(0, 153, 145, 1.0)),
-          ),
         ],
       ),
     );

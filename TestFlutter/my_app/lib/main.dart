@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'tree.dart';
 import 'package:firebase_core/firebase_core.dart';
-
 import 'package:my_app/pages/camera.dart';
 import 'package:my_app/pages/home_page.dart';
 import 'package:my_app/pages/SplashScreen.dart';

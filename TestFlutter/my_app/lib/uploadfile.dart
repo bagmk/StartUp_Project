@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:my_app/pages/camera.dart';
 
 import 'package:firebase_database/firebase_database.dart';
-import 'package:my_app/pages/profile.dart';
+import 'package:my_app/pages/home_page.dart';
 
 class ImageUploadPage extends StatefulWidget {
   File file;
@@ -84,7 +84,7 @@ class _ImageUploadPageState extends State<ImageUploadPage>
     reference.push().set({"image": url.toString()});
 
     Navigator.push(
-        context, new MaterialPageRoute(builder: (context) => new Profile()));
+        context, new MaterialPageRoute(builder: (context) => new HomePage()));
   }
 
   @override
