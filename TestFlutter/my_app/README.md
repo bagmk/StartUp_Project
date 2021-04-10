@@ -1,4 +1,12 @@
 
+
+202104/09
+
+We purchased udemy cource for 
+https://www.udemy.com/course/build-a-social-network-with-flutter-and-firebase/learn/lecture/15354534#overview
+
+
+
 2021/04/07
 
 Currently Saesun Seowoo is setting up the userid 
