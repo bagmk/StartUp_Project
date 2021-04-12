@@ -10,16 +10,16 @@
       "client_info": {
         "mobilesdk_app_id": "1:868311579931:android:f6b4040757a9a4251767be",
         "android_client_info": {
-          "package_name": "com.codeartistry.fluttershare"
+          "package_name": "com.test.fluttershare"
         }
       },
       "oauth_client": [
         {
-          "client_id": "868311579931-n5i58h5ohf7nv7io447a2c07f9agubi2.apps.googleusercontent.com",
+          "client_id": "868311579931-op9kbukci2f8tjetcaj1lshljam8tush.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.codeartistry.fluttershare",
-            "certificate_hash": "a8e62ea87eb1338198f68b7eb4484495f39ef3ec"
+            "package_name": "com.test.fluttershare",
+            "certificate_hash": "c98c0eb50a49112eebf23227246526f204f5633b"
           }
         },
         {
