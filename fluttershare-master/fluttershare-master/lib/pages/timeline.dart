@@ -12,17 +12,27 @@ class Timeline extends StatefulWidget {
 
 class _TimelineState extends State<Timeline> {
   void initState() {
-    getUsers();
+/*     getUsers(); */
+    getUsersById();
     super.initState();
   }
 
-  getUsers() {
+/*   getUsers() {
     usersRef.get().then((QuerySnapshot snapshot) {
       snapshot.docs.forEach((DocumentSnapshot doc) {
         print(doc.data);
         print(doc.id);
         print(doc.exists);
       });
+    });
+  } */
+
+  getUsersById() {
+    final String id = '41ZB0bpATig5s7rrPKcq';
+    usersRef.doc(id).get().then((DocumentSnapshot doc) {
+      print(doc.data);
+      print(doc.id);
+      print(doc.exists);
     });
   }
 
