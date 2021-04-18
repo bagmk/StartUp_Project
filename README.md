@@ -7,9 +7,14 @@ This project is funded by startup innovation fund to test the business plan. [SI
 
 
 
+2021/04/14 
+
+Udemy 
+Some of the people watched #16, and #12, two people did not start to watch the video.
 
 
-202104/09
+
+2021/04/09
 
 We purchased udemy cource for 
 https://www.udemy.com/course/build-a-social-network-with-flutter-and-firebase/learn/lecture/15354534#overview
