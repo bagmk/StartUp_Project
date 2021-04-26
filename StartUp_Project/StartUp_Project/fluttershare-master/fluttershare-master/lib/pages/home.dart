@@ -127,7 +127,7 @@ class _HomeState extends State<Home> {
           ActivityFeed(),
           Upload(currentUser: currentUser),
           Search(),
-          Profile(),
+          Profile(profiledId: currentUser?.id),
         ],
         controller: pageController,
         onPageChanged: onPageChanged,
