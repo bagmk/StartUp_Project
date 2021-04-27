@@ -105,6 +105,11 @@ class _EditProfileState extends State<EditProfile> {
     }
   }
 
+  logout() async {
+    await googleSignIn.signOut();
+    Navigator.push(context, MaterialPageRoute(builder: (context) => Home()));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -161,7 +166,7 @@ class _EditProfileState extends State<EditProfile> {
                       Padding(
                           padding: EdgeInsets.all(16.0),
                           child: FlatButton.icon(
-                            onPressed: () => print('logout'),
+                            onPressed: logout,
                             icon: Icon(Icons.cancel, color: Colors.red),
                             label: Text(
                               "Logout",
