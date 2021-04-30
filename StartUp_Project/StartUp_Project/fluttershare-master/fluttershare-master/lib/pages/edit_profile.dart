@@ -24,7 +24,6 @@ class _EditProfileState extends State<EditProfile> {
   final _scaffoldkey = GlobalKey<ScaffoldState>();
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     getUser();
   }
