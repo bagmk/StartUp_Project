@@ -33,7 +33,7 @@ dependencies:
   path_provider: 2.0.1
   firebase_messaging: 9.1.1
   timeago: 3.0.2
-  cached_network_image:
+  cached_network_image: 
   flutter_svg:
 
 dev_dependencies:
