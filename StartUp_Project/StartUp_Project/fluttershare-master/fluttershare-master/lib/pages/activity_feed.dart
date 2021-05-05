@@ -2,6 +2,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttershare/pages/home.dart';
+import 'package:fluttershare/pages/post_screen.dart';
+import 'package:fluttershare/pages/profile.dart';
 import 'package:fluttershare/widgets/header.dart';
 import 'package:fluttershare/widgets/progress.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -12,12 +14,19 @@ class ActivityFeed extends StatefulWidget {
 }
 
 class _ActivityFeedState extends State<ActivityFeed> {
+  Future userNotifications;
+
+  void initState() {
+    super.initState();
+    userNotifications = getActivityFeed();
+  }
+
   getActivityFeed() async {
     QuerySnapshot snapshot = await activityFeedRef
         .doc(currentUser.id)
         .collection('feedItems')
         .orderBy('timestamp', descending: true)
-        .limit(50)
+        .limit(10)
         .get();
 
     List<ActivityFeedItem> feedItems = [];
@@ -35,10 +44,10 @@ class _ActivityFeedState extends State<ActivityFeed> {
       appBar: header(context, titleText: "Activity Feed"),
       body: Container(
           child: FutureBuilder(
-        future: getActivityFeed(),
+        future: userNotifications,
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return circularProgress();
+            return CircularProgressIndicator();
           }
           return ListView(
             children: snapshot.data,
@@ -75,21 +84,31 @@ class ActivityFeedItem extends StatelessWidget {
 
   factory ActivityFeedItem.fromDocument(DocumentSnapshot doc) {
     return ActivityFeedItem(
-      username: doc['username'],
-      userId: doc['userId'],
-      type: doc['type'],
-      postId: doc['postId'],
-      userProfileImg: doc['userProfileImg'],
-      commentData: doc['commentData'],
-      timestamp: doc['timestamp'],
-      mediaUrl: doc['mediaUrl'],
+      username: doc.data()['username'],
+      userId: doc.data()['userId'],
+      type: doc.data()['type'],
+      postId: doc.data()['postId'],
+      userProfileImg: doc.data()['userProfileImg'],
+      commentData: doc.data()['commentData'],
+      timestamp: doc.data()['timestamp'],
+      mediaUrl: doc.data()['mediaUrl'],
     );
   }
 
-  configureMediaPreview() {
+  showPost(context) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => PostScreen(
+                  postId: postId,
+                  userId: userId,
+                )));
+  }
+
+  configureMediaPreview(context) {
     if (type == "like" || type == 'comment') {
       mediaPreview = GestureDetector(
-        onTap: () => print('showing post'),
+        onTap: () => showPost(context),
         child: Container(
           height: 50.0,
           width: 50.0,
@@ -120,7 +139,7 @@ class ActivityFeedItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    configureMediaPreview();
+    configureMediaPreview(context);
 
     return Padding(
       padding: EdgeInsets.only(bottom: 2.0),
@@ -128,7 +147,10 @@ class ActivityFeedItem extends StatelessWidget {
         color: Colors.white54,
         child: ListTile(
           title: GestureDetector(
-            onTap: () => print('show profile'),
+            onTap: () => showProfile(
+              context,
+              profileId: userId,
+            ),
             child: RichText(
               overflow: TextOverflow.ellipsis,
               text: TextSpan(
@@ -160,4 +182,13 @@ class ActivityFeedItem extends StatelessWidget {
       ),
     );
   }
+}
+
+showProfile(BuildContext context, {String profileId}) {
+  Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => Profile(
+                profileId: profileId,
+              )));
 }
