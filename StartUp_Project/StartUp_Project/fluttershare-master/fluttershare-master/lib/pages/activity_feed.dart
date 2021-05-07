@@ -5,7 +5,6 @@ import 'package:fluttershare/pages/home.dart';
 import 'package:fluttershare/pages/post_screen.dart';
 import 'package:fluttershare/pages/profile.dart';
 import 'package:fluttershare/widgets/header.dart';
-import 'package:fluttershare/widgets/progress.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class ActivityFeed extends StatefulWidget {
