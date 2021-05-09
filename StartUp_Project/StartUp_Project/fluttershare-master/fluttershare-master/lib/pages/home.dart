@@ -55,9 +55,9 @@ class _HomeState extends State<Home> {
     });
   }
 
-  handleSignIn(GoogleSignInAccount account) {
+  handleSignIn(GoogleSignInAccount account) async {
     if (account != null) {
-      createUserInFirestore();
+      await createUserInFirestore();
       setState(() {
         isAuth = true;
       });
@@ -86,14 +86,18 @@ class _HomeState extends State<Home> {
         "bio": " ",
         "timestamp": timestamp,
       });
+      //make new user their own follow to include their posts in their timeline
+      await followersRef
+          .doc(user.id)
+          .collection('userFollowers')
+          .doc(user.id)
+          .set({});
 
       doc = await usersRef.doc(user.id).get();
     }
     //get user name from the creat eaccount, use it to make new uesr document in user collection
 
     currentUser = User.fromDocument(doc);
-    print(currentUser);
-    print(currentUser.username);
   }
 
   void dispose() {
