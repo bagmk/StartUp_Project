@@ -102,7 +102,7 @@ class _SearchState extends State<Search>
       backgroundColor: Theme.of(context).primaryColor.withOpacity(0.8),
       appBar: buildSearchField(),
       body:
-          searchResultsFuture == null ? buildNoContent() : buildSearchResults(),
+          searchResultsFuture == null !? buildNoContent() : buildSearchResults(),
     );
   }
 }
