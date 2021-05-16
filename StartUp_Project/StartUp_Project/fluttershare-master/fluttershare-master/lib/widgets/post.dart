@@ -5,7 +5,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttershare/models/user.dart';
+import 'package:fluttershare/pages/barter.dart';
+
 import 'package:fluttershare/pages/activity_feed.dart';
+
 import 'package:fluttershare/pages/comments.dart';
 import 'package:fluttershare/pages/home.dart';
 import 'package:fluttershare/widgets/custom_image.dart';
@@ -278,6 +281,34 @@ class _PostState extends State<Post> {
   buildPostFooter() {
     return Column(
       children: <Widget>[
+        Container(
+            padding: EdgeInsets.only(top: 2.0),
+            child: FlatButton(
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Barter(
+                          currentUserId: currentUserId,
+                          postId: postId,
+                          ownerId: ownerId),
+                    ));
+              },
+              child: Container(
+                width: 300.0,
+                height: 47.0,
+                child: Text(
+                  "Barter",
+                  style: TextStyle(
+                      color: Colors.black, fontWeight: FontWeight.bold),
+                ),
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                    color: Colors.blue,
+                    border: Border.all(color: Colors.blue),
+                    borderRadius: BorderRadius.circular(5.0)),
+              ),
+            )),
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[

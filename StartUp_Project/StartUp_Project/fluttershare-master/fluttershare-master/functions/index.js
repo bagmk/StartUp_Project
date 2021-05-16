@@ -141,3 +141,68 @@ exports.onDeletePost = functions.firestore.document('/posts/{userId}/userPosts/{
 
 
     });
+
+
+exports.onCreateActivityFeedItem = functions.firestore.document('/feed/{userId}/feedItems/{activityFeedItem}').onCreate(
+    async (snapshot, context)=> {
+        console.log('Actvity Feed Item Created', snapshot.data());
+
+        //1) get user connected to the feed
+        const userId = context.params.userId;
+        const userRef = admin.firestore().doc(`users/${userId}`);
+        const doc = await userRef.get();
+
+        //2) once we have user, check if they have notification token
+        const androidNotificationToken = doc.data().androidNotificationToken;
+        const createdActivityFeedItem = snapshot.data();
+        if (androidNotificationToken){
+            //send notifciation
+            sendNotification(androidNotificationToken,createdActivityFeedItem)
+        }else{
+            console.log("No token for user, cannot send notification")
+        }
+
+
+        function sendNotification(androidNotificationToken, activityFeedItem){
+            let body;
+
+            //switch body vlaue based off on notification type
+
+            switch (activityFeedItem.type) {
+                case "comment":
+                    body = `${activityFeedItem.username} replied : ${activityFeedItem.commentData}`;
+                    break;
+
+                case "like":
+                    body = `${activityFeedItem.username} liked your post`;
+                    break;     
+
+                case "follow":
+                    body = `${activityFeedItem.username} started following you`;
+                    break;                         
+                default:
+                    break;
+            }
+
+
+            //4) creat message for push notification
+            const message ={
+                notification: {body},
+                token: androidNotificationToken,
+                data:{recipient: userId},
+
+            };
+
+            //5) send message with admin.messaging
+            admin.messaging().send(message).then(
+                Response=>{
+                    console.log("Successfully sent message",Response);
+                }
+            )
+            .catch(error =>{
+                console.log("Error sensing message",error);
+            })
+        }
+
+    }
+)
