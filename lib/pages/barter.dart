@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:fluttershare/pages/payment.dart';
 
 import 'KeyPad.dart';
 import 'home.dart';
@@ -16,11 +17,38 @@ class Barter extends StatefulWidget {
   });
 
   @override
-  _BarterState createState() => _BarterState();
+  BarterState createState() => BarterState(
+        currentUserId: this.currentUserId,
+        postId: this.postId,
+        ownerId: this.ownerId,
+      );
 }
 
-class _BarterState extends State {
+class BarterState extends State {
   TextEditingController pinController = TextEditingController();
+  final String currentUserId;
+  final String postId;
+  final String ownerId;
+
+  BarterState({
+    this.currentUserId,
+    this.postId,
+    this.ownerId,
+  });
+
+  handlePayment() {
+    Navigator.push(context, MaterialPageRoute(builder: (context) => Payment()));
+  }
+
+  handleBarter(String pin) {
+    barterRef.doc(ownerId).collection("barter").add({
+      "username": currentUser.username,
+      "price": pin,
+      "timestamp": timestamp,
+      "userId": currentUser.id,
+      "postId": postId
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -86,15 +114,16 @@ class _BarterState extends State {
                 onSubmit: (String pin) {
                   pinController.text = pin;
                   print('submit \$ ${pinController.text}');
-                  //handleBarter(pin);
+                  handleBarter(pinController.text);
 
-                  Navigator.pushAndRemoveUntil(
+/*                   Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(
                       builder: (context) => Home(),
                     ),
                     (Route<dynamic> route) => false,
-                  );
+                  ); */
+                  handlePayment();
                 },
               ),
             ],
@@ -104,11 +133,3 @@ class _BarterState extends State {
     );
   }
 }
-
-//handleBarter(String pin) {
-//  barterRef
-//.doc(ownerId)
-//.collection('barter')
-//.doc(postId)
-//.update({'bid.$currentUserId': pin});
-//}

@@ -19,7 +19,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+
+  stripe_payment: 1.1.1
   cloud_firestore: 1.0.5
+  flutter_credit_card: 2.0.0
   firebase_core : 1.0.3
   image_picker: 0.7.4
   firebase_storage: 8.0.3
@@ -35,6 +38,7 @@ dependencies:
   timeago: 3.0.2
   cached_network_image: 
   flutter_svg:
+  
 
 dev_dependencies:
   flutter_test:
