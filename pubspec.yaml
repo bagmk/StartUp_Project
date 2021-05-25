@@ -19,7 +19,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
+  http: 0.13.3
   stripe_payment: 1.1.1
   cloud_firestore: 1.0.5
   flutter_credit_card: 2.0.0
@@ -37,7 +37,9 @@ dependencies:
   firebase_messaging: 9.1.1
   timeago: 3.0.2
   cached_network_image: 
+  bloc_provider: 0.8.0
   flutter_svg:
+  progress_dialog: ^1.2.4
   
 
 dev_dependencies:
