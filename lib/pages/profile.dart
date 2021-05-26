@@ -266,14 +266,6 @@ class _ProfileState extends State<Profile> {
                 ],
               ),
               Container(
-                alignment: Alignment.centerLeft,
-                padding: EdgeInsets.only(top: 12.0),
-                child: Text(
-                  user.username,
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16.0),
-                ),
-              ),
-              Container(
                   alignment: Alignment.centerLeft,
                   padding: EdgeInsets.only(top: 4.0),
                   child: Text(

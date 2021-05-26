@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:fluttershare/models/user.dart';
 import 'package:fluttershare/pages/activity_feed.dart';
+import 'package:fluttershare/pages/buy_sell.dart';
 import 'package:fluttershare/pages/create_account.dart';
 import 'package:fluttershare/pages/profile.dart';
 import 'package:fluttershare/pages/search.dart';
@@ -177,7 +178,7 @@ class _HomeState extends State<Home> {
           //  onPressed: logout,
           //),
 
-          ActivityFeed(),
+          BuySell(),
           Upload(currentUser: currentUser),
           Search(),
           Profile(profileId: currentUser?.id),
@@ -195,7 +196,7 @@ class _HomeState extends State<Home> {
             icon: Icon(Icons.whatshot),
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.notifications_active),
+            icon: Icon(Icons.shopping_bag),
           ),
           BottomNavigationBarItem(icon: Icon(Icons.photo_camera, size: 35.0)),
           BottomNavigationBarItem(

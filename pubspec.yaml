@@ -38,6 +38,7 @@ dependencies:
   timeago: 3.0.2
   cached_network_image: 
   bloc_provider: 0.8.0
+  flutter_swipable: ^0.1.1
   flutter_svg:
   progress_dialog: ^1.2.4
   

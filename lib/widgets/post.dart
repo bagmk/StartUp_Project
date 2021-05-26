@@ -281,34 +281,7 @@ class _PostState extends State<Post> {
   buildPostFooter() {
     return Column(
       children: <Widget>[
-        Container(
-            padding: EdgeInsets.only(top: 2.0),
-            child: FlatButton(
-              onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => Barter(
-                          currentUserId: currentUserId,
-                          postId: postId,
-                          ownerId: ownerId),
-                    ));
-              },
-              child: Container(
-                width: 300.0,
-                height: 47.0,
-                child: Text(
-                  "Barter",
-                  style: TextStyle(
-                      color: Colors.black, fontWeight: FontWeight.bold),
-                ),
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                    color: Colors.blue,
-                    border: Border.all(color: Colors.blue),
-                    borderRadius: BorderRadius.circular(5.0)),
-              ),
-            )),
+        Text(description),
         Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
@@ -318,42 +291,56 @@ class _PostState extends State<Post> {
               child: Icon(isLiked ? Icons.favorite : Icons.favorite_border,
                   size: 28.0, color: Colors.pink),
             ),
+            Container(
+              margin: EdgeInsets.only(left: 3),
+              child: Text(
+                "$likeCount",
+                style:
+                    TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+              ),
+            ),
             Padding(padding: EdgeInsets.only(right: 20.0)),
             GestureDetector(
               onTap: () => showComments(context,
                   postId: postId, ownerId: ownerId, mediaUrl: mediaUrl),
               child: Icon(Icons.chat, size: 28.0, color: Colors.blue[900]),
             ),
-          ],
-        ),
-        Row(
-          children: <Widget>[
+            Padding(padding: EdgeInsets.only(right: 10.0)),
             Container(
-              margin: EdgeInsets.only(left: 20),
-              child: Text(
-                "$likeCount likes",
-                style:
-                    TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-              ),
-            )
-          ],
-        ),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Container(
-              margin: EdgeInsets.only(left: 20),
-              child: Text(
-                "$username",
-                style:
-                    TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-              ),
+                padding: EdgeInsets.only(top: 2.0),
+                child: FlatButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Barter(
+                              currentUserId: currentUserId,
+                              postId: postId,
+                              ownerId: ownerId),
+                        ));
+                  },
+                  child: Container(
+                    width: 140.0,
+                    height: 45.0,
+                    child: Text(
+                      "Barter",
+                      style: TextStyle(
+                          color: Colors.black, fontWeight: FontWeight.bold),
+                    ),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                        color: Colors.blue,
+                        border: Border.all(color: Colors.blue),
+                        borderRadius: BorderRadius.circular(5.0)),
+                  ),
+                )),
+            Padding(padding: EdgeInsets.only(right: 10.0)),
+            GestureDetector(
+              onTap: () => print('Report function'),
+              child: Icon(Icons.report, size: 35.0, color: Colors.red[900]),
             ),
-            Expanded(
-              child: Text(description),
-            )
           ],
-        )
+        ),
       ],
     );
   }

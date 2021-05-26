@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttershare/pages/activity_feed.dart';
 import 'package:fluttershare/pages/search.dart';
 import 'package:fluttershare/widgets/header.dart';
 import 'package:fluttershare/pages/home.dart';
@@ -124,7 +125,19 @@ class _TimelineState extends State<Timeline> {
   @override
   Widget build(context) {
     return Scaffold(
-      appBar: header(context, isAppTitle: true),
+      appBar: AppBar(
+        title: const Text('Hot Place'),
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.notifications_active),
+            tooltip: 'Show Snackbar',
+            onPressed: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => ActivityFeed()));
+            },
+          )
+        ],
+      ),
       body: RefreshIndicator(
         onRefresh: () => getTimeline(),
         child: buildTimeline(),
