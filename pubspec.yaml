@@ -41,6 +41,7 @@ dependencies:
   flutter_swipable: ^0.1.1
   flutter_svg:
   progress_dialog: ^1.2.4
+  grouped_list: ^4.0.0
   
 
 dev_dependencies:
