@@ -422,10 +422,12 @@ class _PostState extends State<Post> {
                 )),
             Padding(padding: EdgeInsets.only(right: 10.0)),
             GestureDetector(
-                onTap: () => print('t'), //handleReportPost(),
-                child: Icon(Icons.report, size: 35.0, color: Colors.red[900])
-                //isReported ? Colors.red[900] : Colors.black),
-                ),
+              onTap: () => print('test'), //handleReportPost(),
+              child: Icon(Icons.report,
+                  size: 35.0,
+                  color: Colors
+                      .red), //isReported ? Colors.red[900] : Colors.black),
+            ),
           ],
         ),
       ],
@@ -446,7 +448,7 @@ class _PostState extends State<Post> {
   @override
   Widget build(BuildContext context) {
     isLiked = (likes[currentUserId] == true);
-    isReported = (reports[currentUserId] == true);
+    //isReported = (reports[currentUserId] == true);
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
