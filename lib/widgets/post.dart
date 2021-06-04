@@ -23,7 +23,7 @@ class Post extends StatefulWidget {
   final String description;
   final String mediaUrl;
   final dynamic likes;
-  final dynamic report;
+  final dynamic reports;
 
   Post(
       {this.postId,
@@ -33,7 +33,7 @@ class Post extends StatefulWidget {
       this.mediaUrl,
       this.description,
       this.likes,
-      this.report});
+      this.reports});
 
   factory Post.fromDocument(DocumentSnapshot doc) {
     return Post(
@@ -44,7 +44,7 @@ class Post extends StatefulWidget {
         mediaUrl: doc.data()['mediaUrl'],
         description: doc.data()['description'],
         likes: doc.data()['likes'],
-        report: doc.data()['report']);
+        reports: doc.data()['reports']);
   }
 
   int getLikeCount(likes) {
@@ -61,13 +61,13 @@ class Post extends StatefulWidget {
     return count;
   }
 
-  int getReportCount(report) {
+  int getReportCount(reports) {
     //if there are no like return 0
-    if (report == null) {
+    if (reports == null) {
       return 0;
     }
     int count = 0;
-    report.values.forEach((val) {
+    reports.values.forEach((val) {
       if (val == true) {
         count += 1;
       }
@@ -84,9 +84,9 @@ class Post extends StatefulWidget {
         description: this.description,
         mediaUrl: this.mediaUrl,
         likes: this.likes,
-        report: this.report,
+        reports: this.reports,
         likeCount: getLikeCount(this.likes),
-        reportCount: getReportCount(this.report),
+        reportCount: getReportCount(this.reports),
       );
 }
 
@@ -101,8 +101,9 @@ class _PostState extends State<Post> {
   int likeCount;
   Map likes;
   bool isLiked;
+
   int reportCount;
-  Map report;
+  Map reports;
   bool isReported;
 
   bool showHeart = false;
@@ -116,7 +117,7 @@ class _PostState extends State<Post> {
     this.description,
     this.likes,
     this.likeCount,
-    this.report,
+    this.reports,
     this.reportCount,
   });
 
@@ -318,29 +319,29 @@ class _PostState extends State<Post> {
   }
 
   handleReportPost() {
-    bool _isReported = report[currentUserId] == true;
+    bool _isReported = reports[currentUserId] == true;
 
     if (_isReported) {
       postsRef
           .doc(ownerId)
           .collection('userPosts')
           .doc(postId)
-          .update({'report.$currentUserId': false});
+          .update({'reports.$currentUserId': false});
       setState(() {
         reportCount -= 1;
         isReported = false;
-        report[currentUserId] = false;
+        reports[currentUserId] = false;
       });
     } else if (!_isReported) {
       postsRef
           .doc(ownerId)
           .collection('userPosts')
           .doc(postId)
-          .update({'report.$currentUserId': true});
+          .update({'reports.$currentUserId': true});
       setState(() {
         reportCount += 1;
         isReported = true;
-        report[currentUserId] = true;
+        reports[currentUserId] = true;
       });
     }
   }
@@ -421,9 +422,10 @@ class _PostState extends State<Post> {
                 )),
             Padding(padding: EdgeInsets.only(right: 10.0)),
             GestureDetector(
-              onTap: () => print('hello'), //handleReportPost()
-              child: Icon(Icons.report, size: 35.0, color: Colors.red[900]),
-            ),
+                onTap: () => print('t'), //handleReportPost(),
+                child: Icon(Icons.report, size: 35.0, color: Colors.red[900])
+                //isReported ? Colors.red[900] : Colors.black),
+                ),
           ],
         ),
       ],
@@ -444,7 +446,7 @@ class _PostState extends State<Post> {
   @override
   Widget build(BuildContext context) {
     isLiked = (likes[currentUserId] == true);
-
+    isReported = (reports[currentUserId] == true);
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
