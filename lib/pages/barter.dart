@@ -46,7 +46,8 @@ class BarterState extends State {
       "price": pin,
       "timestamp": timestamp,
       "userId": currentUser.id,
-      "postId": postId
+      "postId": postId,
+      "Cash/Item": "Cash"
     });
   }
 
@@ -54,7 +55,7 @@ class BarterState extends State {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Barter'),
+        title: Text('Bid Money'),
         backgroundColor: Colors.blue,
       ),
       body: Builder(

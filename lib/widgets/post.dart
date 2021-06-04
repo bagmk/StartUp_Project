@@ -8,6 +8,7 @@ import 'package:fluttershare/models/user.dart';
 import 'package:fluttershare/pages/barter.dart';
 
 import 'package:fluttershare/pages/activity_feed.dart';
+import 'package:fluttershare/pages/barter_item.dart';
 
 import 'package:fluttershare/pages/comments.dart';
 import 'package:fluttershare/pages/home.dart';
@@ -22,16 +23,17 @@ class Post extends StatefulWidget {
   final String description;
   final String mediaUrl;
   final dynamic likes;
+  final dynamic report;
 
-  Post({
-    this.postId,
-    this.ownerId,
-    this.username,
-    this.location,
-    this.mediaUrl,
-    this.description,
-    this.likes,
-  });
+  Post(
+      {this.postId,
+      this.ownerId,
+      this.username,
+      this.location,
+      this.mediaUrl,
+      this.description,
+      this.likes,
+      this.report});
 
   factory Post.fromDocument(DocumentSnapshot doc) {
     return Post(
@@ -41,7 +43,8 @@ class Post extends StatefulWidget {
         location: doc['location'],
         mediaUrl: doc['mediaUrl'],
         description: doc['description'],
-        likes: doc['likes']);
+        likes: doc['likes'],
+        report: doc['report']);
   }
 
   int getLikeCount(likes) {
@@ -58,6 +61,20 @@ class Post extends StatefulWidget {
     return count;
   }
 
+  int getReportCount(report) {
+    //if there are no like return 0
+    if (report == null) {
+      return 0;
+    }
+    int count = 0;
+    report.values.forEach((val) {
+      if (val == true) {
+        count += 1;
+      }
+    });
+    return count;
+  }
+
   @override
   _PostState createState() => _PostState(
         postId: this.postId,
@@ -67,7 +84,9 @@ class Post extends StatefulWidget {
         description: this.description,
         mediaUrl: this.mediaUrl,
         likes: this.likes,
+        report: this.report,
         likeCount: getLikeCount(this.likes),
+        reportCount: getReportCount(this.report),
       );
 }
 
@@ -82,6 +101,10 @@ class _PostState extends State<Post> {
   int likeCount;
   Map likes;
   bool isLiked;
+  int reportCount;
+  Map report;
+  bool isReported;
+
   bool showHeart = false;
 
   _PostState({
@@ -93,6 +116,8 @@ class _PostState extends State<Post> {
     this.description,
     this.likes,
     this.likeCount,
+    this.report,
+    this.reportCount,
   });
 
   buildPostHeader() {
@@ -157,7 +182,7 @@ class _PostState extends State<Post> {
         context: parentContext,
         builder: (context) {
           return SimpleDialog(
-            title: Text("How do you want to Bid?"),
+            title: Text("How do you want to Barter?"),
             children: <Widget>[
               SimpleDialogOption(
                   onPressed: () {
@@ -171,13 +196,22 @@ class _PostState extends State<Post> {
                         ));
                   },
                   child: Text(
-                    'I have Money!',
+                    'I want to bid Cash!',
                     style: TextStyle(color: Colors.red),
                   )),
               SimpleDialogOption(
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => BarterItem(
+                              currentUserId: currentUserId,
+                              postId: postId,
+                              ownerId: ownerId),
+                        ));
+                  },
                   child: Text(
-                    'I have Item!',
+                    'I want to trade my Item!',
                   )),
             ],
           );
@@ -283,6 +317,39 @@ class _PostState extends State<Post> {
     }
   }
 
+
+  handleReportPost() {
+    bool _isReported = report[currentUserId] == true;
+
+    if (_isReported) {
+      postsRef
+          .doc(ownerId)
+          .collection('userPosts')
+          .doc(postId)
+          .update({'report.$currentUserId': false});
+      setState(() {
+        reportCount -= 1;
+        isReported = false;
+        report[currentUserId] = false;
+      });
+    } else if (!_isReported) {
+      postsRef
+          .doc(ownerId)
+          .collection('userPosts')
+          .doc(postId)
+          .update({'report.$currentUserId': true});
+      setState(() {
+        reportCount += 1;
+        isReported = true;
+        report[currentUserId] = true;
+      });
+    }
+  }
+
+
+
+
+
   buildPostImage() {
     return GestureDetector(
         onDoubleTap: () => handleLikePost(),
@@ -359,8 +426,9 @@ class _PostState extends State<Post> {
                 )),
             Padding(padding: EdgeInsets.only(right: 10.0)),
             GestureDetector(
-              onTap: () => print('Report function'),
-              child: Icon(Icons.report, size: 35.0, color: Colors.red[900]),
+              onTap: () => handleReportPost(),
+              child: Icon(Icons.report
+              , size: 35.0, color: isReported ? Colors.red[900]:Colors.black[900]),
             ),
           ],
         ),

@@ -102,6 +102,7 @@ class _EditProfileState extends State<EditProfile> {
       SnackBar snackbar = SnackBar(content: Text("Profile updated!"));
       _scaffoldkey.currentState.showSnackBar(snackbar);
     }
+    Navigator.pop(context);
   }
 
   logout() async {

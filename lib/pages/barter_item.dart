@@ -25,10 +25,12 @@ class BarterItem extends StatefulWidget {
 }
 
 class BarterItemState extends State {
-  TextEditingController pinController = TextEditingController();
+  TextEditingController itemController = TextEditingController();
   final String currentUserId;
   final String postId;
   final String ownerId;
+  bool _itemNameValid = true;
+  bool isLoading = false;
 
   BarterItemState({
     this.currentUserId,
@@ -36,95 +38,70 @@ class BarterItemState extends State {
     this.ownerId,
   });
 
-  handlePayment() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => Payment()));
+  handleBarter(String itemName) {
+    setState(() {
+      itemController.text.trim().length < 3 || itemController.text.isEmpty
+          ? _itemNameValid = false
+          : _itemNameValid = true;
+    });
+
+    if (_itemNameValid) {
+      barterRef.doc(ownerId).collection("barter").add({
+        "username": currentUser.username,
+        "Item": itemName,
+        "timestamp": timestamp,
+        "userId": currentUser.id,
+        "postId": postId,
+        "Cash/Item": "Item"
+      });
+
+      Navigator.pop(context);
+    }
   }
 
-  handleBarter(String pin) {
-    barterRef.doc(ownerId).collection("barter").add({
-      "username": currentUser.username,
-      "price": pin,
-      "timestamp": timestamp,
-      "userId": currentUser.id,
-      "postId": postId
-    });
+  buildItemNameField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Padding(
+          padding: EdgeInsets.only(top: 12.0),
+          child: Text(
+            "Item Name",
+            style: TextStyle(color: Colors.grey),
+          ),
+        ),
+        TextField(
+          controller: itemController,
+          decoration: InputDecoration(
+              hintText: "Item Name",
+              errorText: _itemNameValid ? null : "Item Name too short"),
+        )
+      ],
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Barter'),
+        title: Text('Trade with Item'),
         backgroundColor: Colors.blue,
       ),
       body: Builder(
         builder: (BuildContext context) => Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: [
+            children: <Widget>[
               Padding(
-                padding: EdgeInsets.only(bottom: 20),
-                child: Text(
-                  'How much do you want to pay?',
-                  style: TextStyle(
-                      color: Colors.blue,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold
-                      // fontFamily: AppTextStyle.robotoBold
-                      ),
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(left: 50, right: 50, bottom: 15),
-                child: Container(
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(5),
-                      color: Colors.orangeAccent,
-                      border:
-                          Border.all(color: Colors.orangeAccent, width: 1.5)),
-                  child: Padding(
-                    padding: EdgeInsets.only(left: 15),
-                    child: TextField(
-                      controller: pinController,
-                      readOnly: true,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 26,
-                        // fontWeight: FontWeight.bold
-                        // fontFamily: AppTextStyle.robotoBold
-                      ),
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        hintText: '\$\$\$',
-                      ),
-                      // controller: userDisplayName,
-                    ),
-                  ),
-                ),
-              ),
-              KeyPad(
-                pinController: pinController,
-                isPinLogin: false,
-                onChange: (String pin) {
-                  pinController.text = pin;
-                  print('${pinController.text}');
-                  setState(() {});
-                },
-                onSubmit: (String pin) {
-                  pinController.text = pin;
-                  print('submit \$ ${pinController.text}');
-                  handleBarter(pinController.text);
-
-/*                   Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => Home(),
-                    ),
-                    (Route<dynamic> route) => false,
-                  ); */
-                  handlePayment();
-                },
+                  padding: EdgeInsets.all(16.0), child: buildItemNameField()),
+              RaisedButton(
+                onPressed: () => handleBarter(itemController.text),
+                child: Text("Barter!",
+                    style: TextStyle(
+                      color: Theme.of(context).primaryColor,
+                      fontSize: 20.0,
+                      fontWeight: FontWeight.bold,
+                    )),
               ),
             ],
           ),
