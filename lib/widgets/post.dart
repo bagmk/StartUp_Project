@@ -37,14 +37,14 @@ class Post extends StatefulWidget {
 
   factory Post.fromDocument(DocumentSnapshot doc) {
     return Post(
-        postId: doc['postId'],
-        ownerId: doc['ownerId'],
-        username: doc['username'],
-        location: doc['location'],
-        mediaUrl: doc['mediaUrl'],
-        description: doc['description'],
-        likes: doc['likes'],
-        report: doc['report']);
+        postId: doc.data()['postId'],
+        ownerId: doc.data()['ownerId'],
+        username: doc.data()['username'],
+        location: doc.data()['location'],
+        mediaUrl: doc.data()['mediaUrl'],
+        description: doc.data()['description'],
+        likes: doc.data()['likes'],
+        report: doc.data()['report']);
   }
 
   int getLikeCount(likes) {
@@ -317,7 +317,6 @@ class _PostState extends State<Post> {
     }
   }
 
-
   handleReportPost() {
     bool _isReported = report[currentUserId] == true;
 
@@ -345,10 +344,6 @@ class _PostState extends State<Post> {
       });
     }
   }
-
-
-
-
 
   buildPostImage() {
     return GestureDetector(
@@ -426,9 +421,8 @@ class _PostState extends State<Post> {
                 )),
             Padding(padding: EdgeInsets.only(right: 10.0)),
             GestureDetector(
-              onTap: () => handleReportPost(),
-              child: Icon(Icons.report
-              , size: 35.0, color: isReported ? Colors.red[900]:Colors.black[900]),
+              onTap: () => print('hello'), //handleReportPost()
+              child: Icon(Icons.report, size: 35.0, color: Colors.red[900]),
             ),
           ],
         ),
@@ -450,6 +444,7 @@ class _PostState extends State<Post> {
   @override
   Widget build(BuildContext context) {
     isLiked = (likes[currentUserId] == true);
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
