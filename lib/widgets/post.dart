@@ -152,6 +152,38 @@ class _PostState extends State<Post> {
         });
   }
 
+  handleBarter(BuildContext parentContext) {
+    return showDialog(
+        context: parentContext,
+        builder: (context) {
+          return SimpleDialog(
+            title: Text("How do you want to Bid?"),
+            children: <Widget>[
+              SimpleDialogOption(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Barter(
+                              currentUserId: currentUserId,
+                              postId: postId,
+                              ownerId: ownerId),
+                        ));
+                  },
+                  child: Text(
+                    'I have Money!',
+                    style: TextStyle(color: Colors.red),
+                  )),
+              SimpleDialogOption(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text(
+                    'I have Item!',
+                  )),
+            ],
+          );
+        });
+  }
+
   //Note to delete post ownerId and currentuserId must be equal, so they can be used interchangly
   deletePost() async {
     postsRef.doc(ownerId).collection('userPosts').doc(postId).get().then((doc) {
@@ -309,16 +341,7 @@ class _PostState extends State<Post> {
             Container(
                 padding: EdgeInsets.only(top: 2.0),
                 child: FlatButton(
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => Barter(
-                              currentUserId: currentUserId,
-                              postId: postId,
-                              ownerId: ownerId),
-                        ));
-                  },
+                  onPressed: () => handleBarter(context),
                   child: Container(
                     width: 140.0,
                     height: 45.0,
