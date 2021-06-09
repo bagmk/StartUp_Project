@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:fluttershare/models/user.dart';
-import 'package:fluttershare/pages/activity_feed.dart';
+
 import 'package:fluttershare/pages/buy_sell.dart';
 import 'package:fluttershare/pages/create_account.dart';
 import 'package:fluttershare/pages/profile.dart';
@@ -16,13 +16,15 @@ import 'package:google_sign_in/google_sign_in.dart';
 
 final GoogleSignIn googleSignIn = GoogleSignIn();
 final usersRef = FirebaseFirestore.instance.collection('users');
-final barterRef = FirebaseFirestore.instance.collection('barter');
+final buyRef = FirebaseFirestore.instance.collection('buy');
+final sellRef = FirebaseFirestore.instance.collection('sell');
 final postsRef = FirebaseFirestore.instance.collection('posts');
 final commentsRef = FirebaseFirestore.instance.collection('comments');
 final activityFeedRef = FirebaseFirestore.instance.collection('feed');
 final followersRef = FirebaseFirestore.instance.collection('followers');
 final followingRef = FirebaseFirestore.instance.collection('following');
 final timelineRef = FirebaseFirestore.instance.collection('timeline');
+final buysellRef = FirebaseFirestore.instance.collection('buysellRef');
 
 final DateTime timestamp = DateTime.now();
 final Reference storageRef = FirebaseStorage.instance.ref();
@@ -178,7 +180,7 @@ class _HomeState extends State<Home> {
           //  onPressed: logout,
           //),
 
-          BuySell(),
+          BuySell(profileId: currentUser?.id),
           Upload(currentUser: currentUser),
           Search(),
           Profile(profileId: currentUser?.id),

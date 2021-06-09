@@ -39,13 +39,13 @@ class BarterState extends State {
   }
 
   handleBarter(String pin) {
-    barterRef.doc(ownerId).collection("barter").add({
+    buyRef.doc(ownerId).collection("barter").add({
       "username": currentUser.username,
-      "price": pin,
+      "Item": pin,
       "timestamp": timestamp,
       "userId": currentUser.id,
       "postId": postId,
-      "Cash/Item": "Cash"
+      "Cash/Item": "Item"
     });
 
     Navigator.push(context, MaterialPageRoute(builder: (context) => Home()));
