@@ -1,68 +1,71 @@
+import 'package:animator/animator.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttershare/models/user.dart';
+
+import 'package:fluttershare/pages/activity_feed.dart';
+
 import 'package:fluttershare/pages/home.dart';
+
 import 'package:fluttershare/widgets/progress.dart';
 
 class BuyList extends StatefulWidget {
   final String postId;
-  final String ownerId;
+  final String userId;
   final String type;
-  final String price;
   final String username;
   final String item;
+  final Timestamp timestamp;
 
   BuyList({
     this.postId,
-    this.ownerId,
+    this.userId,
     this.type,
-    this.price,
     this.username,
+    this.timestamp,
     this.item,
   });
 
   factory BuyList.fromDocument(DocumentSnapshot doc) {
     return BuyList(
         postId: doc.data()['postId'],
-        ownerId: doc.data()['ownerId'],
+        userId: doc.data()['userId'],
         type: doc.data()['Cash/Item'],
-        price: doc.data()['price'],
         username: doc.data()['username'],
-        item: doc.data()['Item']);
+        item: doc.data()['item']);
   }
 
   @override
   _BuyListState createState() => _BuyListState(
       postId: this.postId,
-      ownerId: this.ownerId,
+      userId: this.userId,
+      timestamp: this.timestamp,
       type: this.type,
-      price: this.price,
       username: this.username,
       item: this.item);
 }
 
 class _BuyListState extends State<BuyList> {
-  final String currentUserId = currentUser?.id;
   final String postId;
-  final String ownerId;
+  final String userId;
+  final Timestamp timestamp;
   final String type;
-  final String price;
   final String item;
   final String username;
 
   _BuyListState({
     this.postId,
-    this.ownerId,
+    this.userId,
+    this.timestamp,
     this.type,
-    this.price,
     this.username,
     this.item,
   });
 
   buildPostHeader() {
     return FutureBuilder(
-      future: usersRef.doc(ownerId).get(),
+      future: usersRef.doc(userId).get(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return circularProgress();

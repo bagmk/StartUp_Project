@@ -46,9 +46,18 @@ class BarterItemState extends State {
     });
 
     if (_itemNameValid) {
-      buyRef.doc(ownerId).collection("barter").add({
+      buyRef.doc(currentUser.id).collection("barter").add({
         "username": currentUser.username,
-        "Item": itemName,
+        "item": itemName,
+        "timestamp": timestamp,
+        "userId": currentUser.id,
+        "postId": postId,
+        "Cash/Item": "Item"
+      });
+
+      sellRef.doc(ownerId).collection("barter").add({
+        "username": currentUser.username,
+        "item": itemName,
         "timestamp": timestamp,
         "userId": currentUser.id,
         "postId": postId,

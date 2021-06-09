@@ -12,62 +12,61 @@ import 'package:fluttershare/widgets/progress.dart';
 
 class SellList extends StatefulWidget {
   final String postId;
-  final String ownerId;
+  final String userId;
   final String type;
-  final String price;
   final String username;
   final String item;
+  final Timestamp timestamp;
 
   SellList({
     this.postId,
-    this.ownerId,
+    this.userId,
     this.type,
-    this.price,
     this.username,
+    this.timestamp,
     this.item,
   });
 
   factory SellList.fromDocument(DocumentSnapshot doc) {
     return SellList(
         postId: doc.data()['postId'],
-        ownerId: doc.data()['ownerId'],
+        userId: doc.data()['userId'],
+        timestamp: doc.data()['timestamp'],
         type: doc.data()['Cash/Item'],
-        price: doc.data()['price'],
         username: doc.data()['username'],
-        item: doc.data()['Item']);
+        item: doc.data()['item']);
   }
 
   @override
   _SellListState createState() => _SellListState(
       postId: this.postId,
-      ownerId: this.ownerId,
+      userId: this.userId,
+      timestamp: this.timestamp,
       type: this.type,
-      price: this.price,
       username: this.username,
       item: this.item);
 }
 
 class _SellListState extends State<SellList> {
-  final String currentUserId = currentUser?.id;
   final String postId;
-  final String ownerId;
+  final String userId;
+  final Timestamp timestamp;
   final String type;
-  final String price;
   final String item;
   final String username;
 
   _SellListState({
     this.postId,
-    this.ownerId,
+    this.userId,
+    this.timestamp,
     this.type,
-    this.price,
     this.username,
     this.item,
   });
 
   buildPostHeader() {
     return FutureBuilder(
-      future: usersRef.doc(ownerId).get(),
+      future: usersRef.doc(userId).get(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return circularProgress();

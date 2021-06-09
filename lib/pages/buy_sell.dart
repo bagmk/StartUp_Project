@@ -29,7 +29,7 @@ class _BuySellState extends State<BuySell> {
   void initState() {
     super.initState();
     getBuyList();
-    //getSellList();
+    getSellList();
   }
 
   getBuyList() async {
@@ -47,7 +47,6 @@ class _BuySellState extends State<BuySell> {
       buyCount = snapshot.docs.length;
       buyList = snapshot.docs.map((doc) => BuyList.fromDocument(doc)).toList();
     });
-    print(buyList.toString());
   }
 
   getSellList() async {
@@ -69,31 +68,7 @@ class _BuySellState extends State<BuySell> {
   }
 
   buildProfilePost() {
-    if (isLoading) {
-      return circularProgress();
-    } else if (sellList.isEmpty) {
-      return Container(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            SvgPicture.asset(
-              'assets/images/no_content.svg',
-              height: 260.0,
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: 20.0),
-              child: Text(
-                "No Posts",
-                style: TextStyle(
-                    color: Colors.redAccent,
-                    fontSize: 40.0,
-                    fontWeight: FontWeight.bold),
-              ),
-            ),
-          ],
-        ),
-      );
-    } else if (buyOrSell == "buy") {
+    if (buyOrSell == "buy") {
       return Column(children: buyList);
     } else if (buyOrSell == "sell") {
       return Column(children: sellList);
