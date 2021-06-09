@@ -55,7 +55,7 @@ class BarterItemState extends State {
         "Cash/Item": "Item"
       });
 
-      Navigator.pop(context);
+      Navigator.push(context, MaterialPageRoute(builder: (context) => Home()));
     }
   }
 

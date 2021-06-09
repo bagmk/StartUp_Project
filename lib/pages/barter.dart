@@ -1,7 +1,5 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:fluttershare/pages/payment.dart';
-
 import 'KeyPad.dart';
 import 'home.dart';
 
@@ -49,6 +47,8 @@ class BarterState extends State {
       "postId": postId,
       "Cash/Item": "Cash"
     });
+
+    Navigator.push(context, MaterialPageRoute(builder: (context) => Home()));
   }
 
   @override
@@ -116,15 +116,6 @@ class BarterState extends State {
                   pinController.text = pin;
                   print('submit \$ ${pinController.text}');
                   handleBarter(pinController.text);
-
-/*                   Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => Home(),
-                    ),
-                    (Route<dynamic> route) => false,
-                  ); */
-                  handlePayment();
                 },
               ),
             ],

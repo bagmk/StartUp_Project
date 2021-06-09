@@ -25,15 +25,16 @@ class Post extends StatefulWidget {
   final dynamic likes;
   final dynamic reports;
 
-  Post(
-      {this.postId,
-      this.ownerId,
-      this.username,
-      this.location,
-      this.mediaUrl,
-      this.description,
-      this.likes,
-      this.reports});
+  Post({
+    this.postId,
+    this.ownerId,
+    this.username,
+    this.location,
+    this.mediaUrl,
+    this.description,
+    this.likes,
+    this.reports,
+  });
 
   factory Post.fromDocument(DocumentSnapshot doc) {
     return Post(
@@ -61,7 +62,7 @@ class Post extends StatefulWidget {
     return count;
   }
 
-  int getReportCount(reports) {
+  int getReportCount(likes) {
     //if there are no like return 0
     if (reports == null) {
       return 0;
@@ -86,7 +87,7 @@ class Post extends StatefulWidget {
         likes: this.likes,
         reports: this.reports,
         likeCount: getLikeCount(this.likes),
-        reportCount: getReportCount(this.reports),
+        reportCount: getLikeCount(this.reports),
       );
 }
 
@@ -105,7 +106,6 @@ class _PostState extends State<Post> {
   int reportCount;
   Map reports;
   bool isReported;
-
   bool showHeart = false;
 
   _PostState({
@@ -172,47 +172,6 @@ class _PostState extends State<Post> {
                   onPressed: () => Navigator.pop(context),
                   child: Text(
                     'cancel',
-                  )),
-            ],
-          );
-        });
-  }
-
-  handleBarter(BuildContext parentContext) {
-    return showDialog(
-        context: parentContext,
-        builder: (context) {
-          return SimpleDialog(
-            title: Text("How do you want to Barter?"),
-            children: <Widget>[
-              SimpleDialogOption(
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => Barter(
-                              currentUserId: currentUserId,
-                              postId: postId,
-                              ownerId: ownerId),
-                        ));
-                  },
-                  child: Text(
-                    'I want to bid Cash!',
-                    style: TextStyle(color: Colors.red),
-                  )),
-              SimpleDialogOption(
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => BarterItem(
-                              currentUserId: currentUserId,
-                              postId: postId,
-                              ownerId: ownerId),
-                        ));
-                  },
-                  child: Text(
-                    'I want to trade my Item!',
                   )),
             ],
           );
@@ -327,6 +286,7 @@ class _PostState extends State<Post> {
           .collection('userPosts')
           .doc(postId)
           .update({'reports.$currentUserId': false});
+      removeLikeFromActivityFeed();
       setState(() {
         reportCount -= 1;
         isReported = false;
@@ -338,6 +298,7 @@ class _PostState extends State<Post> {
           .collection('userPosts')
           .doc(postId)
           .update({'reports.$currentUserId': true});
+      addLikeToActivityFeed();
       setState(() {
         reportCount += 1;
         isReported = true;
@@ -371,6 +332,47 @@ class _PostState extends State<Post> {
                 : Text("")
           ],
         ));
+  }
+
+  handleBarter(BuildContext parentContext) {
+    return showDialog(
+        context: parentContext,
+        builder: (context) {
+          return SimpleDialog(
+            title: Text("How do you want to Barter?"),
+            children: <Widget>[
+              SimpleDialogOption(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Barter(
+                              currentUserId: currentUserId,
+                              postId: postId,
+                              ownerId: ownerId),
+                        ));
+                  },
+                  child: Text(
+                    'I want to bid Cash!',
+                    style: TextStyle(color: Colors.red),
+                  )),
+              SimpleDialogOption(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => BarterItem(
+                              currentUserId: currentUserId,
+                              postId: postId,
+                              ownerId: ownerId),
+                        ));
+                  },
+                  child: Text(
+                    'I want to trade my Item!',
+                  )),
+            ],
+          );
+        });
   }
 
   buildPostFooter() {
@@ -422,11 +424,10 @@ class _PostState extends State<Post> {
                 )),
             Padding(padding: EdgeInsets.only(right: 10.0)),
             GestureDetector(
-              onTap: () => print('test'), //handleReportPost(),
+              onTap: () => handleReportPost(),
               child: Icon(Icons.report,
                   size: 35.0,
-                  color: Colors
-                      .red), //isReported ? Colors.red[900] : Colors.black),
+                  color: isReported ? Colors.red[900] : Colors.grey[900]),
             ),
           ],
         ),
@@ -448,7 +449,7 @@ class _PostState extends State<Post> {
   @override
   Widget build(BuildContext context) {
     isLiked = (likes[currentUserId] == true);
-    //isReported = (reports[currentUserId] == true);
+    isReported = (reports[currentUserId] == true);
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
