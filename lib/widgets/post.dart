@@ -8,6 +8,7 @@ import 'package:fluttershare/models/user.dart';
 import 'package:fluttershare/pages/barter.dart';
 
 import 'package:fluttershare/pages/activity_feed.dart';
+import 'package:fluttershare/pages/barter_item.dart';
 
 import 'package:fluttershare/pages/comments.dart';
 import 'package:fluttershare/pages/home.dart';
@@ -22,6 +23,7 @@ class Post extends StatefulWidget {
   final String description;
   final String mediaUrl;
   final dynamic likes;
+  final dynamic reports;
 
   Post({
     this.postId,
@@ -31,17 +33,19 @@ class Post extends StatefulWidget {
     this.mediaUrl,
     this.description,
     this.likes,
+    this.reports,
   });
 
   factory Post.fromDocument(DocumentSnapshot doc) {
     return Post(
-        postId: doc['postId'],
-        ownerId: doc['ownerId'],
-        username: doc['username'],
-        location: doc['location'],
-        mediaUrl: doc['mediaUrl'],
-        description: doc['description'],
-        likes: doc['likes']);
+        postId: doc.data()['postId'],
+        ownerId: doc.data()['ownerId'],
+        username: doc.data()['username'],
+        location: doc.data()['location'],
+        mediaUrl: doc.data()['mediaUrl'],
+        description: doc.data()['description'],
+        likes: doc.data()['likes'],
+        reports: doc.data()['reports']);
   }
 
   int getLikeCount(likes) {
@@ -58,6 +62,20 @@ class Post extends StatefulWidget {
     return count;
   }
 
+  int getReportCount(likes) {
+    //if there are no like return 0
+    if (reports == null) {
+      return 0;
+    }
+    int count = 0;
+    reports.values.forEach((val) {
+      if (val == true) {
+        count += 1;
+      }
+    });
+    return count;
+  }
+
   @override
   _PostState createState() => _PostState(
         postId: this.postId,
@@ -67,7 +85,9 @@ class Post extends StatefulWidget {
         description: this.description,
         mediaUrl: this.mediaUrl,
         likes: this.likes,
+        reports: this.reports,
         likeCount: getLikeCount(this.likes),
+        reportCount: getLikeCount(this.reports),
       );
 }
 
@@ -82,6 +102,10 @@ class _PostState extends State<Post> {
   int likeCount;
   Map likes;
   bool isLiked;
+
+  int reportCount;
+  Map reports;
+  bool isReported;
   bool showHeart = false;
 
   _PostState({
@@ -93,6 +117,8 @@ class _PostState extends State<Post> {
     this.description,
     this.likes,
     this.likeCount,
+    this.reports,
+    this.reportCount,
   });
 
   buildPostHeader() {
@@ -251,6 +277,36 @@ class _PostState extends State<Post> {
     }
   }
 
+  handleReportPost() {
+    bool _isReported = reports[currentUserId] == true;
+
+    if (_isReported) {
+      postsRef
+          .doc(ownerId)
+          .collection('userPosts')
+          .doc(postId)
+          .update({'reports.$currentUserId': false});
+      removeLikeFromActivityFeed();
+      setState(() {
+        reportCount -= 1;
+        isReported = false;
+        reports[currentUserId] = false;
+      });
+    } else if (!_isReported) {
+      postsRef
+          .doc(ownerId)
+          .collection('userPosts')
+          .doc(postId)
+          .update({'reports.$currentUserId': true});
+      addLikeToActivityFeed();
+      setState(() {
+        reportCount += 1;
+        isReported = true;
+        reports[currentUserId] = true;
+      });
+    }
+  }
+
   buildPostImage() {
     return GestureDetector(
         onDoubleTap: () => handleLikePost(),
@@ -276,6 +332,49 @@ class _PostState extends State<Post> {
                 : Text("")
           ],
         ));
+  }
+
+  handleBarter(BuildContext parentContext) {
+    return showDialog(
+        context: parentContext,
+        builder: (context) {
+          return SimpleDialog(
+            title: Text("How do you want to Barter?"),
+            children: <Widget>[
+              SimpleDialogOption(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Barter(
+                              currentUserId: currentUserId,
+                              postId: postId,
+                              ownerId: ownerId,
+                              mediaUrl: mediaUrl),
+                        ));
+                  },
+                  child: Text(
+                    'I want to bid Cash!',
+                    style: TextStyle(color: Colors.red),
+                  )),
+              SimpleDialogOption(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => BarterItem(
+                              currentUserId: currentUserId,
+                              postId: postId,
+                              ownerId: ownerId,
+                              mediaUrl: mediaUrl),
+                        ));
+                  },
+                  child: Text(
+                    'I want to trade my Item!',
+                  )),
+            ],
+          );
+        });
   }
 
   buildPostFooter() {
@@ -309,16 +408,7 @@ class _PostState extends State<Post> {
             Container(
                 padding: EdgeInsets.only(top: 2.0),
                 child: FlatButton(
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => Barter(
-                              currentUserId: currentUserId,
-                              postId: postId,
-                              ownerId: ownerId),
-                        ));
-                  },
+                  onPressed: () => handleBarter(context),
                   child: Container(
                     width: 140.0,
                     height: 45.0,
@@ -336,8 +426,10 @@ class _PostState extends State<Post> {
                 )),
             Padding(padding: EdgeInsets.only(right: 10.0)),
             GestureDetector(
-              onTap: () => print('Report function'),
-              child: Icon(Icons.report, size: 35.0, color: Colors.red[900]),
+              onTap: () => handleReportPost(),
+              child: Icon(Icons.report,
+                  size: 35.0,
+                  color: isReported ? Colors.red[900] : Colors.grey[900]),
             ),
           ],
         ),
@@ -359,6 +451,7 @@ class _PostState extends State<Post> {
   @override
   Widget build(BuildContext context) {
     isLiked = (likes[currentUserId] == true);
+    isReported = (reports[currentUserId] == true);
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[

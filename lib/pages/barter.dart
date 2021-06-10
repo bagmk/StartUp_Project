@@ -1,7 +1,5 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:fluttershare/pages/payment.dart';
-
 import 'KeyPad.dart';
 import 'home.dart';
 
@@ -9,18 +7,15 @@ class Barter extends StatefulWidget {
   final String currentUserId;
   final String postId;
   final String ownerId;
-
-  Barter({
-    this.currentUserId,
-    this.postId,
-    this.ownerId,
-  });
+  final String mediaUrl;
+  Barter({this.currentUserId, this.postId, this.ownerId, this.mediaUrl});
 
   @override
   BarterState createState() => BarterState(
         currentUserId: this.currentUserId,
         postId: this.postId,
         ownerId: this.ownerId,
+        mediaUrl: this.mediaUrl,
       );
 }
 
@@ -29,11 +24,13 @@ class BarterState extends State {
   final String currentUserId;
   final String postId;
   final String ownerId;
+  final String mediaUrl;
 
   BarterState({
     this.currentUserId,
     this.postId,
     this.ownerId,
+    this.mediaUrl,
   });
 
   handlePayment() {
@@ -41,20 +38,34 @@ class BarterState extends State {
   }
 
   handleBarter(String pin) {
-    barterRef.doc(ownerId).collection("barter").add({
+    buyRef.doc(currentUser.id).collection("barter").add({
       "username": currentUser.username,
-      "price": pin,
+      "item": pin,
       "timestamp": timestamp,
       "userId": currentUser.id,
-      "postId": postId
+      "postId": postId,
+      "Cash/Item": "Cash",
+      "mediaUrl": mediaUrl
     });
+
+    sellRef.doc(ownerId).collection("barter").add({
+      "username": currentUser.username,
+      "item": pin,
+      "timestamp": timestamp,
+      "userId": currentUser.id,
+      "postId": postId,
+      "Cash/Item": "Cash",
+      "mediaUrl": mediaUrl
+    });
+
+    Navigator.push(context, MaterialPageRoute(builder: (context) => Home()));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Barter'),
+        title: Text('Bid Money'),
         backgroundColor: Colors.blue,
       ),
       body: Builder(
@@ -115,15 +126,6 @@ class BarterState extends State {
                   pinController.text = pin;
                   print('submit \$ ${pinController.text}');
                   handleBarter(pinController.text);
-
-/*                   Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => Home(),
-                    ),
-                    (Route<dynamic> route) => false,
-                  ); */
-                  handlePayment();
                 },
               ),
             ],

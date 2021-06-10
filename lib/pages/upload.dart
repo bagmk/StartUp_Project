@@ -52,6 +52,7 @@ class _UploadState extends State<Upload>
       "location": location,
       "timestamp": timestamp,
       "likes": {},
+      "reports": {},
     });
     captionController.clear();
     locationController.clear();
