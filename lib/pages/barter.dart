@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttershare/pages/payment.dart';
+import 'package:uuid/uuid.dart';
 import 'KeyPad.dart';
 import 'home.dart';
 
@@ -22,40 +23,41 @@ class Barter extends StatefulWidget {
 class BarterState extends State {
   TextEditingController pinController = TextEditingController();
   final String currentUserId;
+  String bidId = Uuid().v4();
   final String postId;
   final String ownerId;
   final String mediaUrl;
 
-  BarterState({
-    this.currentUserId,
-    this.postId,
-    this.ownerId,
-    this.mediaUrl,
-  });
+  BarterState({this.currentUserId, this.postId, this.ownerId, this.mediaUrl});
 
   handlePayment() {
     Navigator.push(context, MaterialPageRoute(builder: (context) => Payment()));
   }
 
   handleBarter(String pin) {
-    buyRef.doc(currentUser.id).collection("barter").add({
-      "username": currentUser.username,
-      "item": pin,
-      "timestamp": timestamp,
-      "userId": currentUser.id,
-      "postId": postId,
-      "Cash/Item": "Cash",
-      "mediaUrl": mediaUrl
-    });
+    buyRef.doc(currentUser.id).collection("barter").doc(bidId).set(
+      {
+        "username": currentUser.username,
+        "item": pin,
+        "timestamp": timestamp,
+        "userId": currentUser.id,
+        "postId": postId,
+        "bidId": bidId,
+        "Cash/Item": "Cash",
+        "mediaUrl": mediaUrl,
+        "ownerId": ownerId
+      },
+    );
 
-    sellRef.doc(ownerId).collection("barter").add({
+    sellRef.doc(ownerId).collection("barter").doc(bidId).set({
       "username": currentUser.username,
       "item": pin,
       "timestamp": timestamp,
       "userId": currentUser.id,
       "postId": postId,
+      "bidId": bidId,
       "Cash/Item": "Cash",
-      "mediaUrl": mediaUrl
+      "mediaUrl": mediaUrl,
     });
 
     Navigator.push(context, MaterialPageRoute(builder: (context) => Home()));

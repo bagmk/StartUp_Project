@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
 import 'home.dart';
 
 class BarterItem extends StatefulWidget {
@@ -31,13 +32,10 @@ class BarterItemState extends State {
   final String mediaUrl;
   bool _itemNameValid = true;
   bool isLoading = false;
+  String barterId = Uuid().v4();
 
-  BarterItemState({
-    this.currentUserId,
-    this.postId,
-    this.ownerId,
-    this.mediaUrl,
-  });
+  BarterItemState(
+      {this.currentUserId, this.postId, this.ownerId, this.mediaUrl});
 
   handleBarter(String itemName) {
     setState(() {
@@ -47,24 +45,27 @@ class BarterItemState extends State {
     });
 
     if (_itemNameValid) {
-      buyRef.doc(currentUser.id).collection("barter").add({
+      buyRef.doc(currentUser.id).collection("barter").doc(barterId).set({
         "username": currentUser.username,
         "item": itemName,
         "timestamp": timestamp,
         "userId": currentUser.id,
         "postId": postId,
+        "bidId": barterId,
         "Cash/Item": "Item",
-        "mediaUrl": mediaUrl
+        "mediaUrl": mediaUrl,
+        "ownerId": ownerId
       });
 
-      sellRef.doc(ownerId).collection("barter").add({
+      sellRef.doc(ownerId).collection("barter").doc(barterId).set({
         "username": currentUser.username,
         "item": itemName,
         "timestamp": timestamp,
         "userId": currentUser.id,
         "postId": postId,
+        "bidId": barterId,
         "Cash/Item": "Item",
-        "mediaUrl": mediaUrl
+        "mediaUrl": mediaUrl,
       });
 
       Navigator.push(context, MaterialPageRoute(builder: (context) => Home()));

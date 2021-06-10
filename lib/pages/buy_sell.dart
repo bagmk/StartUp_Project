@@ -39,7 +39,7 @@ class _BuySellState extends State<BuySell> {
     QuerySnapshot snapshot = await buyRef
         .doc(widget.profileId)
         .collection('barter')
-        .orderBy('timestamp', descending: true)
+        .orderBy('item', descending: true)
         .get();
 
     setState(() {
@@ -56,7 +56,7 @@ class _BuySellState extends State<BuySell> {
     QuerySnapshot snapshot = await sellRef
         .doc(widget.profileId)
         .collection('barter')
-        .orderBy('timestamp', descending: true)
+        .orderBy('item', descending: true)
         .get();
 
     setState(() {

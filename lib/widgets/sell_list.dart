@@ -18,6 +18,7 @@ class SellList extends StatefulWidget {
   final String item;
   final Timestamp timestamp;
   final String mediaUrl;
+  final String bidId;
 
   SellList(
       {this.postId,
@@ -26,7 +27,8 @@ class SellList extends StatefulWidget {
       this.username,
       this.timestamp,
       this.item,
-      this.mediaUrl});
+      this.mediaUrl,
+      this.bidId});
 
   factory SellList.fromDocument(DocumentSnapshot doc) {
     return SellList(
@@ -36,7 +38,8 @@ class SellList extends StatefulWidget {
         type: doc.data()['Cash/Item'],
         username: doc.data()['username'],
         item: doc.data()['item'],
-        mediaUrl: doc.data()['mediaUrl']);
+        mediaUrl: doc.data()['mediaUrl'],
+        bidId: doc.data()['bidId']);
   }
 
   @override
@@ -47,7 +50,8 @@ class SellList extends StatefulWidget {
       type: this.type,
       username: this.username,
       item: this.item,
-      mediaUrl: this.mediaUrl);
+      mediaUrl: this.mediaUrl,
+      bidId: this.bidId);
 }
 
 class _SellListState extends State<SellList> {
@@ -56,12 +60,14 @@ class _SellListState extends State<SellList> {
   final Timestamp timestamp;
   final String type;
   final String item;
+  final String bidId;
   final String username;
   final String mediaUrl;
 
   _SellListState(
       {this.postId,
       this.userId,
+      this.bidId,
       this.timestamp,
       this.type,
       this.username,
@@ -83,10 +89,21 @@ class _SellListState extends State<SellList> {
               backgroundColor: Colors.grey,
             ),
             title: Row(children: [
-              Text(
-                  type == "Cash"
-                      ? " <- This guy bid with \$"
-                      : "<- This guy barter with ",
+              Text(type == "Cash" ? " <-This guy bid " : "<- This guy barter ",
+                  style: TextStyle(
+                      color: Colors.black, fontWeight: FontWeight.bold)),
+              ClipOval(
+                  child: CachedNetworkImage(
+                imageUrl: mediaUrl,
+                placeholder: (context, url) => Padding(
+                  child: CircularProgressIndicator(),
+                  padding: EdgeInsets.all(20.0),
+                ),
+                height: 50,
+                width: 50,
+                fit: BoxFit.cover,
+              )),
+              Text(type == "Cash" ? " with \$" : " with ",
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.bold)),
               Text(item,
