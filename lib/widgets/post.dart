@@ -349,7 +349,8 @@ class _PostState extends State<Post> {
                           builder: (context) => Barter(
                               currentUserId: currentUserId,
                               postId: postId,
-                              ownerId: ownerId),
+                              ownerId: ownerId,
+                              mediaUrl: mediaUrl),
                         ));
                   },
                   child: Text(
@@ -364,7 +365,8 @@ class _PostState extends State<Post> {
                           builder: (context) => BarterItem(
                               currentUserId: currentUserId,
                               postId: postId,
-                              ownerId: ownerId),
+                              ownerId: ownerId,
+                              mediaUrl: mediaUrl),
                         ));
                   },
                   child: Text(

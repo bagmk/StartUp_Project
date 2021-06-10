@@ -1,19 +1,17 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:fluttershare/pages/payment.dart';
-
-import 'KeyPad.dart';
 import 'home.dart';
 
 class BarterItem extends StatefulWidget {
   final String currentUserId;
   final String postId;
   final String ownerId;
+  final String mediaUrl;
 
   BarterItem({
     this.currentUserId,
     this.postId,
     this.ownerId,
+    this.mediaUrl,
   });
 
   @override
@@ -21,6 +19,7 @@ class BarterItem extends StatefulWidget {
         currentUserId: this.currentUserId,
         postId: this.postId,
         ownerId: this.ownerId,
+        mediaUrl: this.mediaUrl,
       );
 }
 
@@ -29,6 +28,7 @@ class BarterItemState extends State {
   final String currentUserId;
   final String postId;
   final String ownerId;
+  final String mediaUrl;
   bool _itemNameValid = true;
   bool isLoading = false;
 
@@ -36,6 +36,7 @@ class BarterItemState extends State {
     this.currentUserId,
     this.postId,
     this.ownerId,
+    this.mediaUrl,
   });
 
   handleBarter(String itemName) {
@@ -52,7 +53,8 @@ class BarterItemState extends State {
         "timestamp": timestamp,
         "userId": currentUser.id,
         "postId": postId,
-        "Cash/Item": "Item"
+        "Cash/Item": "Item",
+        "mediaUrl": mediaUrl
       });
 
       sellRef.doc(ownerId).collection("barter").add({
@@ -61,7 +63,8 @@ class BarterItemState extends State {
         "timestamp": timestamp,
         "userId": currentUser.id,
         "postId": postId,
-        "Cash/Item": "Item"
+        "Cash/Item": "Item",
+        "mediaUrl": mediaUrl
       });
 
       Navigator.push(context, MaterialPageRoute(builder: (context) => Home()));

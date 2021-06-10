@@ -7,18 +7,15 @@ class Barter extends StatefulWidget {
   final String currentUserId;
   final String postId;
   final String ownerId;
-
-  Barter({
-    this.currentUserId,
-    this.postId,
-    this.ownerId,
-  });
+  final String mediaUrl;
+  Barter({this.currentUserId, this.postId, this.ownerId, this.mediaUrl});
 
   @override
   BarterState createState() => BarterState(
         currentUserId: this.currentUserId,
         postId: this.postId,
         ownerId: this.ownerId,
+        mediaUrl: this.mediaUrl,
       );
 }
 
@@ -27,11 +24,13 @@ class BarterState extends State {
   final String currentUserId;
   final String postId;
   final String ownerId;
+  final String mediaUrl;
 
   BarterState({
     this.currentUserId,
     this.postId,
     this.ownerId,
+    this.mediaUrl,
   });
 
   handlePayment() {
@@ -45,7 +44,8 @@ class BarterState extends State {
       "timestamp": timestamp,
       "userId": currentUser.id,
       "postId": postId,
-      "Cash/Item": "Cash"
+      "Cash/Item": "Cash",
+      "mediaUrl": mediaUrl
     });
 
     sellRef.doc(ownerId).collection("barter").add({
@@ -54,7 +54,8 @@ class BarterState extends State {
       "timestamp": timestamp,
       "userId": currentUser.id,
       "postId": postId,
-      "Cash/Item": "Cash"
+      "Cash/Item": "Cash",
+      "mediaUrl": mediaUrl
     });
 
     Navigator.push(context, MaterialPageRoute(builder: (context) => Home()));

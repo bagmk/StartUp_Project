@@ -17,15 +17,16 @@ class SellList extends StatefulWidget {
   final String username;
   final String item;
   final Timestamp timestamp;
+  final String mediaUrl;
 
-  SellList({
-    this.postId,
-    this.userId,
-    this.type,
-    this.username,
-    this.timestamp,
-    this.item,
-  });
+  SellList(
+      {this.postId,
+      this.userId,
+      this.type,
+      this.username,
+      this.timestamp,
+      this.item,
+      this.mediaUrl});
 
   factory SellList.fromDocument(DocumentSnapshot doc) {
     return SellList(
@@ -34,7 +35,8 @@ class SellList extends StatefulWidget {
         timestamp: doc.data()['timestamp'],
         type: doc.data()['Cash/Item'],
         username: doc.data()['username'],
-        item: doc.data()['item']);
+        item: doc.data()['item'],
+        mediaUrl: doc.data()['mediaUrl']);
   }
 
   @override
@@ -44,7 +46,8 @@ class SellList extends StatefulWidget {
       timestamp: this.timestamp,
       type: this.type,
       username: this.username,
-      item: this.item);
+      item: this.item,
+      mediaUrl: this.mediaUrl);
 }
 
 class _SellListState extends State<SellList> {
@@ -54,15 +57,16 @@ class _SellListState extends State<SellList> {
   final String type;
   final String item;
   final String username;
+  final String mediaUrl;
 
-  _SellListState({
-    this.postId,
-    this.userId,
-    this.timestamp,
-    this.type,
-    this.username,
-    this.item,
-  });
+  _SellListState(
+      {this.postId,
+      this.userId,
+      this.timestamp,
+      this.type,
+      this.username,
+      this.item,
+      this.mediaUrl});
 
   buildPostHeader() {
     return FutureBuilder(
@@ -74,16 +78,21 @@ class _SellListState extends State<SellList> {
         User user = User.fromDocument(snapshot.data);
 
         return ListTile(
-          leading: CircleAvatar(
-            backgroundImage: CachedNetworkImageProvider(user.photoUrl),
-            backgroundColor: Colors.grey,
-          ),
-          title: GestureDetector(
-            child: Text(user.username,
-                style: TextStyle(
-                    color: Colors.black, fontWeight: FontWeight.bold)),
-          ),
-        );
+            leading: CircleAvatar(
+              backgroundImage: CachedNetworkImageProvider(user.photoUrl),
+              backgroundColor: Colors.grey,
+            ),
+            title: Row(children: [
+              Text(
+                  type == "Cash"
+                      ? " <- This guy bid with \$"
+                      : "<- This guy barter with ",
+                  style: TextStyle(
+                      color: Colors.black, fontWeight: FontWeight.bold)),
+              Text(item,
+                  style: TextStyle(
+                      color: Colors.pink, fontWeight: FontWeight.bold)),
+            ]));
       },
     );
   }

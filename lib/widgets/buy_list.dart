@@ -7,6 +7,7 @@ import 'package:fluttershare/models/user.dart';
 import 'package:fluttershare/pages/activity_feed.dart';
 
 import 'package:fluttershare/pages/home.dart';
+import 'package:fluttershare/widgets/custom_image.dart';
 
 import 'package:fluttershare/widgets/progress.dart';
 
@@ -17,23 +18,26 @@ class BuyList extends StatefulWidget {
   final String username;
   final String item;
   final Timestamp timestamp;
+  final String mediaUrl;
 
-  BuyList({
-    this.postId,
-    this.userId,
-    this.type,
-    this.username,
-    this.timestamp,
-    this.item,
-  });
+  BuyList(
+      {this.postId,
+      this.userId,
+      this.type,
+      this.username,
+      this.timestamp,
+      this.item,
+      this.mediaUrl});
 
   factory BuyList.fromDocument(DocumentSnapshot doc) {
     return BuyList(
-        postId: doc.data()['postId'],
-        userId: doc.data()['userId'],
-        type: doc.data()['Cash/Item'],
-        username: doc.data()['username'],
-        item: doc.data()['item']);
+      postId: doc.data()['postId'],
+      userId: doc.data()['userId'],
+      type: doc.data()['Cash/Item'],
+      username: doc.data()['username'],
+      item: doc.data()['item'],
+      mediaUrl: doc.data()['mediaUrl'],
+    );
   }
 
   @override
@@ -43,7 +47,8 @@ class BuyList extends StatefulWidget {
       timestamp: this.timestamp,
       type: this.type,
       username: this.username,
-      item: this.item);
+      item: this.item,
+      mediaUrl: this.mediaUrl);
 }
 
 class _BuyListState extends State<BuyList> {
@@ -53,6 +58,7 @@ class _BuyListState extends State<BuyList> {
   final String type;
   final String item;
   final String username;
+  final String mediaUrl;
 
   _BuyListState({
     this.postId,
@@ -61,6 +67,7 @@ class _BuyListState extends State<BuyList> {
     this.type,
     this.username,
     this.item,
+    this.mediaUrl,
   });
 
   buildPostHeader() {
@@ -73,16 +80,25 @@ class _BuyListState extends State<BuyList> {
         User user = User.fromDocument(snapshot.data);
 
         return ListTile(
-          leading: CircleAvatar(
-            backgroundImage: CachedNetworkImageProvider(user.photoUrl),
-            backgroundColor: Colors.grey,
-          ),
-          title: GestureDetector(
-            child: Text(user.username,
-                style: TextStyle(
-                    color: Colors.black, fontWeight: FontWeight.bold)),
-          ),
-        );
+            title: Row(children: [
+          ClipOval(
+              child: CachedNetworkImage(
+            imageUrl: mediaUrl,
+            placeholder: (context, url) => Padding(
+              child: CircularProgressIndicator(),
+              padding: EdgeInsets.all(20.0),
+            ),
+            height: 50,
+            width: 50,
+            fit: BoxFit.cover,
+          )),
+          Text(type == "Cash" ? " You bid with \$" : "You barter with ",
+              style:
+                  TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+          Text(item,
+              style:
+                  TextStyle(color: Colors.pink, fontWeight: FontWeight.bold)),
+        ]));
       },
     );
   }
