@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttershare/pages/activity_feed.dart';
@@ -7,6 +9,7 @@ import 'package:fluttershare/pages/home.dart';
 import 'package:fluttershare/models/user.dart';
 import 'package:fluttershare/widgets/post.dart';
 import 'package:fluttershare/widgets/progress.dart';
+import 'package:geolocator/geolocator.dart';
 
 final usersRef = FirebaseFirestore.instance.collection('users');
 
@@ -21,6 +24,9 @@ class Timeline extends StatefulWidget {
 class _TimelineState extends State<Timeline> {
   List<Post> posts;
   List<String> followingList = [];
+  String localOrFollow = "local";
+  double posXuser;
+  double posYuser;
   void initState() {
     super.initState();
     getTimeline();
@@ -33,9 +39,13 @@ class _TimelineState extends State<Timeline> {
         .collection('timelinePosts')
         .orderBy('timestamp', descending: true)
         .get();
+    QuerySnapshot snapshotlocal = await localtimelineRef
+        .doc(widget.currentUser.id)
+        .collection('timelinePosts')
+        .orderBy('timestamp', descending: true)
+        .get();
     List<Post> posts =
         snapshot.docs.map((doc) => Post.fromDocument(doc)).toList();
-
     setState(() {
       this.posts = posts;
     });
@@ -49,16 +59,6 @@ class _TimelineState extends State<Timeline> {
     setState(() {
       followingList = snapshot.docs.map((doc) => doc.id).toList();
     });
-  }
-
-  buildTimeline() {
-    if (posts == null) {
-      return circularProgress();
-    } else if (posts.isEmpty) {
-      return buildUserToFollow();
-    } else {
-      return ListView(children: posts);
-    }
   }
 
   buildUserToFollow() {
@@ -122,25 +122,76 @@ class _TimelineState extends State<Timeline> {
     );
   }
 
+  double calculateDistance(lat1, lon1, lat2, lon2) {
+    var p = 0.017453292519943295;
+    var c = cos;
+    var a = 0.5 -
+        c((lat2 - lat1) * p) / 2 +
+        c(lat1 * p) * c(lat2 * p) * (1 - c((lon2 - lon1) * p)) / 2;
+    return 0.621371 * 12742 * asin(sqrt(a));
+    //return mile distance
+  }
+
+  getUserLocation() async {
+    Position position = await Geolocator()
+        .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    posXuser = position.latitude;
+    posYuser = position.longitude;
+  }
+
+  buildTimeline() {
+    if (posts == null) {
+      return circularProgress();
+    } else if (localOrFollow == "local") {
+      return Column(children: posts);
+    } else if (localOrFollow == "follow") {
+      return Column(children: posts);
+    }
+  }
+
+  setLocalOrFollow(String localOrFollow) {
+    setState(() {
+      this.localOrFollow = localOrFollow;
+    });
+  }
+
+  buildTogglePostOreintation() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: <Widget>[
+        IconButton(
+          onPressed: () => setLocalOrFollow("local"),
+          icon: Icon(Icons.location_on),
+          color: localOrFollow == 'local'
+              ? Theme.of(context).primaryColor
+              : Colors.grey,
+        ),
+        IconButton(
+          onPressed: () => setLocalOrFollow("follow"),
+          icon: Icon(Icons.person),
+          color: localOrFollow == 'follow'
+              ? Theme.of(context).primaryColor
+              : Colors.grey,
+        )
+      ],
+    );
+  }
+
   @override
   Widget build(context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Hot Place'),
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.notifications_active),
-            tooltip: 'Show Snackbar',
-            onPressed: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => ActivityFeed()));
-            },
-          )
-        ],
       ),
-      body: RefreshIndicator(
-        onRefresh: () => getTimeline(),
-        child: buildTimeline(),
+      body: ListView(
+        children: <Widget>[
+          Divider(),
+          buildTogglePostOreintation(),
+          Divider(
+            height: 0.0,
+          ),
+          buildTimeline(),
+        ],
       ),
     );
   }

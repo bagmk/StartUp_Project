@@ -60,6 +60,20 @@ class BarterState extends State {
       "mediaUrl": mediaUrl,
     });
 
+    bool isNotPostOwner = currentUserId != ownerId;
+    if (isNotPostOwner) {
+      activityFeedRef.doc(ownerId).collection("feedItems").doc(bidId).set({
+        "type": "Cash",
+        "item": pin,
+        "username": currentUser.username,
+        "userId": currentUser.id,
+        "userProfileImg": currentUser.photoUrl,
+        "postId": postId,
+        "mediaUrl": mediaUrl,
+        "timestamp": timestamp,
+      });
+    }
+
     Navigator.push(context, MaterialPageRoute(builder: (context) => Home()));
   }
 

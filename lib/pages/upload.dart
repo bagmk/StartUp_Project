@@ -26,9 +26,11 @@ class _UploadState extends State<Upload>
   File file;
   bool isUploading = false;
   String postId = Uuid().v4();
-  TextEditingController locationController = TextEditingController();
+  TextEditingController captionController1 = TextEditingController();
   TextEditingController captionController = TextEditingController();
-
+  TextEditingController locationController = TextEditingController();
+  double posX;
+  double posY;
   Future<String> uploadImage(imageFile) async {
     UploadTask uploadTask =
         storageRef.child("post_$postId.jpg").putFile(imageFile);
@@ -38,7 +40,12 @@ class _UploadState extends State<Upload>
   }
 
   createPostInFirestore(
-      {String mediaUrl, String location, String description}) {
+      {String mediaUrl,
+      double posX,
+      double posY,
+      String description,
+      String location,
+      String tag}) {
     postsRef
         .doc(widget.currentUser.id)
         .collection("userPosts")
@@ -49,13 +56,17 @@ class _UploadState extends State<Upload>
       "username": widget.currentUser.username,
       "mediaUrl": mediaUrl,
       "description": description,
+      "tag": tag,
+      "locationX": posX,
+      "locationY": posY,
       "location": location,
       "timestamp": timestamp,
       "likes": {},
       "reports": {},
     });
-    captionController.clear();
     locationController.clear();
+    captionController.clear();
+    captionController1.clear();
     setState(() {
       file = null;
       isUploading = false;
@@ -67,12 +78,19 @@ class _UploadState extends State<Upload>
     setState(() {
       isUploading = true;
     });
+
     await compressImage();
+    await getUserLocation();
+
     String mediaUrl = await uploadImage(file);
     createPostInFirestore(
-        mediaUrl: mediaUrl,
-        location: locationController.text,
-        description: captionController.text);
+      mediaUrl: mediaUrl,
+      posX: posX,
+      posY: posY,
+      location: locationController.text,
+      description: captionController.text,
+      tag: captionController1.text,
+    );
   }
 
   compressImage() async {
@@ -236,37 +254,34 @@ class _UploadState extends State<Upload>
             ),
             Divider(),
             ListTile(
-                leading: Icon(Icons.pin_drop, color: Colors.orange, size: 35.0),
+                leading: Icon(Icons.tag, color: Colors.orange, size: 35.0),
                 title: Container(
                   width: 250.0,
                   child: TextField(
-                    controller: locationController,
+                    controller: captionController1,
                     decoration: InputDecoration(
-                        hintText: "Where was this photo taken?",
-                        border: InputBorder.none),
+                        hintText: "tag your item#", border: InputBorder.none),
                   ),
                 )),
-            Container(
-                width: 200.0,
-                height: 100.0,
-                alignment: Alignment.center,
-                child: RaisedButton.icon(
-                    label: Text(
-                      "Use Current Location",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30.0)),
-                    color: Colors.blue,
-                    onPressed: getUserLocation,
-                    icon: Icon(Icons.my_location, color: Colors.white)))
           ],
         ));
   }
 
+  //getUserLocation() async {
+  //  Position position = await Geolocator()
+  //      .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+  //  List<Placemark> placemarks = await Geolocator()
+  //      .placemarkFromCoordinates(position.latitude, position.longitude);
+  //  Placemark placemark = placemarks[0];
+  //  String address = '${placemark.locality},${placemark.country}';
+  //  locationController.text = address;
+  //}
+
   getUserLocation() async {
     Position position = await Geolocator()
         .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    posX = position.latitude;
+    posY = position.longitude;
     List<Placemark> placemarks = await Geolocator()
         .placemarkFromCoordinates(position.latitude, position.longitude);
     Placemark placemark = placemarks[0];

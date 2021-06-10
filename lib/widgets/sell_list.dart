@@ -89,7 +89,7 @@ class _SellListState extends State<SellList> {
               backgroundColor: Colors.grey,
             ),
             title: Row(children: [
-              Text(type == "Cash" ? " <-This guy bid " : "<- This guy barter ",
+              Text(type == "Cash" ? " <- bid " : "<- barter ",
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.bold)),
               ClipOval(
@@ -109,6 +109,23 @@ class _SellListState extends State<SellList> {
               Text(item,
                   style: TextStyle(
                       color: Colors.pink, fontWeight: FontWeight.bold)),
+              FlatButton(
+                onPressed: () => print('handlechatting'),
+                child: Container(
+                  width: 60.0,
+                  height: 40.0,
+                  child: Text(
+                    "Accept",
+                    style: TextStyle(
+                        color: Colors.black, fontWeight: FontWeight.bold),
+                  ),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                      color: Colors.green,
+                      border: Border.all(color: Colors.blue),
+                      borderRadius: BorderRadius.circular(5.0)),
+                ),
+              ),
             ]));
       },
     );
