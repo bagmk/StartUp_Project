@@ -88,7 +88,7 @@ class _BuySellState extends State<BuySell> {
       children: <Widget>[
         IconButton(
           onPressed: () => setbuyOrSell("buy"),
-          icon: Icon(Icons.sell),
+          icon: Icon(Icons.dangerous),
           color:
               buyOrSell == 'buy' ? Theme.of(context).primaryColor : Colors.grey,
         ),

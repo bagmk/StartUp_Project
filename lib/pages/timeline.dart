@@ -2,9 +2,7 @@ import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttershare/pages/activity_feed.dart';
 import 'package:fluttershare/pages/search.dart';
-import 'package:fluttershare/widgets/header.dart';
 import 'package:fluttershare/pages/home.dart';
 import 'package:fluttershare/models/user.dart';
 import 'package:fluttershare/widgets/post.dart';
@@ -23,23 +21,19 @@ class Timeline extends StatefulWidget {
 
 class _TimelineState extends State<Timeline> {
   List<Post> posts;
+  double _currentSliderValue = 1;
   List<String> followingList = [];
-  String localOrFollow = "local";
   double posXuser;
   double posYuser;
   void initState() {
     super.initState();
     getTimeline();
     getFollowing();
+    getUserLocation();
   }
 
   getTimeline() async {
     QuerySnapshot snapshot = await timelineRef
-        .doc(widget.currentUser.id)
-        .collection('timelinePosts')
-        .orderBy('timestamp', descending: true)
-        .get();
-    QuerySnapshot snapshotlocal = await localtimelineRef
         .doc(widget.currentUser.id)
         .collection('timelinePosts')
         .orderBy('timestamp', descending: true)
@@ -59,67 +53,6 @@ class _TimelineState extends State<Timeline> {
     setState(() {
       followingList = snapshot.docs.map((doc) => doc.id).toList();
     });
-  }
-
-  buildUserToFollow() {
-    return StreamBuilder(
-      stream:
-          usersRef.orderBy('timestamp', descending: true).limit(30).snapshots(),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return circularProgress();
-        }
-        List<UserResult> userResults = [];
-        snapshot.data.docs.forEach((doc) {
-          User user = User.fromDocument(doc);
-          final bool isAuthUser = currentUser.id == user.id;
-          final bool isFollowingUser = followingList.contains(user.id);
-
-          //revmoew auth user from reocmmend list
-          if (isAuthUser) {
-            return;
-          } else if (isFollowingUser) {
-            return;
-          } else {
-            UserResult userResult = UserResult(user);
-            userResults.add(userResult);
-          }
-        });
-        return Container(
-          color: Theme.of(context).accentColor.withOpacity(0.2),
-          child: Column(
-            children: <Widget>[
-              Container(
-                padding: EdgeInsets.all(12.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Icon(
-                      Icons.person_add,
-                      color: Theme.of(context).primaryColor,
-                      size: 30.0,
-                    ),
-                    SizedBox(
-                      width: 8.0,
-                    ),
-                    Text(
-                      "Users to Follow",
-                      style: TextStyle(
-                        color: Theme.of(context).primaryColor,
-                        fontSize: 30.0,
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              Column(
-                children: userResults,
-              )
-            ],
-          ),
-        );
-      },
-    );
   }
 
   double calculateDistance(lat1, lon1, lat2, lon2) {
@@ -142,38 +75,22 @@ class _TimelineState extends State<Timeline> {
   buildTimeline() {
     if (posts == null) {
       return circularProgress();
-    } else if (localOrFollow == "local") {
+    } else
       return Column(children: posts);
-    } else if (localOrFollow == "follow") {
-      return Column(children: posts);
-    }
   }
 
-  setLocalOrFollow(String localOrFollow) {
-    setState(() {
-      this.localOrFollow = localOrFollow;
-    });
-  }
-
-  buildTogglePostOreintation() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: <Widget>[
-        IconButton(
-          onPressed: () => setLocalOrFollow("local"),
-          icon: Icon(Icons.location_on),
-          color: localOrFollow == 'local'
-              ? Theme.of(context).primaryColor
-              : Colors.grey,
-        ),
-        IconButton(
-          onPressed: () => setLocalOrFollow("follow"),
-          icon: Icon(Icons.person),
-          color: localOrFollow == 'follow'
-              ? Theme.of(context).primaryColor
-              : Colors.grey,
-        )
-      ],
+  buildSlider() {
+    return Slider(
+      value: _currentSliderValue,
+      min: 0,
+      max: 5,
+      divisions: 5,
+      label: _currentSliderValue.round().toString(),
+      onChanged: (double value) {
+        setState(() {
+          _currentSliderValue = value;
+        });
+      },
     );
   }
 
@@ -185,11 +102,7 @@ class _TimelineState extends State<Timeline> {
       ),
       body: ListView(
         children: <Widget>[
-          Divider(),
-          buildTogglePostOreintation(),
-          Divider(
-            height: 0.0,
-          ),
+          buildSlider(),
           buildTimeline(),
         ],
       ),
