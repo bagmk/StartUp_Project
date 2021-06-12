@@ -2,6 +2,10 @@ const functions = require("firebase-functions");
 const admin = require('firebase-admin');
 admin.initializeApp();
 
+/**
+ * Get the Stripe secret key from Firebase environment configuration.
+ */
+const stripe = require('stripe')(functions.config().stripe.secret_key);
 // // Create and Deploy Your First Cloud Functions
 // // https://firebase.google.com/docs/functions/write-firebase-functions
 //
@@ -201,8 +205,24 @@ exports.onCreateActivityFeedItem = functions.firestore.document('/feed/{userId}/
             )
             .catch(error =>{
                 console.log("Error sensing message",error);
-            })
+            });
         }
 
     }
-)
+);
+
+/**
+ * Create new Stripe Connect user.
+ */
+//exports.createStripeConnectUser = functions.
+
+/**
+ * Create new customer
+ */
+
+/**
+ * Create the payment intent
+ */
+// exports.stripePayment = functions.https.onRequest(async (req, res) => {
+
+// });
