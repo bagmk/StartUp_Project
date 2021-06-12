@@ -20,6 +20,8 @@ class Post extends StatefulWidget {
   final String ownerId;
   final String username;
   final String location;
+  final double posX;
+  final double posY;
   final String description;
   final String mediaUrl;
   final dynamic likes;
@@ -29,6 +31,8 @@ class Post extends StatefulWidget {
     this.postId,
     this.ownerId,
     this.username,
+    this.posX,
+    this.posY,
     this.location,
     this.mediaUrl,
     this.description,
@@ -41,6 +45,8 @@ class Post extends StatefulWidget {
         postId: doc.data()['postId'],
         ownerId: doc.data()['ownerId'],
         username: doc.data()['username'],
+        posX: doc.data()['posX'],
+        posY: doc.data()['posY'],
         location: doc.data()['location'],
         mediaUrl: doc.data()['mediaUrl'],
         description: doc.data()['description'],
@@ -85,6 +91,8 @@ class Post extends StatefulWidget {
         description: this.description,
         mediaUrl: this.mediaUrl,
         likes: this.likes,
+        posX: this.posX,
+        posY: this.posY,
         reports: this.reports,
         likeCount: getLikeCount(this.likes),
         reportCount: getLikeCount(this.reports),
@@ -99,6 +107,8 @@ class _PostState extends State<Post> {
   final String location;
   final String description;
   final String mediaUrl;
+  final double posX;
+  final double posY;
   int likeCount;
   Map likes;
   bool isLiked;
@@ -119,6 +129,8 @@ class _PostState extends State<Post> {
     this.likeCount,
     this.reports,
     this.reportCount,
+    this.posX,
+    this.posY,
   });
 
   buildPostHeader() {

@@ -24,6 +24,7 @@ final activityFeedRef = FirebaseFirestore.instance.collection('feed');
 final followersRef = FirebaseFirestore.instance.collection('followers');
 final followingRef = FirebaseFirestore.instance.collection('following');
 final timelineRef = FirebaseFirestore.instance.collection('timeline');
+final localtimelineRef = FirebaseFirestore.instance.collection('localtimeline');
 final buysellRef = FirebaseFirestore.instance.collection('buysellRef');
 
 final DateTime timestamp = DateTime.now();
@@ -175,11 +176,6 @@ class _HomeState extends State<Home> {
       body: PageView(
         children: <Widget>[
           Timeline(currentUser: currentUser),
-          //RaisedButton(
-          //  child: Text('Logout'),
-          //  onPressed: logout,
-          //),
-
           BuySell(profileId: currentUser?.id),
           Upload(currentUser: currentUser),
           Search(),

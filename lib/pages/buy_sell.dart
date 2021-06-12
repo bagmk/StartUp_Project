@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttershare/models/user.dart';
+import 'package:fluttershare/pages/activity_feed.dart';
 import 'package:fluttershare/pages/home.dart';
 import 'package:fluttershare/widgets/buy_list.dart';
 import 'package:fluttershare/widgets/sell_list.dart';
@@ -87,7 +88,7 @@ class _BuySellState extends State<BuySell> {
       children: <Widget>[
         IconButton(
           onPressed: () => setbuyOrSell("buy"),
-          icon: Icon(Icons.sell),
+          icon: Icon(Icons.dangerous),
           color:
               buyOrSell == 'buy' ? Theme.of(context).primaryColor : Colors.grey,
         ),
@@ -105,7 +106,24 @@ class _BuySellState extends State<BuySell> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: header(context, titleText: "Barter "),
+      appBar: AppBar(
+        title: const Text('Barter'),
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.notifications_active),
+            tooltip: 'Show Snackbar',
+            onPressed: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => ActivityFeed()));
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.message),
+            tooltip: 'Show Snackbar',
+            onPressed: () => print('message Page'),
+          )
+        ],
+      ),
       body: ListView(
         children: <Widget>[
           Divider(),

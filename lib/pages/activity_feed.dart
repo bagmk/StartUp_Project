@@ -68,18 +68,19 @@ class ActivityFeedItem extends StatelessWidget {
   final String postId;
   final String userProfileImg;
   final String commentData;
+  final String item;
   final Timestamp timestamp;
 
-  ActivityFeedItem({
-    this.username,
-    this.userId,
-    this.type,
-    this.mediaUrl,
-    this.postId,
-    this.userProfileImg,
-    this.commentData,
-    this.timestamp,
-  });
+  ActivityFeedItem(
+      {this.username,
+      this.userId,
+      this.type,
+      this.mediaUrl,
+      this.postId,
+      this.userProfileImg,
+      this.commentData,
+      this.timestamp,
+      this.item});
 
   factory ActivityFeedItem.fromDocument(DocumentSnapshot doc) {
     return ActivityFeedItem(
@@ -91,6 +92,7 @@ class ActivityFeedItem extends StatelessWidget {
       commentData: doc.data()['commentData'],
       timestamp: doc.data()['timestamp'],
       mediaUrl: doc.data()['mediaUrl'],
+      item: doc.data()['item'],
     );
   }
 
@@ -131,6 +133,10 @@ class ActivityFeedItem extends StatelessWidget {
       activityItemText = "is following you";
     } else if (type == 'comment') {
       activityItemText = 'replied: $commentData';
+    } else if (type == 'Cash') {
+      activityItemText = 'bid your item with: \$ $item';
+    } else if (type == 'Item') {
+      activityItemText = 'barter with $item';
     } else {
       activityItemText = "Error: Unknown type '$type'";
     }
