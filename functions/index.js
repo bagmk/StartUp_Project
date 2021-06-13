@@ -144,6 +144,150 @@ exports.onDeletePost = functions.firestore.document('/posts/{userId}/userPosts/{
     });
 
 
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//local Timeline
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+exports.onCreateDistance = functions.firestore.document("/users/{userId}")
+    .onCreate(async (snapshot, context) => {
+        console.log("Follower Created", snapshot.id);
+        const userId = context.params.userId;
+
+        // 1) Create followed users posts ref
+        const userPostsRef = admin
+            .firestore()
+            .collection("posts")
+            .doc(userId)
+            .collection("userPosts");
+
+        // 2) Create following user's timeline ref
+        const timelinePostsLocalRef = admin
+            .firestore()
+            .collection("timelineLocal")
+            .doc(userId)
+            .collection("timelinePosts");
+
+        // 3) Get followed users posts
+        const querySnapshotLocal = await userPostsRef.get();
+
+        // 4) Add each user post to following user's timeline
+        querySnapshotLocal.forEach(doc => {
+            if (doc.exists) {
+                const postId = doc.id;
+                const postData = doc.data();
+                timelinePostsLocalRef.doc(postId).set(postData);
+            }
+        });
+    });
+
+
+exports.onDeleteDistance = functions.firestore.document("/users/{userId}")
+    .onDelete(async (snapshot, context) => {
+        console.log("Follower Deleted", snapshot.id);
+        const userId = context.params.userId;
+
+        const timelinePostsLocalRef = admin
+            .firestore()
+            .collection("timelineLocal")
+            .doc(userId)
+            .collection("timelinePosts");
+
+        const querySnapshotLocal = await timelinePostsLocalRef.get();
+        querySnapshotLocal.forEach(doc => {
+            if (doc.exists) {
+                doc.ref.delete();
+            }
+        });
+
+    });
+
+exports.onCreatePostLocal = functions.firestore.document('/posts/{userId}/userPosts/{postId}')
+    .onCreate(async (snapshot, context) => {
+        const postCreated = snapshot.data();
+        const userId = context.params.userId;
+        const postId = context.params.postId;
+
+        //1) get all the followers of the user who made the post
+        const usersRef = admin.firestore().collection('users');
+        const querySnapshotLocal = await usersRef.get();
+
+
+
+        //2) Add new post to each follower's timeline
+
+        querySnapshotLocal.forEach(doc => {
+            const userId = doc.id;
+
+            admin.firestore().collection('timelineLocal').doc(userId).collection('timelinePosts').doc(postId).set(postCreated);
+        });
+
+
+
+    });
+
+
+exports.onUpdatePostLocal = functions.firestore.document('/posts/{userId}/userPosts/{postId}').onUpdate(
+    async (change, context) => {
+        const postUpdated = change.after.data();
+        const userId = context.params.userId;
+        const postId = context.params.postId;
+
+        //1) get all the followers of the user who made the post
+        const usersRef = admin.firestore().collection('users');
+        const querySnapshotLocal = await usersRef.get();
+
+        //2) update  new post to each follower's timeline
+        querySnapshotLocal.forEach(doc => {
+            const userId = doc.id;
+
+            admin.firestore().collection('timelineLocal').doc(userId).collection('timelinePosts').doc(postId).get().then(doc => {
+
+                if (doc.exists) {
+                    doc.ref.update(postUpdated);
+                }
+            });
+        });
+
+
+
+    });
+
+
+
+exports.onDeletePostLocal = functions.firestore.document('/posts/{userId}/userPosts/{postId}').onDelete(
+    async (change, context) => {
+        const userId = context.params.userId;
+        const postId = context.params.postId;
+
+
+        const usersRef = admin.firestore().collection('users');
+        const querySnapshotLocal = await usersRef.get();
+
+        //2) delete  new post to each follower's timeline
+        querySnapshotLocal.forEach(doc => {
+            const userId = doc.id;
+
+            admin.firestore().collection('timelineLocal').doc(userId).collection('timelinePosts').doc(postId).get().then(doc => {
+
+                if (doc.exists) {
+                    doc.ref.delete();
+                }
+            });
+        });
+
+
+
+    });
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//Activity Feed
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
 exports.onCreateActivityFeedItem = functions.firestore.document('/feed/{userId}/feedItems/{activityFeedItem}').onCreate(
     async (snapshot, context)=> {
         console.log('Actvity Feed Item Created', snapshot.data());

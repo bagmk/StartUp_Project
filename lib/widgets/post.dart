@@ -153,7 +153,7 @@ class _PostState extends State<Post> {
                 style: TextStyle(
                     color: Colors.black, fontWeight: FontWeight.bold)),
           ),
-          subtitle: Text(location),
+          subtitle: Text(location + posX.toString() + posY.toString()),
           trailing: isPostOwner
               ? IconButton(
                   onPressed: () => handleDeletePost(context),

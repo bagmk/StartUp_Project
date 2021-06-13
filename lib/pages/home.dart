@@ -12,6 +12,7 @@ import 'package:fluttershare/pages/search.dart';
 import 'package:fluttershare/pages/timeline.dart';
 import 'package:fluttershare/pages/upload.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 final GoogleSignIn googleSignIn = GoogleSignIn();
@@ -24,7 +25,8 @@ final activityFeedRef = FirebaseFirestore.instance.collection('feed');
 final followersRef = FirebaseFirestore.instance.collection('followers');
 final followingRef = FirebaseFirestore.instance.collection('following');
 final timelineRef = FirebaseFirestore.instance.collection('timeline');
-final localtimelineRef = FirebaseFirestore.instance.collection('localtimeline');
+final timelineLocalRef = FirebaseFirestore.instance.collection('timelineLocal');
+
 final buysellRef = FirebaseFirestore.instance.collection('buysellRef');
 
 final DateTime timestamp = DateTime.now();
@@ -43,12 +45,14 @@ class _HomeState extends State<Home> {
   bool isAuth = false;
   PageController pageController;
   int pageIndex = 0;
+  double posXuser;
+  double posYuser;
 
   // Detects when users sign in
   @override
   void initState() {
     super.initState();
-
+    getUserLocation();
     pageController = PageController();
     googleSignIn.onCurrentUserChanged.listen((account) {
       handleSignIn(account);
@@ -112,6 +116,18 @@ class _HomeState extends State<Home> {
     NotificationSettings settings = await _firebaseMessaging.requestPermission(
         alert: true, badge: true, sound: true);
     print("Settings registered: $settings");
+  }
+
+  getUserLocation() async {
+    Position position = await Geolocator()
+        .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    posXuser = position.latitude;
+    posYuser = position.longitude;
+
+    usersRef.doc(currentUser.id).update({
+      "posXuser": posXuser,
+      "posYuser": posYuser,
+    });
   }
 
   createUserInFirestore() async {
