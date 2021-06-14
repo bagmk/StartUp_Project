@@ -64,6 +64,20 @@ class _UploadState extends State<Upload>
       "likes": {},
       "reports": {},
     });
+    timelineLocalRef.doc('test').collection("userPosts").doc(postId).set({
+      "postId": postId,
+      "ownerId": widget.currentUser.id,
+      "username": widget.currentUser.username,
+      "mediaUrl": mediaUrl,
+      "description": description,
+      "tag": tag,
+      "posX": posX,
+      "posY": posY,
+      "location": location,
+      "timestamp": timestamp,
+      "likes": {},
+      "reports": {},
+    });
     locationController.clear();
     captionController.clear();
     captionController1.clear();

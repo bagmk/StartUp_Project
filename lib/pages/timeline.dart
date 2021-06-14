@@ -6,6 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttershare/pages/home.dart';
 import 'package:fluttershare/models/user.dart';
 import 'package:fluttershare/widgets/post.dart';
+import 'package:fluttershare/widgets/postL.dart';
 import 'package:fluttershare/widgets/post_tile.dart';
 import 'package:fluttershare/widgets/progress.dart';
 import 'package:geolocator/geolocator.dart';
@@ -22,7 +23,7 @@ class Timeline extends StatefulWidget {
 
 class _TimelineState extends State<Timeline> {
   List<Post> posts;
-  List<Post> postsLocal;
+  List<PostL> postsLocal;
   double _currentSliderValue = 1;
   List<String> followingList = [];
   String timelineDecision = "local";
@@ -31,9 +32,9 @@ class _TimelineState extends State<Timeline> {
   void initState() {
     super.initState();
     getTimeline();
-    getTimelineLocal();
     getFollowing();
     getUserLocation();
+    getTimelineLocal();
   }
 
   getTimeline() async {
@@ -51,13 +52,13 @@ class _TimelineState extends State<Timeline> {
 
   getTimelineLocal() async {
     QuerySnapshot snapshotLocal = await timelineLocalRef
-        .doc(widget.currentUser.id)
-        .collection('timelinePosts')
+        .doc('test')
+        .collection('userPosts')
         .orderBy('timestamp', descending: true)
         .get();
 
-    List<Post> postsLocal =
-        snapshotLocal.docs.map((doc) => Post.fromDocument(doc)).toList();
+    List<PostL> postsLocal =
+        snapshotLocal.docs.map((doc) => PostL.fromDocument(doc)).toList();
     setState(() {
       this.postsLocal = postsLocal;
     });
@@ -91,24 +92,12 @@ class _TimelineState extends State<Timeline> {
   }
 
   buildTimeline() {
-    if (posts == null) {
+    if (postsLocal == null) {
       return circularProgress();
-    } else if (timelineDecision == "local") {
-      List<GridTile> gridTiles = [];
-      postsLocal.forEach((postsLocal) {
-        gridTiles.add(GridTile(child: PostTile(postsLocal)));
-      });
-      return GridView.count(
-        crossAxisCount: 3,
-        childAspectRatio: 1.0,
-        mainAxisSpacing: 1.5,
-        crossAxisSpacing: 1.5,
-        shrinkWrap: true,
-        physics: NeverScrollableScrollPhysics(),
-        children: gridTiles,
-      );
     } else if (timelineDecision == "follow") {
       return Column(children: posts);
+    } else if (timelineDecision == "local") {
+      return Column(children: postsLocal);
     }
   }
 
@@ -138,19 +127,19 @@ class _TimelineState extends State<Timeline> {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
         IconButton(
+          onPressed: () => setTimeline("follow"),
+          icon: Icon(Icons.person),
+          color: timelineDecision == 'follow'
+              ? Theme.of(context).primaryColor
+              : Colors.grey,
+        ),
+        IconButton(
           onPressed: () => setTimeline("local"),
           icon: Icon(Icons.local_activity),
           color: timelineDecision == 'local'
               ? Theme.of(context).primaryColor
               : Colors.grey,
         ),
-        IconButton(
-          onPressed: () => setTimeline("follow"),
-          icon: Icon(Icons.person),
-          color: timelineDecision == 'follow'
-              ? Theme.of(context).primaryColor
-              : Colors.grey,
-        )
       ],
     );
   }
