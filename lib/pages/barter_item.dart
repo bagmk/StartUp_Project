@@ -1,4 +1,15 @@
+import 'dart:io';
+
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:fluttershare/pages/home.dart';
+import 'package:fluttershare/widgets/progress.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:image/image.dart' as Im;
 import 'package:uuid/uuid.dart';
 import 'home.dart';
 
@@ -7,12 +18,14 @@ class BarterItem extends StatefulWidget {
   final String postId;
   final String ownerId;
   final String mediaUrl;
+  final String itemName;
 
   BarterItem({
     this.currentUserId,
     this.postId,
     this.ownerId,
     this.mediaUrl,
+    this.itemName,
   });
 
   @override
@@ -21,119 +34,356 @@ class BarterItem extends StatefulWidget {
         postId: this.postId,
         ownerId: this.ownerId,
         mediaUrl: this.mediaUrl,
+        itemName: this.itemName,
       );
 }
 
-class BarterItemState extends State {
-  TextEditingController itemController = TextEditingController();
+class BarterItemState extends State<BarterItem>
+    with AutomaticKeepAliveClientMixin<BarterItem> {
+  File file;
   final String currentUserId;
   final String postId;
   final String ownerId;
   final String mediaUrl;
-  bool _itemNameValid = true;
-  bool isLoading = false;
+  final String itemName;
+  bool isUploading = false;
   String barterId = Uuid().v4();
+  TextEditingController captionController1 = TextEditingController();
+  TextEditingController captionController2 = TextEditingController();
+  TextEditingController captionController3 = TextEditingController();
+  TextEditingController locationController = TextEditingController();
+  double posX;
+  double posY;
 
-  BarterItemState(
-      {this.currentUserId, this.postId, this.ownerId, this.mediaUrl});
+  Future<String> uploadImage(imageFile) async {
+    UploadTask uploadTask =
+        storageRef.child("post_$postId.jpg").putFile(imageFile);
+    TaskSnapshot storageSnap = await uploadTask;
+    String downloadUrl = await storageSnap.ref.getDownloadURL();
+    return downloadUrl;
+  }
 
-  handleBarter(String itemName) {
-    setState(() {
-      itemController.text.trim().length < 3 || itemController.text.isEmpty
-          ? _itemNameValid = false
-          : _itemNameValid = true;
+  BarterItemState({
+    this.currentUserId,
+    this.postId,
+    this.ownerId,
+    this.mediaUrl,
+    this.itemName,
+  });
+
+  createTradePostInFirestore(
+      {String mediaUrl,
+      double posX,
+      double posY,
+      String description,
+      String location,
+      String tag,
+      String itemName}) {
+    buyRef.doc(currentUser.id).collection("barter").doc(barterId).set({
+      "username": currentUser.username,
+      "item": itemName,
+      "timestamp": timestamp,
+      "userId": currentUser.id,
+      "postId": postId,
+      "bidId": barterId,
+      "Cash/Item": "Item",
+      "mediaUrl": mediaUrl,
+      "ownerId": ownerId
     });
 
-    if (_itemNameValid) {
-      buyRef.doc(currentUser.id).collection("barter").doc(barterId).set({
-        "username": currentUser.username,
+    sellRef.doc(ownerId).collection("barter").doc(barterId).set({
+      "username": currentUser.username,
+      "item": itemName,
+      "timestamp": timestamp,
+      "userId": currentUser.id,
+      "postId": postId,
+      "bidId": barterId,
+      "Cash/Item": "Item",
+      "mediaUrl": mediaUrl,
+    });
+
+    bool isNotPostOwner = currentUserId != ownerId;
+    if (isNotPostOwner) {
+      activityFeedRef.doc(ownerId).collection("feedItems").doc(barterId).set({
+        "type": "Item",
         "item": itemName,
-        "timestamp": timestamp,
-        "userId": currentUser.id,
-        "postId": postId,
-        "bidId": barterId,
-        "Cash/Item": "Item",
-        "mediaUrl": mediaUrl,
-        "ownerId": ownerId
-      });
-
-      sellRef.doc(ownerId).collection("barter").doc(barterId).set({
         "username": currentUser.username,
-        "item": itemName,
-        "timestamp": timestamp,
         "userId": currentUser.id,
+        "userProfileImg": currentUser.photoUrl,
         "postId": postId,
-        "bidId": barterId,
-        "Cash/Item": "Item",
         "mediaUrl": mediaUrl,
+        "timestamp": timestamp,
       });
-
-      bool isNotPostOwner = currentUserId != ownerId;
-      if (isNotPostOwner) {
-        activityFeedRef.doc(ownerId).collection("feedItems").doc(barterId).set({
-          "type": "Item",
-          "item": itemName,
-          "username": currentUser.username,
-          "userId": currentUser.id,
-          "userProfileImg": currentUser.photoUrl,
-          "postId": postId,
-          "mediaUrl": mediaUrl,
-          "timestamp": timestamp,
-        });
-      }
-
-      Navigator.push(context, MaterialPageRoute(builder: (context) => Home()));
     }
+
+    locationController.clear();
+    captionController1.clear();
+    captionController2.clear();
+    captionController3.clear();
+    setState(() {
+      file = null;
+      isUploading = false;
+      barterId = Uuid().v4();
+    });
   }
 
-  buildItemNameField() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Padding(
-          padding: EdgeInsets.only(top: 12.0),
-          child: Text(
-            "Item Name",
-            style: TextStyle(color: Colors.grey),
-          ),
-        ),
-        TextField(
-          controller: itemController,
-          decoration: InputDecoration(
-              hintText: "Item Name",
-              errorText: _itemNameValid ? null : "Item Name too short"),
-        )
-      ],
+  hadleSumit() async {
+    setState(() {
+      isUploading = true;
+    });
+
+    await compressImage();
+    await getUserLocation();
+
+    String mediaUrl = await uploadImage(file);
+    createTradePostInFirestore(
+      mediaUrl: mediaUrl,
+      posX: posX,
+      posY: posY,
+      location: locationController.text,
+      description: captionController2.text,
+      tag: captionController3.text,
+      itemName: captionController1.text,
+    );
+
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Upload done"),
+          content: new Text("Your item is uploaded"),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text("Close"),
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pop(context);
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
     );
   }
+
+  compressImage() async {
+    final tempDir = await getTemporaryDirectory();
+    final path = tempDir.path;
+    Im.Image imageFile = Im.decodeImage(file.readAsBytesSync());
+    final compressedImageFile = File('$path/img_$postId.jpg')
+      ..writeAsBytesSync(Im.encodeJpg(imageFile, quality: 20));
+    setState(() {
+      file = compressedImageFile;
+    });
+  }
+
+  handleTakePhoto() async {
+    Navigator.pop(context);
+
+    PickedFile fileSelect = await ImagePicker().getImage(
+      source: ImageSource.camera,
+      maxHeight: 675,
+      maxWidth: 960,
+    );
+    File file = File(fileSelect.path);
+    setState(() {
+      this.file = file;
+    });
+  }
+
+  handleChooseFromGallory() async {
+    Navigator.pop(context);
+    PickedFile fileSelect =
+        await ImagePicker().getImage(source: ImageSource.gallery);
+    File file = File(fileSelect.path);
+    setState(() {
+      this.file = file;
+    });
+  }
+
+  selectImage(parentContext) {
+    return showDialog(
+        context: parentContext,
+        builder: (context) {
+          return SimpleDialog(
+            title: Text("Picture trade item"),
+            children: <Widget>[
+              SimpleDialogOption(
+                child: Text("Photo with Camera"),
+                onPressed: handleTakePhoto,
+              ),
+              SimpleDialogOption(
+                child: Text("Image from Gallery"),
+                onPressed: handleChooseFromGallory,
+              ),
+              SimpleDialogOption(
+                child: Text("Cancel"),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ],
+          );
+        });
+  }
+
+  Container buildSplashScreen() {
+    return Container(
+      color: Theme.of(context).accentColor.withOpacity(0.6),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          SvgPicture.asset(
+            'assets/images/upload.svg',
+            height: 260.0,
+          ),
+          Padding(
+            padding: EdgeInsets.only(top: 20.0),
+            child: RaisedButton(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              child: Text(
+                "Upload Image",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 22.0,
+                ),
+              ),
+              color: Colors.deepOrange,
+              onPressed: () => selectImage(context),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  clearImage() {
+    setState(() {
+      file = null;
+    });
+  }
+
+  Scaffold buildUploadForm(file) {
+    return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.white70,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: Colors.black),
+            onPressed: clearImage,
+          ),
+          title: Text(
+            "Descript Item",
+            style: TextStyle(color: Colors.black),
+          ),
+          actions: [
+            FlatButton(
+              onPressed: isUploading ? null : () => hadleSumit(),
+              child: Text(
+                "Send",
+                style: TextStyle(
+                    color: Colors.blueAccent,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20.0),
+              ),
+            )
+          ],
+        ),
+        body: ListView(
+          children: <Widget>[
+            isUploading ? linearProgress() : Text(""),
+            Container(
+              height: 220.0,
+              width: MediaQuery.of(context).size.width * 0.8,
+              child: Center(
+                  child: AspectRatio(
+                aspectRatio: 16 / 9,
+                child: Container(
+                  decoration: BoxDecoration(
+                      image: DecorationImage(
+                    fit: BoxFit.cover,
+                    image: FileImage(file),
+                  )),
+                ),
+              )),
+            ),
+            Padding(
+              padding: EdgeInsets.only(top: 10.0),
+            ),
+            ListTile(
+              leading: Icon(Icons.title, color: Colors.black, size: 20.0),
+              title: Container(
+                width: 250.0,
+                child: TextField(
+                  controller: captionController1,
+                  decoration: InputDecoration(
+                    hintText: "Write item name",
+                    border: InputBorder.none,
+                  ),
+                ),
+              ),
+            ),
+            Divider(),
+            ListTile(
+              leading: Icon(Icons.short_text, color: Colors.black, size: 20.0),
+              title: Container(
+                width: 250.0,
+                child: TextField(
+                  controller: captionController2,
+                  decoration: InputDecoration(
+                    hintText: "Write a description..",
+                    border: InputBorder.none,
+                  ),
+                ),
+              ),
+            ),
+            Divider(),
+            ListTile(
+                leading: Icon(Icons.tag, color: Colors.orange, size: 35.0),
+                title: Container(
+                  width: 250.0,
+                  child: TextField(
+                    controller: captionController3,
+                    decoration: InputDecoration(
+                        hintText: "tag your item#", border: InputBorder.none),
+                  ),
+                )),
+          ],
+        ));
+  }
+
+  //getUserLocation() async {
+  //  Position position = await Geolocator()
+  //      .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+  //  List<Placemark> placemarks = await Geolocator()
+  //      .placemarkFromCoordinates(position.latitude, position.longitude);
+  //  Placemark placemark = placemarks[0];
+  //  String address = '${placemark.locality},${placemark.country}';
+  //  locationController.text = address;
+  //}
+
+  getUserLocation() async {
+    Position position = await Geolocator()
+        .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    posX = position.latitude;
+    posY = position.longitude;
+    List<Placemark> placemarks = await Geolocator()
+        .placemarkFromCoordinates(position.latitude, position.longitude);
+    Placemark placemark = placemarks[0];
+    String address = '${placemark.locality},${placemark.country}';
+    locationController.text = address;
+  }
+
+  bool get wantKeepAlive => true;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Trade with Item'),
-        backgroundColor: Colors.blue,
-      ),
-      body: Builder(
-        builder: (BuildContext context) => Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Padding(
-                  padding: EdgeInsets.all(16.0), child: buildItemNameField()),
-              RaisedButton(
-                onPressed: () => handleBarter(itemController.text),
-                child: Text("Barter!",
-                    style: TextStyle(
-                      color: Theme.of(context).primaryColor,
-                      fontSize: 20.0,
-                      fontWeight: FontWeight.bold,
-                    )),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+    super.build(context);
+    return file == null ? buildSplashScreen() : buildUploadForm(file);
   }
 }
+
+@override
+// TODO: implement wantKeepAlive
+bool get wantKeepAlive => throw UnimplementedError();
