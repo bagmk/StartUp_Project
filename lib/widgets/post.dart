@@ -199,6 +199,17 @@ class _PostState extends State<Post> {
     });
     storageRef.child("post_$postId.jpg").delete();
 
+    timelineLocalRef
+        .doc('test')
+        .collection('userPosts')
+        .doc(postId)
+        .get()
+        .then((doc) {
+      if (doc.exists) {
+        doc.reference.delete();
+      }
+    });
+
     QuerySnapshot activityFeedSanpshot = await activityFeedRef
         .doc(ownerId)
         .collection("feedItems")
