@@ -15,7 +15,7 @@ import 'package:fluttershare/pages/home.dart';
 import 'package:fluttershare/widgets/custom_image.dart';
 import 'package:fluttershare/widgets/progress.dart';
 
-class Post extends StatefulWidget {
+class PostL extends StatefulWidget {
   final String postId;
   final String ownerId;
   final String username;
@@ -27,7 +27,7 @@ class Post extends StatefulWidget {
   final dynamic likes;
   final dynamic reports;
 
-  Post({
+  PostL({
     this.postId,
     this.ownerId,
     this.username,
@@ -40,8 +40,8 @@ class Post extends StatefulWidget {
     this.reports,
   });
 
-  factory Post.fromDocument(DocumentSnapshot doc) {
-    return Post(
+  factory PostL.fromDocument(DocumentSnapshot doc) {
+    return PostL(
         postId: doc.data()['postId'],
         ownerId: doc.data()['ownerId'],
         username: doc.data()['username'],
@@ -83,7 +83,7 @@ class Post extends StatefulWidget {
   }
 
   @override
-  _PostState createState() => _PostState(
+  _PostLState createState() => _PostLState(
         postId: this.postId,
         ownerId: this.ownerId,
         username: this.username,
@@ -99,7 +99,7 @@ class Post extends StatefulWidget {
       );
 }
 
-class _PostState extends State<Post> {
+class _PostLState extends State<PostL> {
   final String currentUserId = currentUser?.id;
   final String postId;
   final String ownerId;
@@ -118,7 +118,7 @@ class _PostState extends State<Post> {
   bool isReported;
   bool showHeart = false;
 
-  _PostState({
+  _PostLState({
     this.postId,
     this.ownerId,
     this.username,
