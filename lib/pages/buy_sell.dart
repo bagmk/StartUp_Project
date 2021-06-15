@@ -42,12 +42,14 @@ class _BuySellState extends State<BuySell> {
         .collection('barter')
         .orderBy('timestamp', descending: true)
         .get();
-
-    setState(() {
-      isLoading = false;
-      buyCount = snapshot.docs.length;
-      buyList = snapshot.docs.map((doc) => BuyList.fromDocument(doc)).toList();
-    });
+    if (mounted) {
+      setState(() {
+        isLoading = false;
+        buyCount = snapshot.docs.length;
+        buyList =
+            snapshot.docs.map((doc) => BuyList.fromDocument(doc)).toList();
+      });
+    }
   }
 
   getSellList() async {
@@ -59,13 +61,14 @@ class _BuySellState extends State<BuySell> {
         .collection('barter')
         .orderBy('timestamp', descending: true)
         .get();
-
-    setState(() {
-      isLoading = false;
-      sellCount = snapshot.docs.length;
-      sellList =
-          snapshot.docs.map((doc) => SellList.fromDocument(doc)).toList();
-    });
+    if (mounted) {
+      setState(() {
+        isLoading = false;
+        sellCount = snapshot.docs.length;
+        sellList =
+            snapshot.docs.map((doc) => SellList.fromDocument(doc)).toList();
+      });
+    }
   }
 
   buildProfilePost() {
