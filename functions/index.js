@@ -6,13 +6,7 @@ admin.initializeApp();
  * Get the Stripe secret key from Firebase environment configuration.
  */
 const stripe = require('stripe')(functions.config().stripe.secret_key);
-// // Create and Deploy Your First Cloud Functions
-// // https://firebase.google.com/docs/functions/write-firebase-functions
-//
-// exports.helloWorld = functions.https.onRequest((request, response) => {
-//   functions.logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
+
 exports.onCreateFollower = functions.firestore.document("/followers/{userId}/userFollowers/{followerId}")
     .onCreate(async (snapshot, context) => {
         console.log("Follower Created", snapshot.id);
@@ -214,7 +208,30 @@ exports.onCreateActivityFeedItem = functions.firestore.document('/feed/{userId}/
 /**
  * Create new Stripe Connect user.
  */
-//exports.createStripeConnectUser = functions.
+exports.createStripeConnectUser = functions.https.onRequest(async (req, res) => {
+    console.log('Secret Key: ' + functions.config().stripe.secret_key);
+
+    const account = await stripe.accounts.create({
+        type: 'express',
+    });
+    
+    console.log('Express account: ' + account);
+
+    // TODO: Get the user id from Firestore database and use in the account field
+    console.log('User ID from URL: ' + req.query.id);
+
+    const accountLinks = await stripe.accountLinks.create({
+        account: req.query.id,
+        refresh_url: 'https://example.com/reauth',
+        return_url: 'https://example.com/return',
+        type: 'account_onboarding',
+    });
+
+    console.log('accountLinks: ' + accountLinks);
+    
+    res.send(accountLinks);
+    res.end();
+});
 
 /**
  * Create new customer

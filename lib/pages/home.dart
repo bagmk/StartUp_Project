@@ -13,6 +13,7 @@ import 'package:fluttershare/pages/timeline.dart';
 import 'package:fluttershare/pages/upload.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:http/http.dart' as http;
 
 final GoogleSignIn googleSignIn = GoogleSignIn();
 final usersRef = FirebaseFirestore.instance.collection('users');
@@ -141,6 +142,18 @@ class _HomeState extends State<Home> {
     //get user name from the creat eaccount, use it to make new uesr document in user collection
 
     currentUser = User.fromDocument(doc);
+
+    // // Create the user in Stripe Connect through the http request
+    // // to the Firebase functionm, createStripeConnectUser.
+    // // - Pass in user.id as a query parameter
+    // final url =
+    //     'https://us-central1-fluttershare-188bd.cloudfunctions.net/createStripeConnectUser';
+    // final http.Response response =
+    //     await http.post(Uri.parse('$url?id=${user.id}'));
+
+    // // Use the response to redirect to complete Stripe sign up.
+    // // - Response should be account link object.
+    // print('Account link object: $response');
   }
 
   void dispose() {
