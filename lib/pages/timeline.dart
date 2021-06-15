@@ -126,20 +126,27 @@ class _TimelineState extends State<Timeline> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
-        IconButton(
+        TextButton(
           onPressed: () => setTimeline("follow"),
-          icon: Icon(Icons.person),
-          color: timelineDecision == 'follow'
-              ? Theme.of(context).primaryColor
-              : Colors.grey,
+          child: Text('Following',
+              style: TextStyle(
+                  color: timelineDecision == 'follow'
+                      ? Theme.of(context).primaryColor
+                      : Colors.grey)),
+          style: TextButton.styleFrom(
+            textStyle: const TextStyle(fontSize: 20),
+          ),
         ),
-        IconButton(
-          onPressed: () => setTimeline("local"),
-          icon: Icon(Icons.local_activity),
-          color: timelineDecision == 'local'
-              ? Theme.of(context).primaryColor
-              : Colors.grey,
-        ),
+        TextButton(
+            onPressed: () => setTimeline("local"),
+            child: Text('Local',
+                style: TextStyle(
+                    color: timelineDecision == 'local'
+                        ? Theme.of(context).primaryColor
+                        : Colors.grey)),
+            style: TextButton.styleFrom(
+              textStyle: const TextStyle(fontSize: 20),
+            )),
       ],
     );
   }

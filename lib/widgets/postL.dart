@@ -199,11 +199,23 @@ class _PostLState extends State<PostL> {
     });
     storageRef.child("post_$postId.jpg").delete();
 
+    timelineLocalRef
+        .doc('test')
+        .collection('userPosts')
+        .doc(postId)
+        .get()
+        .then((doc) {
+      if (doc.exists) {
+        doc.reference.delete();
+      }
+    });
+
     QuerySnapshot activityFeedSanpshot = await activityFeedRef
         .doc(ownerId)
         .collection("feedItems")
         .where('postId', isEqualTo: postId)
         .get();
+
     activityFeedSanpshot.docs.forEach((doc) {
       if (doc.exists) {
         doc.reference.delete();
