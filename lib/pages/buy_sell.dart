@@ -63,6 +63,7 @@ class _BuySellState extends State<BuySell> {
     setState(() {
       isLoading = false;
       sellCount = snapshot.docs.length;
+      print('test');
       sellList =
           snapshot.docs.map((doc) => SellList.fromDocument(doc)).toList();
     });
