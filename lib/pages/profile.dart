@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttershare/models/user.dart';
 import 'package:fluttershare/pages/edit_profile.dart';
+import 'package:fluttershare/pages/follower_following.dart';
 import 'package:fluttershare/pages/home.dart';
 import 'package:fluttershare/widgets/header.dart';
 import 'package:fluttershare/widgets/post.dart';
@@ -21,6 +22,7 @@ class Profile extends StatefulWidget {
 class _ProfileState extends State<Profile> {
   bool isFollowing = false;
   final String currentUserId = currentUser?.id;
+
   bool isLoading = false;
   int postCount = 0;
   int followerCount = 0;
@@ -30,11 +32,14 @@ class _ProfileState extends State<Profile> {
 
   @override
   void initState() {
+    print('0');
     super.initState();
+
     getProfilePost();
     getFollowers();
     getFollowing();
     checkIfFollowing();
+    print('1');
   }
 
   getFollowers() async {
@@ -109,7 +114,102 @@ class _ProfileState extends State<Profile> {
     );
   }
 
+  Column buildCountColumnFollower(String label, int count) {
+    bool isProfileOwner = currentUserId == widget.profileId;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        GestureDetector(
+          onTap: () => isProfileOwner ? seeFollowInfo() : "",
+          child: Text(
+            count.toString(),
+            style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold),
+          ),
+        ),
+        GestureDetector(
+            onTap: () => isProfileOwner ? seeFollowInfo() : "",
+            child: Container(
+              margin: EdgeInsets.only(top: 4.0),
+              child: Text(
+                label,
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: 15.0,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            )),
+      ],
+    );
+  }
+
+  seeFollowInfo() {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) =>
+                FollowerFollowing(currentUserId: currentUserId)));
+  }
+
+  Column buildCountColumnFollowing(String label, int count) {
+    bool isProfileOwner = currentUserId == widget.profileId;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        GestureDetector(
+          onTap: () => isProfileOwner ? seeFollowInfo() : "",
+          child: Text(
+            count.toString(),
+            style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold),
+          ),
+        ),
+        GestureDetector(
+          onTap: () => isProfileOwner ? seeFollowInfo() : "",
+          child: Container(
+            margin: EdgeInsets.only(top: 4.0),
+            child: Text(
+              label,
+              style: TextStyle(
+                color: Colors.grey,
+                fontSize: 15.0,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ),
+        )
+      ],
+    );
+  }
+
   Container buildButton({String text, Function function}) {
+    return Container(
+        padding: EdgeInsets.only(top: 2.0),
+        child: FlatButton(
+          onPressed: function,
+          child: Container(
+            width: 200.0,
+            height: 27.0,
+            child: Text(
+              text,
+              style: TextStyle(
+                  color: isFollowing ? Colors.black : Colors.white,
+                  fontWeight: FontWeight.bold),
+            ),
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+                color: isFollowing ? Colors.white : Colors.blue,
+                border:
+                    Border.all(color: isFollowing ? Colors.grey : Colors.blue),
+                borderRadius: BorderRadius.circular(5.0)),
+          ),
+        ));
+  }
+
+  Container buildButton1({String text, Function function}) {
     return Container(
         padding: EdgeInsets.only(top: 2.0),
         child: FlatButton(
@@ -142,13 +242,17 @@ class _ProfileState extends State<Profile> {
 
   buildProfileButton() {
     //viwing own profile -show edit profile
+    print('4');
     bool isProfileOwner = currentUserId == widget.profileId;
     if (isProfileOwner) {
       return buildButton(text: "Edit Profile", function: editProfile);
     } else if (isFollowing) {
       return buildButton(text: "Unfollow", function: handleUnfollowUser);
     } else if (!isFollowing) {
-      return buildButton(text: "Follow", function: handleFollowUser);
+      return buildButton1(
+        text: "Follow",
+        function: handleFollowUser,
+      );
     }
   }
 
@@ -193,22 +297,39 @@ class _ProfileState extends State<Profile> {
     });
   }
 
-  handleFollowUser() {
+  handleFollowUser() async {
+    print('6');
     setState(() {
       isFollowing = true;
     });
+    print('7');
     // Make auth user follower of THAT user (update THEIR followers collection)
     followersRef
         .doc(widget.profileId)
         .collection('userFollowers')
         .doc(currentUserId)
-        .set({});
+        .set({
+      "username": currentUser.username,
+      "timestamp": timestamp,
+      "userProfileImg": currentUser.photoUrl,
+      "ownerId": widget.profileId,
+    });
     // Put THAT user on YOUR following collection (update your following collection)
+
+    DocumentSnapshot doc = await usersRef.doc(widget.profileId).get();
+    User user = User.fromDocument(doc);
+
     followingRef
         .doc(currentUserId)
         .collection('userFollowing')
         .doc(widget.profileId)
-        .set({});
+        .set({
+      "timestamp": timestamp,
+      "ownerId": widget.profileId,
+      "username": user.displayName,
+      "userProfileImg": user.photoUrl,
+    });
+
     // add activity feed item for that user to notify about new follower (us)
     activityFeedRef
         .doc(widget.profileId)
@@ -232,6 +353,8 @@ class _ProfileState extends State<Profile> {
           return circularProgress();
         }
         User user = User.fromDocument(snapshot.data);
+        print('2');
+
         return Padding(
           padding: EdgeInsets.all(16.0),
           child: Column(
@@ -252,8 +375,12 @@ class _ProfileState extends State<Profile> {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: <Widget>[
                             buildCountColumn("posts", postCount),
-                            buildCountColumn("followers", followerCount),
-                            buildCountColumn("following", followingCount),
+                            buildCountColumnFollower(
+                              "followers",
+                              followerCount,
+                            ),
+                            buildCountColumnFollowing(
+                                "following", followingCount),
                           ],
                         ),
                         Row(

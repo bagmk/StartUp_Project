@@ -2,12 +2,10 @@ import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttershare/pages/home.dart';
 import 'package:fluttershare/models/user.dart';
 import 'package:fluttershare/widgets/post.dart';
 import 'package:fluttershare/widgets/postL.dart';
-import 'package:fluttershare/widgets/post_tile.dart';
 import 'package:fluttershare/widgets/progress.dart';
 import 'package:geolocator/geolocator.dart';
 
