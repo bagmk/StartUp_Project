@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:fluttershare/models/user.dart';
-import 'package:fluttershare/pages/activity_feed.dart';
+
 import 'package:fluttershare/pages/buy_sell.dart';
 import 'package:fluttershare/pages/create_account.dart';
 import 'package:fluttershare/pages/profile.dart';
@@ -12,18 +12,23 @@ import 'package:fluttershare/pages/search.dart';
 import 'package:fluttershare/pages/timeline.dart';
 import 'package:fluttershare/pages/upload.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 
 final GoogleSignIn googleSignIn = GoogleSignIn();
 final usersRef = FirebaseFirestore.instance.collection('users');
-final barterRef = FirebaseFirestore.instance.collection('barter');
+final buyRef = FirebaseFirestore.instance.collection('buy');
+final sellRef = FirebaseFirestore.instance.collection('sell');
 final postsRef = FirebaseFirestore.instance.collection('posts');
 final commentsRef = FirebaseFirestore.instance.collection('comments');
 final activityFeedRef = FirebaseFirestore.instance.collection('feed');
 final followersRef = FirebaseFirestore.instance.collection('followers');
 final followingRef = FirebaseFirestore.instance.collection('following');
 final timelineRef = FirebaseFirestore.instance.collection('timeline');
+final timelineLocalRef = FirebaseFirestore.instance.collection('timelineLocal');
+
+final buysellRef = FirebaseFirestore.instance.collection('buysellRef');
 
 final DateTime timestamp = DateTime.now();
 final Reference storageRef = FirebaseStorage.instance.ref();
@@ -41,12 +46,14 @@ class _HomeState extends State<Home> {
   bool isAuth = false;
   PageController pageController;
   int pageIndex = 0;
+  double posXuser;
+  double posYuser;
 
   // Detects when users sign in
   @override
   void initState() {
     super.initState();
-
+    getUserLocation();
     pageController = PageController();
     googleSignIn.onCurrentUserChanged.listen((account) {
       handleSignIn(account);
@@ -110,6 +117,18 @@ class _HomeState extends State<Home> {
     NotificationSettings settings = await _firebaseMessaging.requestPermission(
         alert: true, badge: true, sound: true);
     print("Settings registered: $settings");
+  }
+
+  getUserLocation() async {
+    Position position = await Geolocator()
+        .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    posXuser = position.latitude;
+    posYuser = position.longitude;
+
+    usersRef.doc(currentUser.id).update({
+      "posXuser": posXuser,
+      "posYuser": posYuser,
+    });
   }
 
   createUserInFirestore() async {
@@ -186,12 +205,7 @@ class _HomeState extends State<Home> {
       body: PageView(
         children: <Widget>[
           Timeline(currentUser: currentUser),
-          //RaisedButton(
-          //  child: Text('Logout'),
-          //  onPressed: logout,
-          //),
-
-          BuySell(),
+          BuySell(profileId: currentUser?.id),
           Upload(currentUser: currentUser),
           Search(),
           Profile(profileId: currentUser?.id),

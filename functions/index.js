@@ -70,8 +70,9 @@ exports.onCreatePost = functions.firestore.document('/posts/{userId}/userPosts/{
 
         //1) get all the followers of the user who made the post
         const userFollowersRef = admin.firestore().collection('followers').doc(userId).collection('userFollowers');
-
         const querySnapshot = await userFollowersRef.get();
+
+
 
         //2) Add new post to each follower's timeline
 
@@ -136,9 +137,27 @@ exports.onDeletePost = functions.firestore.document('/posts/{userId}/userPosts/{
             });
         });
 
+        
+
 
 
     });
+
+
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//local Timeline
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//Activity Feed
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 exports.onCreateActivityFeedItem = functions.firestore.document('/feed/{userId}/feedItems/{activityFeedItem}').onCreate(
@@ -167,6 +186,16 @@ exports.onCreateActivityFeedItem = functions.firestore.document('/feed/{userId}/
             //switch body vlaue based off on notification type
 
             switch (activityFeedItem.type) {
+
+                case "Cash":
+                    body = `${activityFeedItem.username} bid your item with \$: ${activityFeedItem.item}`;
+                    break;
+
+                case "Item":
+                    body = `${activityFeedItem.username} barter with : ${activityFeedItem.item}`;
+                    break;
+
+
                 case "comment":
                     body = `${activityFeedItem.username} replied : ${activityFeedItem.commentData}`;
                     break;

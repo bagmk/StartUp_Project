@@ -4,7 +4,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:fluttershare/models/user.dart';
 import 'package:fluttershare/pages/home.dart';
 import 'package:fluttershare/widgets/progress.dart';
 import 'package:geolocator/geolocator.dart';
@@ -12,25 +11,50 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:image/image.dart' as Im;
 import 'package:uuid/uuid.dart';
+import 'home.dart';
 
-class Upload extends StatefulWidget {
-  final User currentUser;
+class BarterItem extends StatefulWidget {
+  final String currentUserId;
+  final String postId;
+  final String ownerId;
+  final String mediaUrl;
+  final String itemName;
 
-  Upload({this.currentUser});
+  BarterItem({
+    this.currentUserId,
+    this.postId,
+    this.ownerId,
+    this.mediaUrl,
+    this.itemName,
+  });
+
   @override
-  _UploadState createState() => _UploadState();
+  BarterItemState createState() => BarterItemState(
+        currentUserId: this.currentUserId,
+        postId: this.postId,
+        ownerId: this.ownerId,
+        mediaUrl: this.mediaUrl,
+        itemName: this.itemName,
+      );
 }
 
-class _UploadState extends State<Upload>
-    with AutomaticKeepAliveClientMixin<Upload> {
+class BarterItemState extends State<BarterItem>
+    with AutomaticKeepAliveClientMixin<BarterItem> {
   File file;
+  final String currentUserId;
+  final String postId;
+  final String ownerId;
+  final String mediaUrl;
+  final String itemName;
   bool isUploading = false;
-  String postId = Uuid().v4();
+  String barterId = Uuid().v4();
   TextEditingController captionController1 = TextEditingController();
-  TextEditingController captionController = TextEditingController();
+  TextEditingController captionController2 = TextEditingController();
+  TextEditingController captionController3 = TextEditingController();
   TextEditingController locationController = TextEditingController();
   double posX;
   double posY;
+
   Future<String> uploadImage(imageFile) async {
     UploadTask uploadTask =
         storageRef.child("post_$postId.jpg").putFile(imageFile);
@@ -39,52 +63,67 @@ class _UploadState extends State<Upload>
     return downloadUrl;
   }
 
-  createPostInFirestore(
+  BarterItemState({
+    this.currentUserId,
+    this.postId,
+    this.ownerId,
+    this.mediaUrl,
+    this.itemName,
+  });
+
+  createTradePostInFirestore(
       {String mediaUrl,
       double posX,
       double posY,
       String description,
       String location,
-      String tag}) {
-    postsRef
-        .doc(widget.currentUser.id)
-        .collection("userPosts")
-        .doc(postId)
-        .set({
-      "postId": postId,
-      "ownerId": widget.currentUser.id,
-      "username": widget.currentUser.username,
-      "mediaUrl": mediaUrl,
-      "description": description,
-      "tag": tag,
-      "posX": posX,
-      "posY": posY,
-      "location": location,
+      String tag,
+      String itemName}) {
+    buyRef.doc(currentUser.id).collection("barter").doc(barterId).set({
+      "username": currentUser.username,
+      "item": itemName,
       "timestamp": timestamp,
-      "likes": {},
-      "reports": {},
-    });
-    timelineLocalRef.doc('test').collection("userPosts").doc(postId).set({
+      "userId": currentUser.id,
       "postId": postId,
-      "ownerId": widget.currentUser.id,
-      "username": widget.currentUser.username,
+      "bidId": barterId,
+      "Cash/Item": "Item",
       "mediaUrl": mediaUrl,
-      "description": description,
-      "tag": tag,
-      "posX": posX,
-      "posY": posY,
-      "location": location,
-      "timestamp": timestamp,
-      "likes": {},
-      "reports": {},
+      "ownerId": ownerId
     });
+
+    sellRef.doc(ownerId).collection("barter").doc(barterId).set({
+      "username": currentUser.username,
+      "item": itemName,
+      "timestamp": timestamp,
+      "userId": currentUser.id,
+      "postId": postId,
+      "bidId": barterId,
+      "Cash/Item": "Item",
+      "mediaUrl": mediaUrl,
+    });
+
+    bool isNotPostOwner = currentUserId != ownerId;
+    if (isNotPostOwner) {
+      activityFeedRef.doc(ownerId).collection("feedItems").doc(barterId).set({
+        "type": "Item",
+        "item": itemName,
+        "username": currentUser.username,
+        "userId": currentUser.id,
+        "userProfileImg": currentUser.photoUrl,
+        "postId": postId,
+        "mediaUrl": mediaUrl,
+        "timestamp": timestamp,
+      });
+    }
+
     locationController.clear();
-    captionController.clear();
     captionController1.clear();
+    captionController2.clear();
+    captionController3.clear();
     setState(() {
       file = null;
       isUploading = false;
-      postId = Uuid().v4();
+      barterId = Uuid().v4();
     });
   }
 
@@ -97,13 +136,35 @@ class _UploadState extends State<Upload>
     await getUserLocation();
 
     String mediaUrl = await uploadImage(file);
-    createPostInFirestore(
+    createTradePostInFirestore(
       mediaUrl: mediaUrl,
       posX: posX,
       posY: posY,
       location: locationController.text,
-      description: captionController.text,
-      tag: captionController1.text,
+      description: captionController2.text,
+      tag: captionController3.text,
+      itemName: captionController1.text,
+    );
+
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Upload done"),
+          content: new Text("Your item is uploaded"),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text("Close"),
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pop(context);
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -147,7 +208,7 @@ class _UploadState extends State<Upload>
         context: parentContext,
         builder: (context) {
           return SimpleDialog(
-            title: Text("Create Post"),
+            title: Text("Picture trade item"),
             children: <Widget>[
               SimpleDialogOption(
                 child: Text("Photo with Camera"),
@@ -213,14 +274,14 @@ class _UploadState extends State<Upload>
             onPressed: clearImage,
           ),
           title: Text(
-            "Caption Post",
+            "Descript Item",
             style: TextStyle(color: Colors.black),
           ),
           actions: [
             FlatButton(
               onPressed: isUploading ? null : () => hadleSumit(),
               child: Text(
-                "Post",
+                "Send",
                 style: TextStyle(
                     color: Colors.blueAccent,
                     fontWeight: FontWeight.bold,
@@ -251,16 +312,27 @@ class _UploadState extends State<Upload>
               padding: EdgeInsets.only(top: 10.0),
             ),
             ListTile(
-              leading: CircleAvatar(
-                backgroundImage:
-                    CachedNetworkImageProvider(widget.currentUser.photoUrl),
-              ),
+              leading: Icon(Icons.title, color: Colors.black, size: 20.0),
               title: Container(
                 width: 250.0,
                 child: TextField(
-                  controller: captionController,
+                  controller: captionController1,
                   decoration: InputDecoration(
-                    hintText: "Write a caption..",
+                    hintText: "Write item name",
+                    border: InputBorder.none,
+                  ),
+                ),
+              ),
+            ),
+            Divider(),
+            ListTile(
+              leading: Icon(Icons.short_text, color: Colors.black, size: 20.0),
+              title: Container(
+                width: 250.0,
+                child: TextField(
+                  controller: captionController2,
+                  decoration: InputDecoration(
+                    hintText: "Write a description..",
                     border: InputBorder.none,
                   ),
                 ),
@@ -272,7 +344,7 @@ class _UploadState extends State<Upload>
                 title: Container(
                   width: 250.0,
                   child: TextField(
-                    controller: captionController1,
+                    controller: captionController3,
                     decoration: InputDecoration(
                         hintText: "tag your item#", border: InputBorder.none),
                   ),
@@ -311,3 +383,7 @@ class _UploadState extends State<Upload>
     return file == null ? buildSplashScreen() : buildUploadForm(file);
   }
 }
+
+@override
+// TODO: implement wantKeepAlive
+bool get wantKeepAlive => throw UnimplementedError();

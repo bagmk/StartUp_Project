@@ -125,11 +125,11 @@ class Comment extends StatelessWidget {
 
   factory Comment.fromDocument(DocumentSnapshot doc) {
     return Comment(
-      username: doc['username'],
-      userId: doc['userId'],
-      comment: doc['comment'],
-      timestamp: doc['timestamp'],
-      avatarUrl: doc['avatarUrl'],
+      username: doc.data()['username'],
+      userId: doc.data()['userId'],
+      comment: doc.data()['comment'],
+      timestamp: doc.data()['timestamp'],
+      avatarUrl: doc.data()['avatarUrl'],
     );
   }
 

@@ -1,7 +1,6 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:fluttershare/pages/payment.dart';
-
+import 'package:uuid/uuid.dart';
 import 'KeyPad.dart';
 import 'home.dart';
 
@@ -9,52 +8,80 @@ class Barter extends StatefulWidget {
   final String currentUserId;
   final String postId;
   final String ownerId;
-
-  Barter({
-    this.currentUserId,
-    this.postId,
-    this.ownerId,
-  });
+  final String mediaUrl;
+  Barter({this.currentUserId, this.postId, this.ownerId, this.mediaUrl});
 
   @override
   BarterState createState() => BarterState(
         currentUserId: this.currentUserId,
         postId: this.postId,
         ownerId: this.ownerId,
+        mediaUrl: this.mediaUrl,
       );
 }
 
 class BarterState extends State {
   TextEditingController pinController = TextEditingController();
   final String currentUserId;
+  String bidId = Uuid().v4();
   final String postId;
   final String ownerId;
+  final String mediaUrl;
 
-  BarterState({
-    this.currentUserId,
-    this.postId,
-    this.ownerId,
-  });
+  BarterState({this.currentUserId, this.postId, this.ownerId, this.mediaUrl});
 
   handlePayment() {
     Navigator.push(context, MaterialPageRoute(builder: (context) => Payment()));
   }
 
   handleBarter(String pin) {
-    barterRef.doc(ownerId).collection("barter").add({
+    buyRef.doc(currentUser.id).collection("barter").doc(bidId).set(
+      {
+        "username": currentUser.username,
+        "item": pin,
+        "timestamp": timestamp,
+        "userId": currentUser.id,
+        "postId": postId,
+        "bidId": bidId,
+        "Cash/Item": "Cash",
+        "mediaUrl": mediaUrl,
+        "ownerId": ownerId
+      },
+    );
+
+    sellRef.doc(ownerId).collection("barter").doc(bidId).set({
       "username": currentUser.username,
-      "price": pin,
+      "item": pin,
       "timestamp": timestamp,
       "userId": currentUser.id,
-      "postId": postId
+      "postId": postId,
+      "bidId": bidId,
+      "Cash/Item": "Cash",
+      "mediaUrl": mediaUrl,
     });
+
+    bool isNotPostOwner = currentUserId != ownerId;
+    if (isNotPostOwner) {
+      activityFeedRef.doc(ownerId).collection("feedItems").doc(bidId).set({
+        "type": "Cash",
+        "item": pin,
+        "username": currentUser.username,
+        "userId": currentUser.id,
+        "userProfileImg": currentUser.photoUrl,
+        "postId": postId,
+        "mediaUrl": mediaUrl,
+        "timestamp": timestamp,
+      });
+    }
+
+    Navigator.push(context, MaterialPageRoute(builder: (context) => Home()));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Barter'),
+        title: Text('Bid Money'),
         backgroundColor: Colors.blue,
       ),
       body: Builder(
@@ -115,15 +142,6 @@ class BarterState extends State {
                   pinController.text = pin;
                   print('submit \$ ${pinController.text}');
                   handleBarter(pinController.text);
-
-/*                   Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => Home(),
-                    ),
-                    (Route<dynamic> route) => false,
-                  ); */
-                  handlePayment();
                 },
               ),
             ],

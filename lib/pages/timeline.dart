@@ -1,12 +1,15 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttershare/pages/activity_feed.dart';
-import 'package:fluttershare/pages/search.dart';
-import 'package:fluttershare/widgets/header.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttershare/pages/home.dart';
 import 'package:fluttershare/models/user.dart';
 import 'package:fluttershare/widgets/post.dart';
+import 'package:fluttershare/widgets/postL.dart';
+import 'package:fluttershare/widgets/post_tile.dart';
 import 'package:fluttershare/widgets/progress.dart';
+import 'package:geolocator/geolocator.dart';
 
 final usersRef = FirebaseFirestore.instance.collection('users');
 
@@ -20,11 +23,18 @@ class Timeline extends StatefulWidget {
 
 class _TimelineState extends State<Timeline> {
   List<Post> posts;
+  List<PostL> postsLocal;
+  double _currentSliderValue = 1;
   List<String> followingList = [];
+  String timelineDecision = "local";
+  double posXuser;
+  double posYuser;
   void initState() {
     super.initState();
     getTimeline();
     getFollowing();
+    getUserLocation();
+    getTimelineLocal();
   }
 
   getTimeline() async {
@@ -35,9 +45,22 @@ class _TimelineState extends State<Timeline> {
         .get();
     List<Post> posts =
         snapshot.docs.map((doc) => Post.fromDocument(doc)).toList();
-
     setState(() {
       this.posts = posts;
+    });
+  }
+
+  getTimelineLocal() async {
+    QuerySnapshot snapshotLocal = await timelineLocalRef
+        .doc('test')
+        .collection('userPosts')
+        .orderBy('timestamp', descending: true)
+        .get();
+
+    List<PostL> postsLocal =
+        snapshotLocal.docs.map((doc) => PostL.fromDocument(doc)).toList();
+    setState(() {
+      this.postsLocal = postsLocal;
     });
   }
 
@@ -51,74 +74,80 @@ class _TimelineState extends State<Timeline> {
     });
   }
 
+  double calculateDistance(lat1, lon1, lat2, lon2) {
+    var p = 0.017453292519943295;
+    var c = cos;
+    var a = 0.5 -
+        c((lat2 - lat1) * p) / 2 +
+        c(lat1 * p) * c(lat2 * p) * (1 - c((lon2 - lon1) * p)) / 2;
+    return 0.621371 * 12742 * asin(sqrt(a));
+    //return mile distance
+  }
+
+  getUserLocation() async {
+    Position position = await Geolocator()
+        .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    posXuser = position.latitude;
+    posYuser = position.longitude;
+  }
+
   buildTimeline() {
-    if (posts == null) {
+    if (postsLocal == null) {
       return circularProgress();
-    } else if (posts.isEmpty) {
-      return buildUserToFollow();
-    } else {
-      return ListView(children: posts);
+    } else if (timelineDecision == "follow") {
+      return Column(children: posts);
+    } else if (timelineDecision == "local") {
+      return Column(children: postsLocal);
     }
   }
 
-  buildUserToFollow() {
-    return StreamBuilder(
-      stream:
-          usersRef.orderBy('timestamp', descending: true).limit(30).snapshots(),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return circularProgress();
-        }
-        List<UserResult> userResults = [];
-        snapshot.data.docs.forEach((doc) {
-          User user = User.fromDocument(doc);
-          final bool isAuthUser = currentUser.id == user.id;
-          final bool isFollowingUser = followingList.contains(user.id);
-
-          //revmoew auth user from reocmmend list
-          if (isAuthUser) {
-            return;
-          } else if (isFollowingUser) {
-            return;
-          } else {
-            UserResult userResult = UserResult(user);
-            userResults.add(userResult);
-          }
+  buildSlider() {
+    return Slider(
+      value: _currentSliderValue,
+      min: 0,
+      max: 5,
+      divisions: 5,
+      label: _currentSliderValue.round().toString(),
+      onChanged: (double value) {
+        setState(() {
+          _currentSliderValue = value;
         });
-        return Container(
-          color: Theme.of(context).accentColor.withOpacity(0.2),
-          child: Column(
-            children: <Widget>[
-              Container(
-                padding: EdgeInsets.all(12.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Icon(
-                      Icons.person_add,
-                      color: Theme.of(context).primaryColor,
-                      size: 30.0,
-                    ),
-                    SizedBox(
-                      width: 8.0,
-                    ),
-                    Text(
-                      "Users to Follow",
-                      style: TextStyle(
-                        color: Theme.of(context).primaryColor,
-                        fontSize: 30.0,
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              Column(
-                children: userResults,
-              )
-            ],
-          ),
-        );
       },
+    );
+  }
+
+  setTimeline(String timelineDecision) {
+    setState(() {
+      this.timelineDecision = timelineDecision;
+    });
+  }
+
+  buildToggleTimeline() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: <Widget>[
+        TextButton(
+          onPressed: () => setTimeline("follow"),
+          child: Text('Following',
+              style: TextStyle(
+                  color: timelineDecision == 'follow'
+                      ? Theme.of(context).primaryColor
+                      : Colors.grey)),
+          style: TextButton.styleFrom(
+            textStyle: const TextStyle(fontSize: 20),
+          ),
+        ),
+        TextButton(
+            onPressed: () => setTimeline("local"),
+            child: Text('Local',
+                style: TextStyle(
+                    color: timelineDecision == 'local'
+                        ? Theme.of(context).primaryColor
+                        : Colors.grey)),
+            style: TextButton.styleFrom(
+              textStyle: const TextStyle(fontSize: 20),
+            )),
+      ],
     );
   }
 
@@ -127,20 +156,16 @@ class _TimelineState extends State<Timeline> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Hot Place'),
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.notifications_active),
-            tooltip: 'Show Snackbar',
-            onPressed: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => ActivityFeed()));
-            },
-          )
-        ],
       ),
-      body: RefreshIndicator(
-        onRefresh: () => getTimeline(),
-        child: buildTimeline(),
+      body: ListView(
+        children: <Widget>[
+          buildToggleTimeline(),
+          Divider(
+            height: 0.0,
+          ),
+          buildSlider(),
+          buildTimeline(),
+        ],
       ),
     );
   }
