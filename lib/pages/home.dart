@@ -52,7 +52,7 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
-    getUserLocation();
+
     pageController = PageController();
     googleSignIn.onCurrentUserChanged.listen((account) {
       handleSignIn(account);
@@ -66,6 +66,7 @@ class _HomeState extends State<Home> {
           googleSignIn.signInSilently().then((account) => handleSignIn(account))
         };
     });
+    getUserLocation();
   }
 
   handleSignIn(GoogleSignInAccount account) async {
@@ -124,7 +125,7 @@ class _HomeState extends State<Home> {
     posXuser = position.latitude;
     posYuser = position.longitude;
 
-    usersRef.doc(currentUser.id).update({
+    await usersRef.doc(currentUser.id).update({
       "posXuser": posXuser,
       "posYuser": posYuser,
     });

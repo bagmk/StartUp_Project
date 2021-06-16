@@ -1,14 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttershare/pages/activity_feed.dart';
+
 import 'package:fluttershare/pages/home.dart';
-import 'package:fluttershare/widgets/buy_list.dart';
-import 'package:fluttershare/widgets/sell_list.dart';
+
+import 'package:fluttershare/widgets/follower_list.dart';
+import 'package:fluttershare/widgets/following_list.dart';
 
 class FollowerFollowing extends StatefulWidget {
-  final String profileId;
+  final String currentUserId;
 
-  FollowerFollowing({this.profileId});
+  FollowerFollowing({this.currentUserId});
   @override
   _FollowerFollowingState createState() => _FollowerFollowingState();
 }
@@ -18,26 +19,28 @@ class _FollowerFollowingState extends State<FollowerFollowing> {
   final String currentUserId = currentUser?.id;
   int followerCount = 0;
   int followingCount = 0;
-  List<FollowerFollowing> followerList = [];
-  List<FollowerFollowing> followingList = [];
-  String followerOrFollowering = "follower";
+  List<FollowerList> followerList = [];
+  List<FollowingList> followingList = [];
+  String followerOrFollowering = "following";
 
   @override
   void initState() {
     super.initState();
-    getBuyList();
-    getSellList();
+
+    getFollowerList();
+    getFollowingList();
   }
 
-  getBuyList() async {
+  getFollowerList() async {
     setState(() {
       isLoading = true;
     });
-    QuerySnapshot snapshot = await buyRef
-        .doc(widget.profileId)
-        .collection('barter')
+    QuerySnapshot snapshot = await followersRef
+        .doc(currentUserId)
+        .collection('userFollowers')
         .orderBy('timestamp', descending: true)
         .get();
+
     if (mounted) {
       setState(() {
         isLoading = false;
@@ -48,15 +51,16 @@ class _FollowerFollowingState extends State<FollowerFollowing> {
     }
   }
 
-  getSellList() async {
+  getFollowingList() async {
     setState(() {
       isLoading = true;
     });
-    QuerySnapshot snapshot = await sellRef
-        .doc(widget.profileId)
-        .collection('barter')
+    QuerySnapshot snapshot = await followingRef
+        .doc(currentUserId)
+        .collection('userFollowing')
         .orderBy('timestamp', descending: true)
         .get();
+
     if (mounted) {
       setState(() {
         isLoading = false;
@@ -86,20 +90,27 @@ class _FollowerFollowingState extends State<FollowerFollowing> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
-        IconButton(
+        TextButton(
           onPressed: () => setFollowerOrFollowering("follower"),
-          icon: Icon(Icons.dangerous),
-          color: followerOrFollowering == 'follower'
-              ? Theme.of(context).primaryColor
-              : Colors.grey,
+          child: Text('Follower',
+              style: TextStyle(
+                  color: followerOrFollowering == 'follower'
+                      ? Theme.of(context).primaryColor
+                      : Colors.grey)),
+          style: TextButton.styleFrom(
+            textStyle: const TextStyle(fontSize: 20),
+          ),
         ),
-        IconButton(
-          onPressed: () => setFollowerOrFollowering("following"),
-          icon: Icon(Icons.shop),
-          color: followerOrFollowering == 'following'
-              ? Theme.of(context).primaryColor
-              : Colors.grey,
-        )
+        TextButton(
+            onPressed: () => setFollowerOrFollowering("following"),
+            child: Text('following',
+                style: TextStyle(
+                    color: followerOrFollowering == 'following'
+                        ? Theme.of(context).primaryColor
+                        : Colors.grey)),
+            style: TextButton.styleFrom(
+              textStyle: const TextStyle(fontSize: 20),
+            )),
       ],
     );
   }
@@ -108,7 +119,7 @@ class _FollowerFollowingState extends State<FollowerFollowing> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Barter'),
+        title: const Text('Info'),
       ),
       body: ListView(
         children: <Widget>[
