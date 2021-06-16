@@ -143,9 +143,12 @@ class _PostLState extends State<PostL> {
         User user = User.fromDocument(snapshot.data);
         bool isPostOwner = currentUserId == ownerId;
         return ListTile(
-          leading: CircleAvatar(
-            backgroundImage: CachedNetworkImageProvider(user.photoUrl),
-            backgroundColor: Colors.grey,
+          leading: GestureDetector(
+            onTap: () => showProfile(context, profileId: user.id),
+            child: CircleAvatar(
+              backgroundImage: CachedNetworkImageProvider(user.photoUrl),
+              backgroundColor: Colors.grey,
+            ),
           ),
           title: GestureDetector(
             onTap: () => showProfile(context, profileId: user.id),

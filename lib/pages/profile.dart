@@ -109,6 +109,57 @@ class _ProfileState extends State<Profile> {
     );
   }
 
+  Column buildCountColumnFollower(String label, int count) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Text(
+          count.toString(),
+          style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold),
+        ),
+        Container(
+          margin: EdgeInsets.only(top: 4.0),
+          child: Text(
+            label,
+            style: TextStyle(
+              color: Colors.grey,
+              fontSize: 15.0,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Column buildCountColumnFollowing(String label, int count) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        GestureDetector(
+          onTap: () => print(1),
+          child: Text(
+            count.toString(),
+            style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold),
+          ),
+        ),
+        Container(
+          margin: EdgeInsets.only(top: 4.0),
+          child: Text(
+            label,
+            style: TextStyle(
+              color: Colors.grey,
+              fontSize: 15.0,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   Container buildButton({String text, Function function}) {
     return Container(
         padding: EdgeInsets.only(top: 2.0),
@@ -252,8 +303,10 @@ class _ProfileState extends State<Profile> {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: <Widget>[
                             buildCountColumn("posts", postCount),
-                            buildCountColumn("followers", followerCount),
-                            buildCountColumn("following", followingCount),
+                            buildCountColumnFollower(
+                                "followers", followerCount),
+                            buildCountColumnFollowing(
+                                "following", followingCount),
                           ],
                         ),
                         Row(
