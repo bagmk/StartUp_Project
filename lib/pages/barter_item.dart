@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -44,7 +43,9 @@ class BarterItemState extends State<BarterItem>
   final String currentUserId;
   final String postId;
   final String ownerId;
+  final String photoUrl;
   final String mediaUrl;
+  final String itemUrl;
   final String itemName;
   bool isUploading = false;
   String barterId = Uuid().v4();
@@ -67,12 +68,15 @@ class BarterItemState extends State<BarterItem>
     this.currentUserId,
     this.postId,
     this.ownerId,
+    this.photoUrl,
     this.mediaUrl,
+    this.itemUrl,
     this.itemName,
   });
 
   createTradePostInFirestore(
-      {String mediaUrl,
+      {String itemUrl,
+      String photoUrl,
       double posX,
       double posY,
       String description,
@@ -87,6 +91,7 @@ class BarterItemState extends State<BarterItem>
       "postId": postId,
       "bidId": barterId,
       "Cash/Item": "Item",
+      "itemUrl": itemUrl,
       "mediaUrl": mediaUrl,
       "ownerId": ownerId
     });
@@ -99,6 +104,7 @@ class BarterItemState extends State<BarterItem>
       "postId": postId,
       "bidId": barterId,
       "Cash/Item": "Item",
+      "itemUrl": itemUrl,
       "mediaUrl": mediaUrl,
     });
 
@@ -109,13 +115,15 @@ class BarterItemState extends State<BarterItem>
         "item": itemName,
         "username": currentUser.username,
         "userId": currentUser.id,
-        "userProfileImg": currentUser.photoUrl,
+        "photoUrl": currentUser.photoUrl,
         "postId": postId,
+        "itemUrl": itemUrl,
         "mediaUrl": mediaUrl,
         "timestamp": timestamp,
       });
     }
-
+    print("debug!!!!!!!!!!!!!");
+    print(usersRef.doc(currentUserId).get());
     locationController.clear();
     captionController1.clear();
     captionController2.clear();
@@ -135,9 +143,9 @@ class BarterItemState extends State<BarterItem>
     await compressImage();
     await getUserLocation();
 
-    String mediaUrl = await uploadImage(file);
+    String itemUrl = await uploadImage(file);
     createTradePostInFirestore(
-      mediaUrl: mediaUrl,
+      itemUrl: itemUrl,
       posX: posX,
       posY: posY,
       location: locationController.text,

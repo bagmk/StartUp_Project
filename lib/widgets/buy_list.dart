@@ -12,6 +12,7 @@ class BuyList extends StatefulWidget {
   final String username;
   final String item;
   final Timestamp timestamp;
+  final String itemUrl;
   final String mediaUrl;
   final String ownerId;
 
@@ -22,6 +23,7 @@ class BuyList extends StatefulWidget {
       this.username,
       this.timestamp,
       this.item,
+      this.itemUrl,
       this.mediaUrl,
       this.bidId,
       this.ownerId});
@@ -33,6 +35,7 @@ class BuyList extends StatefulWidget {
         type: doc.data()['Cash/Item'],
         username: doc.data()['username'],
         item: doc.data()['item'],
+        itemUrl: doc.data()['itemUrl'],
         mediaUrl: doc.data()['mediaUrl'],
         bidId: doc.data()['bidId'],
         ownerId: doc.data()['ownerId']);
@@ -48,6 +51,7 @@ class BuyList extends StatefulWidget {
       item: this.item,
       bidId: this.bidId,
       ownerId: this.ownerId,
+      itemUrl: this.itemUrl,
       mediaUrl: this.mediaUrl);
 }
 
@@ -60,6 +64,7 @@ class _BuyListState extends State<BuyList> {
   final String ownerId;
   final String bidId;
   final String username;
+  final String itemUrl;
   final String mediaUrl;
 
   _BuyListState({
@@ -71,6 +76,7 @@ class _BuyListState extends State<BuyList> {
     this.type,
     this.username,
     this.item,
+    this.itemUrl,
     this.mediaUrl,
   });
 
@@ -142,9 +148,17 @@ class _BuyListState extends State<BuyList> {
               Text(type == "Cash" ? " You bid with \$" : "You barter with ",
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.bold)),
-              Text(item,
-                  style: TextStyle(
-                      color: Colors.pink, fontWeight: FontWeight.bold)),
+              ClipOval(
+                  child: CachedNetworkImage(
+                imageUrl: itemUrl,
+                placeholder: (context, url) => Padding(
+                  child: CircularProgressIndicator(),
+                  padding: EdgeInsets.all(20.0),
+                ),
+                height: 50,
+                width: 50,
+                fit: BoxFit.cover,
+              ))
             ]),
             trailing: IconButton(
                 onPressed: () => handleDeleteList(context),

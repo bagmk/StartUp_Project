@@ -13,6 +13,7 @@ class SellList extends StatefulWidget {
   final String username;
   final String item;
   final Timestamp timestamp;
+  final String itemUrl;
   final String mediaUrl;
   final String bidId;
 
@@ -23,6 +24,7 @@ class SellList extends StatefulWidget {
       this.username,
       this.timestamp,
       this.item,
+      this.itemUrl,
       this.mediaUrl,
       this.bidId});
 
@@ -34,6 +36,7 @@ class SellList extends StatefulWidget {
         type: doc.data()['Cash/Item'],
         username: doc.data()['username'],
         item: doc.data()['item'],
+        itemUrl: doc.data()['itemUrl'],
         mediaUrl: doc.data()['mediaUrl'],
         bidId: doc.data()['bidId']);
   }
@@ -46,6 +49,7 @@ class SellList extends StatefulWidget {
       type: this.type,
       username: this.username,
       item: this.item,
+      itemUrl: this.itemUrl,
       mediaUrl: this.mediaUrl,
       bidId: this.bidId);
 }
@@ -58,17 +62,20 @@ class _SellListState extends State<SellList> {
   final String item;
   final String bidId;
   final String username;
+  final String itemUrl;
   final String mediaUrl;
 
-  _SellListState(
-      {this.postId,
-      this.userId,
-      this.bidId,
-      this.timestamp,
-      this.type,
-      this.username,
-      this.item,
-      this.mediaUrl});
+  _SellListState({
+    this.postId,
+    this.userId,
+    this.bidId,
+    this.timestamp,
+    this.type,
+    this.username,
+    this.item,
+    this.itemUrl,
+    this.mediaUrl,
+  });
 
   buildPostHeader() {
     return FutureBuilder(
@@ -102,9 +109,17 @@ class _SellListState extends State<SellList> {
               Text(type == "Cash" ? " with \$" : " with ",
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.bold)),
-              Text(item,
-                  style: TextStyle(
-                      color: Colors.pink, fontWeight: FontWeight.bold)),
+              ClipOval(
+                  child: CachedNetworkImage(
+                imageUrl: itemUrl,
+                placeholder: (context, url) => Padding(
+                  child: CircularProgressIndicator(),
+                  padding: EdgeInsets.all(20.0),
+                ),
+                height: 50,
+                width: 50,
+                fit: BoxFit.cover,
+              )),
               FlatButton(
                 onPressed: () => print('handlechatting'),
                 child: Container(
