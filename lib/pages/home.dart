@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttershare/models/stripeAccountLink.dart';
 import 'dart:io';
 import 'package:fluttershare/models/user.dart';
 
@@ -162,17 +165,27 @@ class _HomeState extends State<Home> {
 
     currentUser = User.fromDocument(doc);
 
-    // // Create the user in Stripe Connect through the http request
-    // // to the Firebase functionm, createStripeConnectUser.
-    // // - Pass in user.id as a query parameter
-    // final url =
-    //     'https://us-central1-fluttershare-188bd.cloudfunctions.net/createStripeConnectUser';
-    // final http.Response response =
-    //     await http.post(Uri.parse('$url?id=${user.id}'));
+    // Create the user in Stripe Connect through the http request
+    // to the Firebase functionm, createStripeConnectUser.
+    // - Pass in user.id as a query parameter
+    final http.Response response = await http.post(Uri.parse(
+        'https://us-central1-fluttershare-188bd.cloudfunctions.net/createStripeConnectUser'));
 
-    // // Use the response to redirect to complete Stripe sign up.
-    // // - Response should be account link object.
-    // print('Account link object: $response');
+    var jsonResponse;
+    if (response.statusCode == 200) {
+      jsonResponse = StripeAccountLink.fromJson(jsonDecode(response.body));
+    } else {
+      throw Exception('Failed to get response from createStripeConnectUser.');
+    }
+
+    print('jsonResponse type: ${jsonResponse.runtimeType}');
+
+    StripeAccountLink stripeAccountLink =
+        new StripeAccountLink.fromJson(jsonResponse);
+
+    // Use the response to redirect to complete Stripe sign up.
+    // - Response should be account link object.
+    print('Stripe Connect user ID: ${stripeAccountLink.url}');
   }
 
   void dispose() {

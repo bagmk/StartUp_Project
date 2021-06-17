@@ -244,13 +244,12 @@ exports.createStripeConnectUser = functions.https.onRequest(async (req, res) => 
         type: 'express',
     });
     
-    console.log('Express account: ' + account);
+    console.log('Express account ID: ' + account.id);
 
-    // TODO: Get the user id from Firestore database and use in the account field
-    console.log('User ID from URL: ' + req.query.id);
+    // TODO: Add account.id to some part of the Firebase database
 
     const accountLinks = await stripe.accountLinks.create({
-        account: req.query.id,
+        account: account.id,
         refresh_url: 'https://example.com/reauth',
         return_url: 'https://example.com/return',
         type: 'account_onboarding',
@@ -259,7 +258,6 @@ exports.createStripeConnectUser = functions.https.onRequest(async (req, res) => 
     console.log('accountLinks: ' + accountLinks);
     
     res.send(accountLinks);
-    res.end();
 });
 
 /**
