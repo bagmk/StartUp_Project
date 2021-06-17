@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fluttershare/models/user.dart';
@@ -10,6 +13,10 @@ import 'package:fluttershare/widgets/header.dart';
 import 'package:fluttershare/widgets/post.dart';
 import 'package:fluttershare/widgets/post_tile.dart';
 import 'package:fluttershare/widgets/progress.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:image/image.dart' as Im;
+import 'package:path_provider/path_provider.dart';
+import 'package:uuid/uuid.dart';
 
 class Profile extends StatefulWidget {
   final String profileId;
@@ -20,15 +27,27 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
+  bool isUploading = false;
+  File file;
   bool isFollowing = false;
   final String currentUserId = currentUser?.id;
-
+  bool _profileImage = false;
   bool isLoading = false;
   int postCount = 0;
   int followerCount = 0;
   int followingCount = 0;
+  String profileUrl;
+
   List<Post> posts = [];
   String postOrientation = "grid";
+  String profileId = Uuid().v4();
+  Future<String> uploadImage(imageFile) async {
+    UploadTask uploadTask =
+        storageRef.child("profile_$profileId.jpg").putFile(imageFile);
+    TaskSnapshot storageSnap = await uploadTask;
+    String downloadUrl = await storageSnap.ref.getDownloadURL();
+    return downloadUrl;
+  }
 
   @override
   void initState() {
@@ -345,6 +364,127 @@ class _ProfileState extends State<Profile> {
     });
   }
 
+  createPostInFirestore({String profileUrl}) async {
+    await usersRef.doc(currentUserId).update({"profileUrl": profileUrl});
+    setState(() {
+      file = null;
+      profileId = Uuid().v4();
+      isUploading = false;
+    });
+  }
+
+  hadleSumit() async {
+    setState(() {
+      isUploading = true;
+      _profileImage = true;
+    });
+
+    await compressImage();
+
+    String profileUrl = await uploadImage(file);
+    createPostInFirestore(
+      profileUrl: profileUrl,
+    );
+  }
+
+  Scaffold buildUploadForm(file) {
+    return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.white70,
+          actions: [
+            FlatButton(
+              onPressed: isUploading ? null : () => hadleSumit(),
+              child: Text(
+                "Post",
+                style: TextStyle(
+                    color: Colors.blueAccent,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20.0),
+              ),
+            )
+          ],
+          title: Text(
+            "Profile Picture",
+            style: TextStyle(color: Colors.black),
+          ),
+        ),
+        body: ListView(
+          children: <Widget>[
+            isUploading ? linearProgress() : Text(""),
+            Container(
+              height: 550.0,
+              width: MediaQuery.of(context).size.width * 0.8,
+              child: Center(
+                  child: AspectRatio(
+                aspectRatio: 1 / 1.5,
+                child: Container(
+                  decoration: BoxDecoration(
+                      image: DecorationImage(
+                    fit: BoxFit.cover,
+                    image: FileImage(file),
+                  )),
+                ),
+              )),
+            ),
+          ],
+        ));
+  }
+
+  compressImage() async {
+    final tempDir = await getTemporaryDirectory();
+    final path = tempDir.path;
+    Im.Image imageFile = Im.decodeImage(file.readAsBytesSync());
+    final compressedImageFile = File('$path/img_$profileId.jpg')
+      ..writeAsBytesSync(Im.encodeJpg(imageFile, quality: 20));
+    setState(() {
+      file = compressedImageFile;
+    });
+  }
+
+  handleTakePhoto() async {
+    Navigator.pop(context);
+
+    PickedFile fileSelect = await ImagePicker().getImage(
+      source: ImageSource.camera,
+      maxHeight: 675,
+      maxWidth: 960,
+    );
+    File file = File(fileSelect.path);
+    setState(() {
+      this.file = file;
+    });
+  }
+
+  handleChooseFromGallory() async {
+    Navigator.pop(context);
+    PickedFile fileSelect =
+        await ImagePicker().getImage(source: ImageSource.gallery);
+    File file = File(fileSelect.path);
+    setState(() {
+      this.file = file;
+    });
+  }
+
+  selectImage(parentContext) async {
+    return showDialog(
+        context: parentContext,
+        builder: (context) {
+          return SimpleDialog(
+            title: Text("Create Post"),
+            children: <Widget>[
+              SimpleDialogOption(
+                child: Text("Photo with Camera"),
+                onPressed: handleTakePhoto,
+              ),
+              SimpleDialogOption(
+                child: Text("Image from Gallery"),
+                onPressed: handleChooseFromGallory,
+              ),
+            ],
+          );
+        });
+  }
+
   buildProfileHeader() {
     return FutureBuilder(
       future: usersRef.doc(widget.profileId).get(),
@@ -353,7 +493,6 @@ class _ProfileState extends State<Profile> {
           return circularProgress();
         }
         User user = User.fromDocument(snapshot.data);
-        print('2');
 
         return Padding(
           padding: EdgeInsets.all(16.0),
@@ -361,10 +500,13 @@ class _ProfileState extends State<Profile> {
             children: <Widget>[
               Row(
                 children: [
-                  CircleAvatar(
-                    radius: 40.0,
-                    backgroundColor: Colors.grey,
-                    backgroundImage: CachedNetworkImageProvider(user.photoUrl),
+                  GestureDetector(
+                    onTap: () => selectImage(context),
+                    child: CircleAvatar(
+                        radius: 40.0,
+                        backgroundColor: Colors.grey,
+                        backgroundImage:
+                            CachedNetworkImageProvider(user.profileUrl)),
                   ),
                   Expanded(
                     flex: 1,
@@ -487,19 +629,21 @@ class _ProfileState extends State<Profile> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: header(context, titleText: "Profile"),
-      body: ListView(
-        children: <Widget>[
-          buildProfileHeader(),
-          Divider(),
-          buildTogglePostOreintation(),
-          Divider(
-            height: 0.0,
-          ),
-          buildProfilePost(),
-        ],
-      ),
-    );
+    return file == null
+        ? Scaffold(
+            appBar: header(context, titleText: "Profile"),
+            body: ListView(
+              children: <Widget>[
+                buildProfileHeader(),
+                Divider(),
+                buildTogglePostOreintation(),
+                Divider(
+                  height: 0.0,
+                ),
+                buildProfilePost(),
+              ],
+            ),
+          )
+        : buildUploadForm(file);
   }
 }

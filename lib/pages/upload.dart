@@ -253,7 +253,7 @@ class _UploadState extends State<Upload>
             ListTile(
               leading: CircleAvatar(
                 backgroundImage:
-                    CachedNetworkImageProvider(widget.currentUser.photoUrl),
+                    CachedNetworkImageProvider(widget.currentUser.profileUrl),
               ),
               title: Container(
                 width: 250.0,
@@ -280,16 +280,6 @@ class _UploadState extends State<Upload>
           ],
         ));
   }
-
-  //getUserLocation() async {
-  //  Position position = await Geolocator()
-  //      .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-  //  List<Placemark> placemarks = await Geolocator()
-  //      .placemarkFromCoordinates(position.latitude, position.longitude);
-  //  Placemark placemark = placemarks[0];
-  //  String address = '${placemark.locality},${placemark.country}';
-  //  locationController.text = address;
-  //}
 
   getUserLocation() async {
     Position position = await Geolocator()

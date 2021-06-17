@@ -88,7 +88,7 @@ class _SellListState extends State<SellList> {
 
         return ListTile(
             leading: CircleAvatar(
-              backgroundImage: CachedNetworkImageProvider(user.photoUrl),
+              backgroundImage: CachedNetworkImageProvider(user.profileUrl),
               backgroundColor: Colors.grey,
             ),
             title: Row(children: [

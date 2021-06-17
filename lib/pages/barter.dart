@@ -67,7 +67,7 @@ class BarterState extends State {
         "item": pin,
         "username": currentUser.username,
         "userId": currentUser.id,
-        "userProfileImg": currentUser.photoUrl,
+        "userProfileImg": currentUser.profileUrl,
         "postId": postId,
         "mediaUrl": mediaUrl,
         "timestamp": timestamp,

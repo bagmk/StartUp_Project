@@ -43,7 +43,7 @@ class BarterItemState extends State<BarterItem>
   final String currentUserId;
   final String postId;
   final String ownerId;
-  final String photoUrl;
+  final String profileUrl;
   final String mediaUrl;
   final String itemUrl;
   final String itemName;
@@ -68,7 +68,7 @@ class BarterItemState extends State<BarterItem>
     this.currentUserId,
     this.postId,
     this.ownerId,
-    this.photoUrl,
+    this.profileUrl,
     this.mediaUrl,
     this.itemUrl,
     this.itemName,
@@ -76,7 +76,7 @@ class BarterItemState extends State<BarterItem>
 
   createTradePostInFirestore(
       {String itemUrl,
-      String photoUrl,
+      String profileUrl,
       double posX,
       double posY,
       String description,
@@ -115,7 +115,7 @@ class BarterItemState extends State<BarterItem>
         "item": itemName,
         "username": currentUser.username,
         "userId": currentUser.id,
-        "photoUrl": currentUser.photoUrl,
+        "profileUrl": currentUser.profileUrl,
         "postId": postId,
         "itemUrl": itemUrl,
         "mediaUrl": mediaUrl,

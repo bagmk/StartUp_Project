@@ -146,7 +146,7 @@ class _PostLState extends State<PostL> {
           leading: GestureDetector(
             onTap: () => showProfile(context, profileId: user.id),
             child: CircleAvatar(
-              backgroundImage: CachedNetworkImageProvider(user.photoUrl),
+              backgroundImage: CachedNetworkImageProvider(user.profileUrl),
               backgroundColor: Colors.grey,
             ),
           ),
@@ -244,7 +244,7 @@ class _PostLState extends State<PostL> {
         "type": "like",
         "username": currentUser.username,
         "userId": currentUser.id,
-        "userProfileImg": currentUser.photoUrl,
+        "userProfileImg": currentUser.profileUrl,
         "postId": postId,
         "mediaUrl": mediaUrl,
         "timestamp": timestamp,

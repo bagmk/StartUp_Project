@@ -10,8 +10,8 @@ import 'package:fluttershare/pages/create_account.dart';
 import 'package:fluttershare/pages/profile.dart';
 import 'package:fluttershare/pages/search.dart';
 import 'package:fluttershare/pages/timeline.dart';
-import 'package:fluttershare/pages/upload.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fluttershare/pages/upload.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -253,7 +253,7 @@ class _HomeState extends State<Home> {
                 onTap: login,
                 child: Container(
                   width: 260.0,
-                  height: 60.0,
+                  height: 80.0,
                   decoration: BoxDecoration(
                       image: DecorationImage(
                           image: AssetImage(

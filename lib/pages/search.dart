@@ -124,7 +124,7 @@ class UserResult extends StatelessWidget {
                 leading: CircleAvatar(
                     backgroundColor: Colors.grey,
                     backgroundImage: CachedNetworkImageProvider(
-                      user.photoUrl,
+                      user.profileUrl,
                     )),
                 title: Text(user.displayName,
                     style: TextStyle(
