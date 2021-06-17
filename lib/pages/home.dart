@@ -56,6 +56,7 @@ class _HomeState extends State<Home> {
     pageController = PageController();
     googleSignIn.onCurrentUserChanged.listen((account) {
       handleSignIn(account);
+      getUserLocation();
     }, onError: (err) {
       print('Error sign in:$err');
     });
@@ -66,7 +67,6 @@ class _HomeState extends State<Home> {
           googleSignIn.signInSilently().then((account) => handleSignIn(account))
         };
     });
-    getUserLocation();
   }
 
   handleSignIn(GoogleSignInAccount account) async {
