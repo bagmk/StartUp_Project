@@ -51,14 +51,12 @@ class _ProfileState extends State<Profile> {
 
   @override
   void initState() {
-    print('0');
     super.initState();
 
     getProfilePost();
     getFollowers();
     getFollowing();
     checkIfFollowing();
-    print('1');
   }
 
   getFollowers() async {
@@ -261,7 +259,7 @@ class _ProfileState extends State<Profile> {
 
   buildProfileButton() {
     //viwing own profile -show edit profile
-    print('4');
+
     bool isProfileOwner = currentUserId == widget.profileId;
     if (isProfileOwner) {
       return buildButton(text: "Edit Profile", function: editProfile);
@@ -317,11 +315,10 @@ class _ProfileState extends State<Profile> {
   }
 
   handleFollowUser() async {
-    print('6');
     setState(() {
       isFollowing = true;
     });
-    print('7');
+
     // Make auth user follower of THAT user (update THEIR followers collection)
     followersRef
         .doc(widget.profileId)

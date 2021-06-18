@@ -106,6 +106,7 @@ class BarterItemState extends State<BarterItem>
       "Cash/Item": "Item",
       "itemUrl": itemUrl,
       "mediaUrl": mediaUrl,
+      "ownerId": ownerId
     });
 
     bool isNotPostOwner = currentUserId != ownerId;
@@ -116,13 +117,13 @@ class BarterItemState extends State<BarterItem>
         "username": currentUser.username,
         "userId": currentUser.id,
         "profileUrl": currentUser.profileUrl,
-        "postId": postId,
+        "postId": barterId,
         "itemUrl": itemUrl,
         "mediaUrl": mediaUrl,
         "timestamp": timestamp,
       });
     }
-    print("debug!!!!!!!!!!!!!");
+
     print(usersRef.doc(currentUserId).get());
     locationController.clear();
     captionController1.clear();

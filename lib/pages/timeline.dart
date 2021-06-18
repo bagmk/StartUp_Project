@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttershare/pages/home.dart';
 import 'package:fluttershare/models/user.dart';
+import 'package:fluttershare/pages/search.dart';
 import 'package:fluttershare/widgets/post.dart';
 import 'package:fluttershare/widgets/postL.dart';
 import 'package:fluttershare/widgets/progress.dart';
@@ -154,6 +155,14 @@ class _TimelineState extends State<Timeline> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Hot Place'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.search),
+            tooltip: 'Show Snackbar',
+            onPressed: () => Navigator.push(
+                context, MaterialPageRoute(builder: (context) => Search())),
+          )
+        ],
       ),
       body: ListView(
         children: <Widget>[
@@ -161,7 +170,7 @@ class _TimelineState extends State<Timeline> {
           Divider(
             height: 0.0,
           ),
-          buildSlider(),
+          //buildSlider(),
           buildTimeline(),
         ],
       ),

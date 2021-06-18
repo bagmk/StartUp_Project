@@ -11,6 +11,7 @@ import 'package:fluttershare/pages/activity_feed.dart';
 import 'package:fluttershare/pages/barter_item.dart';
 
 import 'package:fluttershare/pages/comments.dart';
+import 'package:fluttershare/pages/edit_post.dart';
 import 'package:fluttershare/pages/home.dart';
 import 'package:fluttershare/widgets/custom_image.dart';
 import 'package:fluttershare/widgets/progress.dart';
@@ -403,7 +404,18 @@ class _PostState extends State<Post> {
         });
   }
 
+  editPost(BuildContext parentContext) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => EditPost(
+                currentUserId: currentUserId,
+                postId: postId,
+                mediaUrl: mediaUrl)));
+  }
+
   buildPostFooter() {
+    bool isPostOwner = currentUserId == ownerId;
     return Column(
       children: <Widget>[
         Text(description),
@@ -434,18 +446,19 @@ class _PostState extends State<Post> {
             Container(
                 padding: EdgeInsets.only(top: 2.0),
                 child: FlatButton(
-                  onPressed: () => handleBarter(context),
+                  onPressed: () =>
+                      isPostOwner ? editPost(context) : handleBarter(context),
                   child: Container(
                     width: 140.0,
                     height: 45.0,
                     child: Text(
-                      "Barter",
+                      isPostOwner ? "Edit" : "Barter",
                       style: TextStyle(
                           color: Colors.black, fontWeight: FontWeight.bold),
                     ),
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
-                        color: Colors.blue,
+                        color: isPostOwner ? Colors.blue : Colors.green,
                         border: Border.all(color: Colors.blue),
                         borderRadius: BorderRadius.circular(5.0)),
                   ),

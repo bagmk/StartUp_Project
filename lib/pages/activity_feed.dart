@@ -70,6 +70,7 @@ class ActivityFeedItem extends StatelessWidget {
   final String commentData;
   final String item;
   final Timestamp timestamp;
+  int _counter = 0;
 
   ActivityFeedItem(
       {this.username,
@@ -142,6 +143,19 @@ class ActivityFeedItem extends StatelessWidget {
     }
   }
 
+  deleteList() async {
+    activityFeedRef
+        .doc(currentUser.id)
+        .collection('feedItems')
+        .doc(postId)
+        .get()
+        .then((doc) {
+      if (doc.exists) {
+        doc.reference.delete();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     configureMediaPreview(context);
@@ -149,42 +163,49 @@ class ActivityFeedItem extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.only(bottom: 2.0),
       child: Container(
-        color: Colors.white54,
-        child: ListTile(
-          title: GestureDetector(
-            onTap: () => showProfile(
-              context,
-              profileId: userId,
+          color: Colors.white54,
+          child: Dismissible(
+            resizeDuration: null,
+            onDismissed: (DismissDirection direction) {
+              _counter += direction == DismissDirection.endToStart ? 1 : -1;
+              deleteList();
+            },
+            key: new ValueKey(_counter),
+            child: ListTile(
+              title: GestureDetector(
+                onTap: () => showProfile(
+                  context,
+                  profileId: userId,
+                ),
+                child: RichText(
+                  overflow: TextOverflow.ellipsis,
+                  text: TextSpan(
+                      style: TextStyle(
+                        fontSize: 14.0,
+                        color: Colors.black,
+                      ),
+                      children: [
+                        TextSpan(
+                          text: username,
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        TextSpan(
+                          text: ' $activityItemText',
+                        ),
+                      ]),
+                ),
+              ),
+              //errors are showing here
+              leading: CircleAvatar(
+                backgroundImage: CachedNetworkImageProvider(userProfileImg),
+              ),
+              subtitle: Text(
+                timeago.format(timestamp.toDate()),
+                overflow: TextOverflow.ellipsis,
+              ),
+              trailing: mediaPreview,
             ),
-            child: RichText(
-              overflow: TextOverflow.ellipsis,
-              text: TextSpan(
-                  style: TextStyle(
-                    fontSize: 14.0,
-                    color: Colors.black,
-                  ),
-                  children: [
-                    TextSpan(
-                      text: username,
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    TextSpan(
-                      text: ' $activityItemText',
-                    ),
-                  ]),
-            ),
-          ),
-          //errors are showing here
-          leading: CircleAvatar(
-            backgroundImage: CachedNetworkImageProvider(userProfileImg),
-          ),
-          subtitle: Text(
-            timeago.format(timestamp.toDate()),
-            overflow: TextOverflow.ellipsis,
-          ),
-          trailing: mediaPreview,
-        ),
-      ),
+          )),
     );
   }
 }

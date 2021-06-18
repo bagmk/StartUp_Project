@@ -1,13 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:fluttershare/models/user.dart';
 import 'package:fluttershare/pages/activity_feed.dart';
+
 import 'package:fluttershare/pages/home.dart';
 import 'package:fluttershare/widgets/buy_list.dart';
 import 'package:fluttershare/widgets/sell_list.dart';
-import 'package:fluttershare/widgets/header.dart';
-import 'package:fluttershare/widgets/progress.dart';
 
 class BuySell extends StatefulWidget {
   final String profileId;
@@ -89,19 +86,26 @@ class _BuySellState extends State<BuySell> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
-        IconButton(
-          onPressed: () => setbuyOrSell("buy"),
-          icon: Icon(Icons.dangerous),
-          color:
-              buyOrSell == 'buy' ? Theme.of(context).primaryColor : Colors.grey,
-        ),
-        IconButton(
-          onPressed: () => setbuyOrSell("sell"),
-          icon: Icon(Icons.shop),
-          color: buyOrSell == 'sell'
-              ? Theme.of(context).primaryColor
-              : Colors.grey,
-        )
+        TextButton(
+            onPressed: () => setbuyOrSell("buy"),
+            child: Text("BuyList",
+                style: TextStyle(
+                    color: buyOrSell == 'buy'
+                        ? Theme.of(context).primaryColor
+                        : Colors.grey)),
+            style: TextButton.styleFrom(
+              textStyle: const TextStyle(fontSize: 20),
+            )),
+        TextButton(
+            onPressed: () => setbuyOrSell("sell"),
+            child: Text('sell',
+                style: TextStyle(
+                    color: buyOrSell == 'sell'
+                        ? Theme.of(context).primaryColor
+                        : Colors.grey)),
+            style: TextButton.styleFrom(
+              textStyle: const TextStyle(fontSize: 20),
+            ))
       ],
     );
   }
@@ -114,17 +118,11 @@ class _BuySellState extends State<BuySell> {
         actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.notifications_active),
-            tooltip: 'Show Snackbar',
             onPressed: () {
               Navigator.push(context,
                   MaterialPageRoute(builder: (context) => ActivityFeed()));
             },
           ),
-          IconButton(
-            icon: const Icon(Icons.message),
-            tooltip: 'Show Snackbar',
-            onPressed: () => print('message Page'),
-          )
         ],
       ),
       body: ListView(

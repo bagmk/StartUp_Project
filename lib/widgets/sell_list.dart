@@ -16,6 +16,7 @@ class SellList extends StatefulWidget {
   final String itemUrl;
   final String mediaUrl;
   final String bidId;
+  final String ownerId;
 
   SellList(
       {this.postId,
@@ -26,7 +27,8 @@ class SellList extends StatefulWidget {
       this.item,
       this.itemUrl,
       this.mediaUrl,
-      this.bidId});
+      this.bidId,
+      this.ownerId});
 
   factory SellList.fromDocument(DocumentSnapshot doc) {
     return SellList(
@@ -38,7 +40,8 @@ class SellList extends StatefulWidget {
         item: doc.data()['item'],
         itemUrl: doc.data()['itemUrl'],
         mediaUrl: doc.data()['mediaUrl'],
-        bidId: doc.data()['bidId']);
+        bidId: doc.data()['bidId'],
+        ownerId: doc.data()['ownerId']);
   }
 
   @override
@@ -51,7 +54,8 @@ class SellList extends StatefulWidget {
       item: this.item,
       itemUrl: this.itemUrl,
       mediaUrl: this.mediaUrl,
-      bidId: this.bidId);
+      bidId: this.bidId,
+      ownerId: this.ownerId);
 }
 
 class _SellListState extends State<SellList> {
@@ -64,7 +68,8 @@ class _SellListState extends State<SellList> {
   final String username;
   final String itemUrl;
   final String mediaUrl;
-
+  final String ownerId;
+  int _counter = 0;
   _SellListState({
     this.postId,
     this.userId,
@@ -75,7 +80,52 @@ class _SellListState extends State<SellList> {
     this.item,
     this.itemUrl,
     this.mediaUrl,
+    this.ownerId,
   });
+
+  handleOfferList(BuildContext parentContext) {
+    return showDialog(
+        context: parentContext,
+        builder: (context) {
+          return SimpleDialog(
+            title: Text("Decision"),
+            children: <Widget>[
+              SimpleDialogOption(
+                  onPressed: () => Navigator.pop(context),
+                  child: Text(
+                    'Accept',
+                    style: TextStyle(color: Colors.red),
+                  )),
+              SimpleDialogOption(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    deleteList();
+                  },
+                  child: Text(
+                    'Decline',
+                  )),
+            ],
+          );
+        });
+  }
+
+  deleteList() async {
+    buyRef.doc(userId).collection('barter').doc(bidId).get().then((doc) {
+      if (doc.exists) {
+        doc.reference.delete();
+      }
+    });
+    sellRef
+        .doc(currentUser.id)
+        .collection('barter')
+        .doc(bidId)
+        .get()
+        .then((doc) {
+      if (doc.exists) {
+        doc.reference.delete();
+      }
+    });
+  }
 
   buildPostHeader() {
     return FutureBuilder(
@@ -87,57 +137,51 @@ class _SellListState extends State<SellList> {
         User user = User.fromDocument(snapshot.data);
 
         return ListTile(
-            leading: CircleAvatar(
-              backgroundImage: CachedNetworkImageProvider(user.profileUrl),
-              backgroundColor: Colors.grey,
-            ),
-            title: Row(children: [
-              Text(type == "Cash" ? " <- bid " : "<- barter ",
-                  style: TextStyle(
-                      color: Colors.black, fontWeight: FontWeight.bold)),
-              ClipOval(
-                  child: CachedNetworkImage(
-                imageUrl: mediaUrl,
-                placeholder: (context, url) => Padding(
-                  child: CircularProgressIndicator(),
-                  padding: EdgeInsets.all(20.0),
-                ),
-                height: 50,
-                width: 50,
-                fit: BoxFit.cover,
-              )),
-              Text(type == "Cash" ? " with \$" : " with ",
-                  style: TextStyle(
-                      color: Colors.black, fontWeight: FontWeight.bold)),
-              ClipOval(
-                  child: CachedNetworkImage(
-                imageUrl: itemUrl,
-                placeholder: (context, url) => Padding(
-                  child: CircularProgressIndicator(),
-                  padding: EdgeInsets.all(20.0),
-                ),
-                height: 50,
-                width: 50,
-                fit: BoxFit.cover,
-              )),
-              FlatButton(
-                onPressed: () => print('handlechatting'),
-                child: Container(
-                  width: 60.0,
-                  height: 40.0,
-                  child: Text(
-                    "Accept",
-                    style: TextStyle(
-                        color: Colors.black, fontWeight: FontWeight.bold),
+            title: Dismissible(
+                resizeDuration: null,
+                onDismissed: (DismissDirection direction) {
+                  setState(() {
+                    _counter +=
+                        direction == DismissDirection.endToStart ? 1 : -1;
+                    handleOfferList(context);
+                  });
+                },
+                key: new ValueKey(_counter),
+                child: Row(children: [
+                  CircleAvatar(
+                    backgroundImage:
+                        CachedNetworkImageProvider(user.profileUrl),
+                    backgroundColor: Colors.grey,
                   ),
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                      color: Colors.green,
-                      border: Border.all(color: Colors.blue),
-                      borderRadius: BorderRadius.circular(5.0)),
-                ),
-              ),
-            ]));
+                  Text(type == "Cash" ? " <BD " : "<BT ",
+                      style: TextStyle(
+                          color: Colors.black, fontWeight: FontWeight.bold)),
+                  ClipOval(
+                      child: CachedNetworkImage(
+                    imageUrl: mediaUrl,
+                    placeholder: (context, url) => Padding(
+                      child: CircularProgressIndicator(),
+                      padding: EdgeInsets.all(20.0),
+                    ),
+                    height: 50,
+                    width: 50,
+                    fit: BoxFit.cover,
+                  )),
+                  Text(type == "Cash" ? " with \$" : " with ",
+                      style: TextStyle(
+                          color: Colors.black, fontWeight: FontWeight.bold)),
+                  ClipOval(
+                      child: CachedNetworkImage(
+                    imageUrl: itemUrl,
+                    placeholder: (context, url) => Padding(
+                      child: CircularProgressIndicator(),
+                      padding: EdgeInsets.all(20.0),
+                    ),
+                    height: 50,
+                    width: 50,
+                    fit: BoxFit.cover,
+                  )),
+                ])));
       },
     );
   }

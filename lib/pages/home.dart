@@ -7,6 +7,7 @@ import 'package:fluttershare/models/user.dart';
 
 import 'package:fluttershare/pages/buy_sell.dart';
 import 'package:fluttershare/pages/create_account.dart';
+import 'package:fluttershare/pages/message.dart';
 import 'package:fluttershare/pages/profile.dart';
 import 'package:fluttershare/pages/search.dart';
 import 'package:fluttershare/pages/timeline.dart';
@@ -195,7 +196,7 @@ class _HomeState extends State<Home> {
           Timeline(currentUser: currentUser),
           BuySell(profileId: currentUser?.id),
           Upload(currentUser: currentUser),
-          Search(),
+          Message(),
           Profile(profileId: currentUser?.id),
         ],
         controller: pageController,
@@ -215,7 +216,7 @@ class _HomeState extends State<Home> {
           ),
           BottomNavigationBarItem(icon: Icon(Icons.photo_camera, size: 35.0)),
           BottomNavigationBarItem(
-            icon: Icon(Icons.search),
+            icon: Icon(Icons.message),
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.circle),
@@ -253,7 +254,7 @@ class _HomeState extends State<Home> {
                 onTap: login,
                 child: Container(
                   width: 260.0,
-                  height: 80.0,
+                  height: 70.0,
                   decoration: BoxDecoration(
                       image: DecorationImage(
                           image: AssetImage(

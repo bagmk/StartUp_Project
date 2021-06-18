@@ -66,7 +66,7 @@ class _BuyListState extends State<BuyList> {
   final String username;
   final String itemUrl;
   final String mediaUrl;
-
+  int _counter = 0;
   _BuyListState({
     this.postId,
     this.userId,
@@ -133,36 +133,43 @@ class _BuyListState extends State<BuyList> {
         }
 
         return ListTile(
-            title: Row(children: [
-              ClipOval(
-                  child: CachedNetworkImage(
-                imageUrl: mediaUrl,
-                placeholder: (context, url) => Padding(
-                  child: CircularProgressIndicator(),
-                  padding: EdgeInsets.all(20.0),
-                ),
-                height: 50,
-                width: 50,
-                fit: BoxFit.cover,
-              )),
-              Text(type == "Cash" ? " You bid with \$" : "You barter with ",
-                  style: TextStyle(
-                      color: Colors.black, fontWeight: FontWeight.bold)),
-              ClipOval(
-                  child: CachedNetworkImage(
-                imageUrl: itemUrl,
-                placeholder: (context, url) => Padding(
-                  child: CircularProgressIndicator(),
-                  padding: EdgeInsets.all(20.0),
-                ),
-                height: 50,
-                width: 50,
-                fit: BoxFit.cover,
-              ))
-            ]),
-            trailing: IconButton(
-                onPressed: () => handleDeleteList(context),
-                icon: Icon(Icons.more_vert)));
+          title: Dismissible(
+              resizeDuration: null,
+              onDismissed: (DismissDirection direction) {
+                setState(() {
+                  _counter += direction == DismissDirection.endToStart ? 1 : -1;
+                  handleDeleteList(context);
+                });
+              },
+              key: new ValueKey(_counter),
+              child: Row(children: [
+                ClipOval(
+                    child: CachedNetworkImage(
+                  imageUrl: mediaUrl,
+                  placeholder: (context, url) => Padding(
+                    child: CircularProgressIndicator(),
+                    padding: EdgeInsets.all(20.0),
+                  ),
+                  height: 50,
+                  width: 50,
+                  fit: BoxFit.cover,
+                )),
+                Text(type == "Cash" ? " You bid with \$" : "You barter with ",
+                    style: TextStyle(
+                        color: Colors.black, fontWeight: FontWeight.bold)),
+                ClipOval(
+                    child: CachedNetworkImage(
+                  imageUrl: itemUrl,
+                  placeholder: (context, url) => Padding(
+                    child: CircularProgressIndicator(),
+                    padding: EdgeInsets.all(20.0),
+                  ),
+                  height: 50,
+                  width: 50,
+                  fit: BoxFit.cover,
+                ))
+              ])),
+        );
       },
     );
   }
