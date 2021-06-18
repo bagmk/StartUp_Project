@@ -53,6 +53,20 @@ class _EditPostState extends State<EditPost> {
       "description": descriptionController.text,
       "tag": tagController.text,
     });
+
+    timelineLocalRef
+        .doc('test')
+        .collection('userPosts')
+        .doc(widget.postId)
+        .update({
+      "description": descriptionController.text,
+      "tag": tagController.text,
+    });
+    timelineRef.doc('test').collection('userPosts').doc(widget.postId).update({
+      "description": descriptionController.text,
+      "tag": tagController.text,
+    });
+
     SnackBar snackbar = SnackBar(content: Text("Post updated!"));
     _scaffoldkey.currentState.showSnackBar(snackbar);
     Navigator.pop(context);
