@@ -2,17 +2,21 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
 import 'dart:io';
 import 'package:fluttershare/models/user.dart';
 
 import 'package:fluttershare/pages/buy_sell.dart';
 import 'package:fluttershare/pages/create_account.dart';
-import 'package:fluttershare/pages/message.dart';
+
 import 'package:fluttershare/pages/profile.dart';
-import 'package:fluttershare/pages/search.dart';
+
 import 'package:fluttershare/pages/timeline.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fluttershare/pages/upload.dart';
+
+import 'package:fluttershare/srcMessage/screen/chats/list_friend.dart';
+
 import 'package:geolocator/geolocator.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -196,7 +200,7 @@ class _HomeState extends State<Home> {
           Timeline(currentUser: currentUser),
           BuySell(profileId: currentUser?.id),
           Upload(currentUser: currentUser),
-          Message(),
+          ListFriend(),
           Profile(profileId: currentUser?.id),
         ],
         controller: pageController,

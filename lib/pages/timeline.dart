@@ -44,6 +44,7 @@ class _TimelineState extends State<Timeline> {
         .get();
     List<Post> posts =
         snapshot.docs.map((doc) => Post.fromDocument(doc)).toList();
+
     setState(() {
       this.posts = posts;
     });
