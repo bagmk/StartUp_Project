@@ -42,7 +42,7 @@ dependencies:
   flutter_svg:
   progress_dialog: ^1.2.4
   grouped_list: ^4.0.0
-  
+
 
 dev_dependencies:
   flutter_test:
