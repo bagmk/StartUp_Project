@@ -43,12 +43,6 @@ dependencies:
   progress_dialog: ^1.2.4
   grouped_list: ^4.0.0
 
-  #Message
-  font_awesome_flutter: 8.5.0
-  badges: 1.1.0
-  date_format: 1.0.6
-  transparent_image: 1.0.0
-  flutter_slidable: 0.6.0  
 
 dev_dependencies:
   flutter_test:
@@ -72,31 +66,3 @@ flutter:
     - assets/images/no_content.svg
     
     - assets/images/user.png
-
-
-
-    #Message
-
-    - assets/images/img_lights.jpg
-    - assets/images/list_friend/1.jpeg
-    - assets/images/list_friend/1.jpg
-    - assets/images/list_friend/2.jpg
-    - assets/images/list_friend/2.jpeg
-    - assets/images/list_friend/3.jpg
-    - assets/images/list_friend/4.jpg
-    - assets/images/list_friend/5.jpg
-    - assets/images/list_friend/6.jpg
-    - assets/images/list_friend/7.jpg
-    - assets/images/list_friend/8.jpg
-    - assets/images/user_account/me.jpg
-    - assets/images/user_account/4.jpeg
-    - assets/images/list_popular/1.jpg
-    - assets/images/list_popular/2.jpg
-    - assets/images/list_popular/3.jpg
-    - assets/images/list_popular/4.jpg
-    - assets/images/list_popular/5.jpg
-    - assets/images/list_popular/6.jpg
-    - assets/images/list_popular/7.jpg
-    - assets/images/list_popular/8.jpg
-    - assets/images/list_popular/9.jpg
-    - assets/images/list_popular/10.jpg

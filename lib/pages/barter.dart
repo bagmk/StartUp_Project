@@ -58,7 +58,8 @@ class BarterState extends State {
       "bidId": bidId,
       "Cash/Item": "Cash",
       "mediaUrl": mediaUrl,
-      "ownerId": ownerId
+      "ownerId": ownerId,
+      "userProfileUrl": currentUser.profileUrl
     });
 
     bool isNotPostOwner = currentUserId != ownerId;

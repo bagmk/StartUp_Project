@@ -124,6 +124,25 @@ class _BuyListState extends State<BuyList> {
     });
   }
 
+  handleItem(String type, String item) {
+    if (type == "Item") {
+      return ClipOval(
+          child: CachedNetworkImage(
+        imageUrl: itemUrl,
+        placeholder: (context, url) => Padding(
+          child: CircularProgressIndicator(),
+          padding: EdgeInsets.all(20.0),
+        ),
+        height: 50,
+        width: 50,
+        fit: BoxFit.cover,
+      ));
+    } else {
+      return Text(item,
+          style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold));
+    }
+  }
+
   buildPostHeader() {
     return FutureBuilder(
       future: usersRef.doc(userId).get(),
@@ -157,17 +176,7 @@ class _BuyListState extends State<BuyList> {
                 Text(type == "Cash" ? " You bid with \$" : "You barter with ",
                     style: TextStyle(
                         color: Colors.black, fontWeight: FontWeight.bold)),
-                ClipOval(
-                    child: CachedNetworkImage(
-                  imageUrl: itemUrl,
-                  placeholder: (context, url) => Padding(
-                    child: CircularProgressIndicator(),
-                    padding: EdgeInsets.all(20.0),
-                  ),
-                  height: 50,
-                  width: 50,
-                  fit: BoxFit.cover,
-                ))
+                handleItem(type, item)
               ])),
         );
       },

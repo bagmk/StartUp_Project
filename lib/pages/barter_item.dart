@@ -106,7 +106,8 @@ class BarterItemState extends State<BarterItem>
       "Cash/Item": "Item",
       "itemUrl": itemUrl,
       "mediaUrl": mediaUrl,
-      "ownerId": ownerId
+      "ownerId": ownerId,
+      "userProfileUrl": currentUser.profileUrl
     });
 
     bool isNotPostOwner = currentUserId != ownerId;

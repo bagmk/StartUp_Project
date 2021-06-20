@@ -5,6 +5,7 @@ import 'package:fluttershare/models/user.dart';
 import 'package:fluttershare/pages/home.dart';
 
 import 'package:fluttershare/widgets/progress.dart';
+import 'package:uuid/uuid.dart';
 
 class SellList extends StatefulWidget {
   final String postId;
@@ -17,6 +18,7 @@ class SellList extends StatefulWidget {
   final String mediaUrl;
   final String bidId;
   final String ownerId;
+  final String userProfileUrl;
 
   SellList(
       {this.postId,
@@ -28,7 +30,8 @@ class SellList extends StatefulWidget {
       this.itemUrl,
       this.mediaUrl,
       this.bidId,
-      this.ownerId});
+      this.ownerId,
+      this.userProfileUrl});
 
   factory SellList.fromDocument(DocumentSnapshot doc) {
     return SellList(
@@ -41,7 +44,8 @@ class SellList extends StatefulWidget {
         itemUrl: doc.data()['itemUrl'],
         mediaUrl: doc.data()['mediaUrl'],
         bidId: doc.data()['bidId'],
-        ownerId: doc.data()['ownerId']);
+        ownerId: doc.data()['ownerId'],
+        userProfileUrl: doc.data()['userProfileUrl']);
   }
 
   @override
@@ -55,7 +59,8 @@ class SellList extends StatefulWidget {
       itemUrl: this.itemUrl,
       mediaUrl: this.mediaUrl,
       bidId: this.bidId,
-      ownerId: this.ownerId);
+      ownerId: this.ownerId,
+      userProfileUrl: this.userProfileUrl);
 }
 
 class _SellListState extends State<SellList> {
@@ -69,6 +74,8 @@ class _SellListState extends State<SellList> {
   final String itemUrl;
   final String mediaUrl;
   final String ownerId;
+  final String userProfileUrl;
+
   int _counter = 0;
   _SellListState({
     this.postId,
@@ -81,6 +88,7 @@ class _SellListState extends State<SellList> {
     this.itemUrl,
     this.mediaUrl,
     this.ownerId,
+    this.userProfileUrl,
   });
 
   handleOfferList(BuildContext parentContext) {
@@ -91,7 +99,7 @@ class _SellListState extends State<SellList> {
             title: Text("Decision"),
             children: <Widget>[
               SimpleDialogOption(
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () => acceptOffer(),
                   child: Text(
                     'Accept',
                     style: TextStyle(color: Colors.red),
@@ -107,6 +115,41 @@ class _SellListState extends State<SellList> {
             ],
           );
         });
+  }
+
+  acceptOffer() {
+    String messageId = Uuid().v4();
+
+    openchatRef.doc(ownerId).collection("chat").doc(messageId).set(
+      {
+        "name": item,
+        "userUrl": userProfileUrl,
+        "imageAvatarUrl": mediaUrl,
+        "shortDescription": type,
+        "postId": postId,
+        "timestamp": timestamp,
+        "userName": username,
+        "postion": "Offer",
+        "messageId": messageId
+      },
+    );
+
+    openchatRef.doc(userId).collection("chat").doc(messageId).set(
+      {
+        "name": item,
+        "userUrl": currentUser.profileUrl,
+        "imageAvatarUrl": mediaUrl,
+        "shortDescription": type,
+        "postId": postId,
+        "timestamp": timestamp,
+        "userName": currentUser.displayName,
+        "postion": "Bid",
+        "messageId": messageId
+      },
+    );
+
+// It need to go to chat screen.
+    Navigator.pop(context);
   }
 
   deleteList() async {
@@ -125,6 +168,25 @@ class _SellListState extends State<SellList> {
         doc.reference.delete();
       }
     });
+  }
+
+  handleItem(String type, String item) {
+    if (type == "Item") {
+      return ClipOval(
+          child: CachedNetworkImage(
+        imageUrl: itemUrl,
+        placeholder: (context, url) => Padding(
+          child: CircularProgressIndicator(),
+          padding: EdgeInsets.all(20.0),
+        ),
+        height: 50,
+        width: 50,
+        fit: BoxFit.cover,
+      ));
+    } else {
+      return Text(item,
+          style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold));
+    }
   }
 
   buildPostHeader() {
@@ -170,17 +232,7 @@ class _SellListState extends State<SellList> {
                   Text(type == "Cash" ? " with \$" : " with ",
                       style: TextStyle(
                           color: Colors.black, fontWeight: FontWeight.bold)),
-                  ClipOval(
-                      child: CachedNetworkImage(
-                    imageUrl: itemUrl,
-                    placeholder: (context, url) => Padding(
-                      child: CircularProgressIndicator(),
-                      padding: EdgeInsets.all(20.0),
-                    ),
-                    height: 50,
-                    width: 50,
-                    fit: BoxFit.cover,
-                  )),
+                  handleItem(type, item)
                 ])));
       },
     );

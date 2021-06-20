@@ -8,14 +8,13 @@ import 'package:fluttershare/models/user.dart';
 
 import 'package:fluttershare/pages/buy_sell.dart';
 import 'package:fluttershare/pages/create_account.dart';
+import 'package:fluttershare/pages/message.dart';
 
 import 'package:fluttershare/pages/profile.dart';
 
 import 'package:fluttershare/pages/timeline.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fluttershare/pages/upload.dart';
-
-import 'package:fluttershare/srcMessage/screen/chats/list_friend.dart';
 
 import 'package:geolocator/geolocator.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -31,8 +30,9 @@ final followersRef = FirebaseFirestore.instance.collection('followers');
 final followingRef = FirebaseFirestore.instance.collection('following');
 final timelineRef = FirebaseFirestore.instance.collection('timeline');
 final timelineLocalRef = FirebaseFirestore.instance.collection('timelineLocal');
-
+final openchatRef = FirebaseFirestore.instance.collection('openchatList');
 final buysellRef = FirebaseFirestore.instance.collection('buysellRef');
+final message = FirebaseFirestore.instance.collection('MessageRef');
 
 final DateTime timestamp = DateTime.now();
 final Reference storageRef = FirebaseStorage.instance.ref();
@@ -61,7 +61,6 @@ class _HomeState extends State<Home> {
     pageController = PageController();
     googleSignIn.onCurrentUserChanged.listen((account) {
       handleSignIn(account);
-      getUserLocation();
     }, onError: (err) {
       print('Error sign in:$err');
     });
@@ -122,18 +121,6 @@ class _HomeState extends State<Home> {
     NotificationSettings settings = await _firebaseMessaging.requestPermission(
         alert: true, badge: true, sound: true);
     print("Settings registered: $settings");
-  }
-
-  getUserLocation() async {
-    Position position = await Geolocator()
-        .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-    posXuser = position.latitude;
-    posYuser = position.longitude;
-
-    await usersRef.doc(currentUser.id).update({
-      "posXuser": posXuser,
-      "posYuser": posYuser,
-    });
   }
 
   createUserInFirestore() async {
@@ -200,7 +187,7 @@ class _HomeState extends State<Home> {
           Timeline(currentUser: currentUser),
           BuySell(profileId: currentUser?.id),
           Upload(currentUser: currentUser),
-          ListFriend(),
+          Message(profileId: currentUser?.id),
           Profile(profileId: currentUser?.id),
         ],
         controller: pageController,
