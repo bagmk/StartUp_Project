@@ -139,14 +139,14 @@ class _ProfileState extends State<Profile> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         GestureDetector(
-          onTap: () => isProfileOwner ? seeFollowInfo() : "",
+          onTap: () => isProfileOwner ? seeFollowInfo("follower") : "",
           child: Text(
             count.toString(),
             style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold),
           ),
         ),
         GestureDetector(
-            onTap: () => isProfileOwner ? seeFollowInfo() : "",
+            onTap: () => isProfileOwner ? seeFollowInfo("follower") : "",
             child: Container(
               margin: EdgeInsets.only(top: 4.0),
               child: Text(
@@ -162,12 +162,12 @@ class _ProfileState extends State<Profile> {
     );
   }
 
-  seeFollowInfo() {
+  seeFollowInfo(String state) {
     Navigator.push(
         context,
         MaterialPageRoute(
             builder: (context) =>
-                FollowerFollowing(currentUserId: currentUserId)));
+                FollowerFollowing(currentUserId: currentUserId, state: state)));
   }
 
   Column buildCountColumnFollowing(String label, int count) {
@@ -178,14 +178,14 @@ class _ProfileState extends State<Profile> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         GestureDetector(
-          onTap: () => isProfileOwner ? seeFollowInfo() : "",
+          onTap: () => isProfileOwner ? seeFollowInfo("following") : "",
           child: Text(
             count.toString(),
             style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold),
           ),
         ),
         GestureDetector(
-          onTap: () => isProfileOwner ? seeFollowInfo() : "",
+          onTap: () => isProfileOwner ? seeFollowInfo("following") : "",
           child: Container(
             margin: EdgeInsets.only(top: 4.0),
             child: Text(

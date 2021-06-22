@@ -8,10 +8,13 @@ import 'package:fluttershare/widgets/following_list.dart';
 
 class FollowerFollowing extends StatefulWidget {
   final String currentUserId;
+  String state;
+  FollowerFollowing({this.currentUserId, this.state});
 
-  FollowerFollowing({this.currentUserId});
   @override
-  _FollowerFollowingState createState() => _FollowerFollowingState();
+  _FollowerFollowingState createState() => _FollowerFollowingState(
+        followerOrFollowering: this.state,
+      );
 }
 
 class _FollowerFollowingState extends State<FollowerFollowing> {
@@ -21,7 +24,9 @@ class _FollowerFollowingState extends State<FollowerFollowing> {
   int followingCount = 0;
   List<FollowerList> followerList = [];
   List<FollowingList> followingList = [];
-  String followerOrFollowering = "following";
+  String followerOrFollowering;
+
+  _FollowerFollowingState({this.followerOrFollowering});
 
   @override
   void initState() {
@@ -80,9 +85,9 @@ class _FollowerFollowingState extends State<FollowerFollowing> {
     }
   }
 
-  setFollowerOrFollowering(String followerOrFollowering) {
+  setFollowerOrFollowering(String state) {
     setState(() {
-      this.followerOrFollowering = followerOrFollowering;
+      this.followerOrFollowering = state;
     });
   }
 
