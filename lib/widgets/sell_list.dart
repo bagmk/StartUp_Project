@@ -127,7 +127,7 @@ class _SellListState extends State<SellList> {
         "imageAvatarUrl": mediaUrl,
         "shortDescription": type,
         "postId": postId,
-        "timestamp": timestamp,
+        "timestamp": DateTime.now(),
         "userName": username,
         "postion": "Offer",
         "messageId": messageId
@@ -141,7 +141,7 @@ class _SellListState extends State<SellList> {
         "imageAvatarUrl": mediaUrl,
         "shortDescription": type,
         "postId": postId,
-        "timestamp": timestamp,
+        "timestamp": DateTime.now(),
         "userName": currentUser.displayName,
         "postion": "Bid",
         "messageId": messageId

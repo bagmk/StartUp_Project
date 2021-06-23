@@ -326,7 +326,7 @@ class _ProfileState extends State<Profile> {
         .doc(currentUserId)
         .set({
       "username": currentUser.username,
-      "timestamp": timestamp,
+      "timestamp": DateTime.now(),
       "userProfileImg": currentUser.photoUrl,
       "ownerId": widget.profileId,
     });
@@ -340,7 +340,7 @@ class _ProfileState extends State<Profile> {
         .collection('userFollowing')
         .doc(widget.profileId)
         .set({
-      "timestamp": timestamp,
+      "timestamp": DateTime.now(),
       "ownerId": widget.profileId,
       "username": user.displayName,
       "userProfileImg": user.photoUrl,
@@ -357,7 +357,7 @@ class _ProfileState extends State<Profile> {
       "username": currentUser.username,
       "userId": currentUserId,
       "userProfileImg": currentUser.photoUrl,
-      "timestamp": timestamp,
+      "timestamp": DateTime.now(),
     });
   }
 

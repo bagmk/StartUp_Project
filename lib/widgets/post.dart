@@ -18,6 +18,7 @@ import 'package:fluttershare/widgets/progress.dart';
 
 class Post extends StatefulWidget {
   final String postId;
+  final String item;
   final String ownerId;
   final String username;
   final String location;
@@ -30,6 +31,7 @@ class Post extends StatefulWidget {
 
   Post({
     this.postId,
+    this.item,
     this.ownerId,
     this.username,
     this.posX,
@@ -44,6 +46,7 @@ class Post extends StatefulWidget {
   factory Post.fromDocument(DocumentSnapshot doc) {
     return Post(
         postId: doc.data()['postId'],
+        item: doc.data()['item'],
         ownerId: doc.data()['ownerId'],
         username: doc.data()['username'],
         posX: doc.data()['posX'],
@@ -86,6 +89,7 @@ class Post extends StatefulWidget {
   @override
   _PostState createState() => _PostState(
         postId: this.postId,
+        item: this.item,
         ownerId: this.ownerId,
         username: this.username,
         location: this.location,
@@ -103,6 +107,7 @@ class Post extends StatefulWidget {
 class _PostState extends State<Post> {
   final String currentUserId = currentUser?.id;
   final String postId;
+  final String item;
   final String ownerId;
   final String username;
   final String location;
@@ -121,6 +126,7 @@ class _PostState extends State<Post> {
 
   _PostState({
     this.postId,
+    this.item,
     this.ownerId,
     this.username,
     this.location,
@@ -247,7 +253,7 @@ class _PostState extends State<Post> {
         "userProfileImg": currentUser.profileUrl,
         "postId": postId,
         "mediaUrl": mediaUrl,
-        "timestamp": timestamp,
+        "timestamp": DateTime.now(),
       });
     }
   }

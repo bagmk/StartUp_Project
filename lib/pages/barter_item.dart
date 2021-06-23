@@ -47,7 +47,9 @@ class BarterItemState extends State<BarterItem>
   final String mediaUrl;
   final String itemUrl;
   final String itemName;
+
   bool isUploading = false;
+  bool _checked = false;
   String barterId = Uuid().v4();
   TextEditingController captionController1 = TextEditingController();
   TextEditingController captionController2 = TextEditingController();
@@ -86,7 +88,7 @@ class BarterItemState extends State<BarterItem>
     buyRef.doc(currentUser.id).collection("barter").doc(barterId).set({
       "username": currentUser.username,
       "item": itemName,
-      "timestamp": timestamp,
+      "timestamp": DateTime.now(),
       "userId": currentUser.id,
       "postId": postId,
       "bidId": barterId,
@@ -99,7 +101,7 @@ class BarterItemState extends State<BarterItem>
     sellRef.doc(ownerId).collection("barter").doc(barterId).set({
       "username": currentUser.username,
       "item": itemName,
-      "timestamp": timestamp,
+      "timestamp": DateTime.now(),
       "userId": currentUser.id,
       "postId": postId,
       "bidId": barterId,
@@ -109,6 +111,24 @@ class BarterItemState extends State<BarterItem>
       "ownerId": ownerId,
       "userProfileUrl": currentUser.profileUrl
     });
+
+    if (_checked) {
+      postsRef.doc(currentUser.id).collection("userPosts").doc(postId).set({
+        "postId": postId,
+        "ownerId": currentUser.id,
+        "item": itemName,
+        "username": currentUser.username,
+        "mediaUrl": itemUrl,
+        "description": description,
+        "tag": tag,
+        "posX": posX,
+        "posY": posY,
+        "location": location,
+        "timestamp": DateTime.now(),
+        "likes": {},
+        "reports": {},
+      });
+    }
 
     bool isNotPostOwner = currentUserId != ownerId;
     if (isNotPostOwner) {
@@ -121,11 +141,10 @@ class BarterItemState extends State<BarterItem>
         "postId": barterId,
         "itemUrl": itemUrl,
         "mediaUrl": mediaUrl,
-        "timestamp": timestamp,
+        "timestamp": DateTime.now(),
       });
     }
 
-    print(usersRef.doc(currentUserId).get());
     locationController.clear();
     captionController1.clear();
     captionController2.clear();
@@ -359,19 +378,23 @@ class BarterItemState extends State<BarterItem>
                         hintText: "tag your item#", border: InputBorder.none),
                   ),
                 )),
+            Divider(),
+            CheckboxListTile(
+              title: Text("Do you want this item to be uploaded to your post?"),
+              controlAffinity: ListTileControlAffinity.leading,
+              value: _checked,
+              onChanged: (bool value) {
+                setState(() {
+                  _checked = value;
+                });
+              },
+              activeColor: Colors.blue,
+              checkColor: Colors.white,
+              selected: _checked,
+            ),
           ],
         ));
   }
-
-  //getUserLocation() async {
-  //  Position position = await Geolocator()
-  //      .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-  //  List<Placemark> placemarks = await Geolocator()
-  //      .placemarkFromCoordinates(position.latitude, position.longitude);
-  //  Placemark placemark = placemarks[0];
-  //  String address = '${placemark.locality},${placemark.country}';
-  //  locationController.text = address;
-  //}
 
   getUserLocation() async {
     Position position = await Geolocator()

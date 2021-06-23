@@ -62,7 +62,7 @@ class CommentsState extends State<Comments> {
     commentsRef.doc(postId).collection("comments").add({
       "username": currentUser.username,
       "comment": commentController.text,
-      "timestamp": timestamp,
+      "timestamp": DateTime.now(),
       "avatarUrl": currentUser.profileUrl,
       "userId": currentUser.id,
     });
@@ -71,7 +71,7 @@ class CommentsState extends State<Comments> {
       activityFeedRef.doc(postOwnerId).collection('feedItems').add({
         "type": "comment",
         "commentData": commentController.text,
-        "timestamp": timestamp,
+        "timestamp": DateTime.now(),
         "userId": currentUser.id,
         "postId": postId,
         "username": currentUser.username,
