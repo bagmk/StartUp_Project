@@ -178,14 +178,8 @@ class _HomeState extends State<Home> {
       throw Exception('Failed to get response from createStripeConnectUser.');
     }
 
-    print('jsonResponse type: ${jsonResponse.runtimeType}');
-
-    StripeAccountLink stripeAccountLink =
-        new StripeAccountLink.fromJson(jsonResponse);
-
     // Use the response to redirect to complete Stripe sign up.
     // - Response should be account link object.
-    print('Stripe Connect user ID: ${stripeAccountLink.url}');
   }
 
   void dispose() {
