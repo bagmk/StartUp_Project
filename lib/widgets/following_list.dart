@@ -4,79 +4,40 @@ import 'package:flutter/material.dart';
 import 'package:fluttershare/pages/home.dart';
 import 'package:fluttershare/widgets/progress.dart';
 
-class BuyList extends StatefulWidget {
-  final String postId;
-  final String userId;
-  final String bidId;
-  final String type;
+class FollowingList extends StatefulWidget {
   final String username;
-  final String item;
   final Timestamp timestamp;
-  final String itemUrl;
   final String mediaUrl;
   final String ownerId;
 
-  BuyList(
-      {this.postId,
-      this.userId,
-      this.type,
-      this.username,
-      this.timestamp,
-      this.item,
-      this.itemUrl,
-      this.mediaUrl,
-      this.bidId,
-      this.ownerId});
+  FollowingList({this.username, this.timestamp, this.mediaUrl, this.ownerId});
 
-  factory BuyList.fromDocument(DocumentSnapshot doc) {
-    return BuyList(
-        postId: doc.data()['postId'],
-        userId: doc.data()['userId'],
-        type: doc.data()['Cash/Item'],
+  factory FollowingList.fromDocument(DocumentSnapshot doc) {
+    return FollowingList(
         username: doc.data()['username'],
-        item: doc.data()['item'],
-        itemUrl: doc.data()['itemUrl'],
-        mediaUrl: doc.data()['mediaUrl'],
-        bidId: doc.data()['bidId'],
+        timestamp: doc.data()['timestamp'],
+        mediaUrl: doc.data()['userProfileImg'],
         ownerId: doc.data()['ownerId']);
   }
 
   @override
-  _BuyListState createState() => _BuyListState(
-      postId: this.postId,
-      userId: this.userId,
+  _FollowingListState createState() => _FollowingListState(
       timestamp: this.timestamp,
-      type: this.type,
       username: this.username,
-      item: this.item,
-      bidId: this.bidId,
-      ownerId: this.ownerId,
-      itemUrl: this.itemUrl,
-      mediaUrl: this.mediaUrl);
+      mediaUrl: this.mediaUrl,
+      ownerId: this.ownerId);
 }
 
-class _BuyListState extends State<BuyList> {
-  final String postId;
-  final String userId;
+class _FollowingListState extends State<FollowingList> {
   final Timestamp timestamp;
-  final String type;
-  final String item;
-  final String ownerId;
-  final String bidId;
   final String username;
-  final String itemUrl;
   final String mediaUrl;
+  final String ownerId;
 
-  _BuyListState({
-    this.postId,
-    this.userId,
-    this.bidId,
-    this.ownerId,
+  _FollowingListState({
     this.timestamp,
-    this.type,
     this.username,
-    this.item,
-    this.itemUrl,
+    this.ownerId,
     this.mediaUrl,
   });
 
@@ -85,7 +46,7 @@ class _BuyListState extends State<BuyList> {
         context: parentContext,
         builder: (context) {
           return SimpleDialog(
-            title: Text("Remove this offer?"),
+            title: Text("Remove this following?"),
             children: <Widget>[
               SimpleDialogOption(
                   onPressed: () {
@@ -107,17 +68,12 @@ class _BuyListState extends State<BuyList> {
   }
 
   deleteList() async {
-    buyRef
+    followingRef
         .doc(currentUser.id)
-        .collection('barter')
-        .doc(bidId)
+        .collection('userFollowing')
+        .doc(ownerId)
         .get()
         .then((doc) {
-      if (doc.exists) {
-        doc.reference.delete();
-      }
-    });
-    sellRef.doc(ownerId).collection('barter').doc(bidId).get().then((doc) {
       if (doc.exists) {
         doc.reference.delete();
       }
@@ -126,7 +82,7 @@ class _BuyListState extends State<BuyList> {
 
   buildPostHeader() {
     return FutureBuilder(
-      future: usersRef.doc(userId).get(),
+      future: usersRef.doc(ownerId).get(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return circularProgress();
@@ -145,20 +101,9 @@ class _BuyListState extends State<BuyList> {
                 width: 50,
                 fit: BoxFit.cover,
               )),
-              Text(type == "Cash" ? " You bid with \$" : "You barter with ",
+              Text(username,
                   style: TextStyle(
                       color: Colors.black, fontWeight: FontWeight.bold)),
-              ClipOval(
-                  child: CachedNetworkImage(
-                imageUrl: itemUrl,
-                placeholder: (context, url) => Padding(
-                  child: CircularProgressIndicator(),
-                  padding: EdgeInsets.all(20.0),
-                ),
-                height: 50,
-                width: 50,
-                fit: BoxFit.cover,
-              ))
             ]),
             trailing: IconButton(
                 onPressed: () => handleDeleteList(context),

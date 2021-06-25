@@ -142,7 +142,7 @@ class _EditProfileState extends State<EditProfile> {
                         child: CircleAvatar(
                           radius: 50.0,
                           backgroundImage:
-                              CachedNetworkImageProvider(user.photoUrl),
+                              CachedNetworkImageProvider(user.profileUrl),
                         ),
                       ),
                       Padding(

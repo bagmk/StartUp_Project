@@ -143,9 +143,12 @@ class _PostState extends State<Post> {
         User user = User.fromDocument(snapshot.data);
         bool isPostOwner = currentUserId == ownerId;
         return ListTile(
-          leading: CircleAvatar(
-            backgroundImage: CachedNetworkImageProvider(user.photoUrl),
-            backgroundColor: Colors.grey,
+          leading: GestureDetector(
+            onTap: () => showProfile(context, profileId: user.id),
+            child: CircleAvatar(
+              backgroundImage: CachedNetworkImageProvider(user.profileUrl),
+              backgroundColor: Colors.grey,
+            ),
           ),
           title: GestureDetector(
             onTap: () => showProfile(context, profileId: user.id),
@@ -240,7 +243,7 @@ class _PostState extends State<Post> {
         "type": "like",
         "username": currentUser.username,
         "userId": currentUser.id,
-        "userProfileImg": currentUser.photoUrl,
+        "userProfileImg": currentUser.profileUrl,
         "postId": postId,
         "mediaUrl": mediaUrl,
         "timestamp": timestamp,

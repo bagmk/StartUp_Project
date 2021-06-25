@@ -63,7 +63,7 @@ class CommentsState extends State<Comments> {
       "username": currentUser.username,
       "comment": commentController.text,
       "timestamp": timestamp,
-      "avatarUrl": currentUser.photoUrl,
+      "avatarUrl": currentUser.profileUrl,
       "userId": currentUser.id,
     });
     bool isNotPostOwner = postOwnerId != currentUser.id;
@@ -75,7 +75,7 @@ class CommentsState extends State<Comments> {
         "userId": currentUser.id,
         "postId": postId,
         "username": currentUser.username,
-        "userProfileImg": currentUser.photoUrl,
+        "userProfileImg": currentUser.profileUrl,
         "mediaUrl": postMediaUrl,
       });
     }

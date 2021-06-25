@@ -9,6 +9,7 @@ class User {
   final String bio;
   final double posXuser;
   final double posYuser;
+  final String profileUrl;
 
   User(
       {this.id,
@@ -18,18 +19,19 @@ class User {
       this.displayName,
       this.bio,
       this.posXuser,
-      this.posYuser});
+      this.posYuser,
+      this.profileUrl});
 
   factory User.fromDocument(DocumentSnapshot doc) {
     return User(
-      id: doc.data()['id'],
-      email: doc.data()['email'],
-      username: doc.data()['username'],
-      photoUrl: doc.data()['photoUrl'],
-      displayName: doc.data()['displayName'],
-      bio: doc.data()['bio'],
-      posXuser: doc.data()['posXuser'],
-      posYuser: doc.data()['posYuser'],
-    );
+        id: doc.data()['id'],
+        email: doc.data()['email'],
+        username: doc.data()['username'],
+        photoUrl: doc.data()['photoUrl'],
+        displayName: doc.data()['displayName'],
+        bio: doc.data()['bio'],
+        posXuser: doc.data()['posXuser'],
+        posYuser: doc.data()['posYuser'],
+        profileUrl: doc.data()['profileUrl']);
   }
 }
