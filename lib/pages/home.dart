@@ -1,11 +1,9 @@
-import 'dart:convert';
+import 'dart:io';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fluttershare/models/stripeAccountLink.dart';
-import 'dart:io';
 import 'package:fluttershare/models/user.dart';
 
 import 'package:fluttershare/pages/buy_sell.dart';
@@ -17,7 +15,6 @@ import 'package:fluttershare/pages/upload.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:http/http.dart' as http;
 
 final GoogleSignIn googleSignIn = GoogleSignIn();
 final usersRef = FirebaseFirestore.instance.collection('users');
@@ -164,22 +161,6 @@ class _HomeState extends State<Home> {
     //get user name from the creat eaccount, use it to make new uesr document in user collection
 
     currentUser = User.fromDocument(doc);
-
-    // Create the user in Stripe Connect through the http request
-    // to the Firebase functionm, createStripeConnectUser.
-    // - Pass in user.id as a query parameter
-    final http.Response response = await http.post(Uri.parse(
-        'https://us-central1-fluttershare-188bd.cloudfunctions.net/createStripeConnectUser'));
-
-    var jsonResponse;
-    if (response.statusCode == 200) {
-      jsonResponse = StripeAccountLink.fromJson(jsonDecode(response.body));
-    } else {
-      throw Exception('Failed to get response from createStripeConnectUser.');
-    }
-
-    // Use the response to redirect to complete Stripe sign up.
-    // - Response should be account link object.
   }
 
   void dispose() {

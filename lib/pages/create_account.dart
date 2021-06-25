@@ -1,7 +1,11 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_web_browser/flutter_web_browser.dart';
+import 'package:fluttershare/models/stripeAccountLink.dart';
 import 'package:fluttershare/widgets/header.dart';
+import 'package:http/http.dart' as http;
 
 class CreateAccount extends StatefulWidget {
   @override
@@ -13,7 +17,7 @@ class _CreateAccountState extends State<CreateAccount> {
   final _formkey = GlobalKey<FormState>();
   String username;
 
-  submit() {
+  submit() async {
     final form = _formkey.currentState;
     if (form.validate()) {
       form.save();
@@ -22,8 +26,30 @@ class _CreateAccountState extends State<CreateAccount> {
       Timer(Duration(seconds: 2), () {
         Navigator.pop(context, username);
       });
+      await createStripeConnectUser();
     }
   }
+
+  createStripeConnectUser() async {
+    // Create the user in Stripe Connect through the http request
+    // to the Firebase functionm, createStripeConnectUser.
+    // - Pass in user.id as a query parameter
+    final http.Response response = await http.post(Uri.parse(
+        'https://us-central1-fluttershare-188bd.cloudfunctions.net/createStripeConnectUser'));
+
+    var jsonResponse;
+    if (response.statusCode == 200) {
+      jsonResponse = StripeAccountLink.fromJson(jsonDecode(response.body));
+    } else {
+      throw Exception('Failed to get response from createStripeConnectUser.');
+    }
+
+    // Use the response to redirect to complete Stripe sign up.
+    // - Response should be account link object.
+    await FlutterWebBrowser.openWebPage(url: '${jsonResponse.url}');
+  }
+
+  createStripeCustomer() {}
 
   @override
   Widget build(BuildContext parentContext) {

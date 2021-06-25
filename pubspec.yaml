@@ -41,6 +41,7 @@ dependencies:
   flutter_svg:
   progress_dialog: ^1.2.4
   grouped_list: ^4.0.0
+  flutter_web_browser: "^0.14.0"
   
 
 dev_dependencies:
