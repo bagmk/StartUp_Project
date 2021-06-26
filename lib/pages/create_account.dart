@@ -1,13 +1,22 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_web_browser/flutter_web_browser.dart';
 import 'package:fluttershare/models/stripeAccountLink.dart';
 import 'package:fluttershare/widgets/header.dart';
 import 'package:http/http.dart' as http;
+import 'package:google_sign_in/google_sign_in.dart';
+
+final GoogleSignIn googleSignIn = GoogleSignIn();
+final stripeUsersRef = FirebaseFirestore.instance.collection('stripeUsers');
 
 class CreateAccount extends StatefulWidget {
+  final String userId;
+
+  const CreateAccount({Key key, this.userId}) : super(key: key);
+
   @override
   _CreateAccountState createState() => _CreateAccountState();
 }
@@ -32,10 +41,12 @@ class _CreateAccountState extends State<CreateAccount> {
 
   createStripeConnectUser() async {
     // Create the user in Stripe Connect through the http request
-    // to the Firebase functionm, createStripeConnectUser.
+    // to the Firebase function, createStripeConnectUser.
     // - Pass in user.id as a query parameter
+    // final GoogleSignInAccount user = googleSignIn.currentUser;
+    print('user ID: ${widget.userId}');
     final http.Response response = await http.post(Uri.parse(
-        'https://us-central1-fluttershare-188bd.cloudfunctions.net/createStripeConnectUser'));
+        'https://us-central1-fluttershare-188bd.cloudfunctions.net/createStripeConnectUser?id=${widget.userId}'));
 
     var jsonResponse;
     if (response.statusCode == 200) {

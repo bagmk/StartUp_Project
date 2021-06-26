@@ -11,8 +11,8 @@ import 'package:fluttershare/pages/create_account.dart';
 import 'package:fluttershare/pages/profile.dart';
 import 'package:fluttershare/pages/search.dart';
 import 'package:fluttershare/pages/timeline.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fluttershare/pages/upload.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -53,11 +53,10 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
-
+    getUserLocation();
     pageController = PageController();
     googleSignIn.onCurrentUserChanged.listen((account) {
       handleSignIn(account);
-      getUserLocation();
     }, onError: (err) {
       print('Error sign in:$err');
     });
@@ -126,7 +125,7 @@ class _HomeState extends State<Home> {
     posXuser = position.latitude;
     posYuser = position.longitude;
 
-    await usersRef.doc(currentUser.id).update({
+    usersRef.doc(currentUser.id).update({
       "posXuser": posXuser,
       "posYuser": posYuser,
     });
@@ -139,7 +138,9 @@ class _HomeState extends State<Home> {
     //if the user does not exist, we awant to thek them to the creat account page
     if (!doc.exists) {
       final username = await Navigator.push(
-          context, MaterialPageRoute(builder: (context) => CreateAccount()));
+          context,
+          MaterialPageRoute(
+              builder: (context) => CreateAccount(userId: user.id)));
 
       usersRef.doc(user.id).set({
         "id": user.id,
@@ -189,6 +190,10 @@ class _HomeState extends State<Home> {
   }
 
   Scaffold buildAuthScreen() {
+    // TODO: Create the screen to say that user needs to finish Connect sign up if not finished.
+    // Get the Connect account ID using the Stripe account API.
+    // Use the 'charges_enabled' property to check.
+
     return Scaffold(
       key: _scaffoldKey,
       body: PageView(
@@ -254,7 +259,7 @@ class _HomeState extends State<Home> {
                 onTap: login,
                 child: Container(
                   width: 260.0,
-                  height: 80.0,
+                  height: 60.0,
                   decoration: BoxDecoration(
                       image: DecorationImage(
                           image: AssetImage(
