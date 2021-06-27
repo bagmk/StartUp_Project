@@ -4,9 +4,9 @@ Pull request에 대해서 짧게 설명을 해주시고 Notion에 있는 task �
 
 **Notion task:**
 
-- [ ] Bug
-- [ ] Feature
-- [ ] Other
+- [ ] :bug:Bug
+- [ ] :tada:Feature
+- [ ] :question:Other
 
 Other를 고르셨으면 설명해주세요.
 
@@ -32,5 +32,8 @@ Other를 고르셨으면 설명해주세요.
 
 
 <br />
+
+마지막으로 Notion에 있는 task안에 댓글로 pull request 링크를 남겨주세요!:smiley::thumbsup:
+
 <br />
 <br />
