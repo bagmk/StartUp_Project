@@ -42,6 +42,7 @@ dependencies:
   flutter_svg:
   progress_dialog: ^1.2.4
   grouped_list: ^4.0.0
+  latlong: ^0.6.1
 
 
 dev_dependencies:
