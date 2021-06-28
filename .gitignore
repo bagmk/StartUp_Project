@@ -1,6 +1,6 @@
 
-# Created by https://www.toptal.com/developers/gitignore/api/windows,macos,visualstudiocode,intellij,flutter,dart
-# Edit at https://www.toptal.com/developers/gitignore?templates=windows,macos,visualstudiocode,intellij,flutter,dart
+# Created by https://www.toptal.com/developers/gitignore/api/macos,windows,visualstudiocode,intellij,dart,flutter,firebase
+# Edit at https://www.toptal.com/developers/gitignore?templates=macos,windows,visualstudiocode,intellij,dart,flutter,firebase
 
 ### Dart ###
 # See https://www.dartlang.org/guides/libraries/private-files
@@ -30,6 +30,15 @@ doc/api/
 
 .flutter-plugins
 .flutter-plugins-dependencies
+
+### Firebase ###
+.idea
+**/node_modules/*
+**/.firebaserc
+
+### Firebase Patch ###
+.runtimeconfig.json
+.firebase/
 
 ### Flutter ###
 # Flutter/Dart/Pub related
@@ -267,4 +276,4 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-# End of https://www.toptal.com/developers/gitignore/api/windows,macos,visualstudiocode,intellij,flutter,dart
+# End of https://www.toptal.com/developers/gitignore/api/macos,windows,visualstudiocode,intellij,dart,flutter,firebase
