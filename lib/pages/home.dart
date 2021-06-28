@@ -1,20 +1,22 @@
 import 'dart:io';
+import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttershare/models/stripeConnectAccount.dart';
 import 'package:fluttershare/models/user.dart';
-
 import 'package:fluttershare/pages/buy_sell.dart';
 import 'package:fluttershare/pages/create_account.dart';
 import 'package:fluttershare/pages/profile.dart';
 import 'package:fluttershare/pages/search.dart';
 import 'package:fluttershare/pages/timeline.dart';
 import 'package:fluttershare/pages/upload.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:http/http.dart' as http;
 
 final GoogleSignIn googleSignIn = GoogleSignIn();
 final usersRef = FirebaseFirestore.instance.collection('users');
@@ -27,6 +29,7 @@ final followersRef = FirebaseFirestore.instance.collection('followers');
 final followingRef = FirebaseFirestore.instance.collection('following');
 final timelineRef = FirebaseFirestore.instance.collection('timeline');
 final timelineLocalRef = FirebaseFirestore.instance.collection('timelineLocal');
+final stripeUsersRef = FirebaseFirestore.instance.collection('stripeUsers');
 
 final buysellRef = FirebaseFirestore.instance.collection('buysellRef');
 
@@ -44,6 +47,7 @@ class _HomeState extends State<Home> {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
   bool isAuth = false;
+  bool areChargesEnabled = false;
   PageController pageController;
   int pageIndex = 0;
   double posXuser;
@@ -81,6 +85,41 @@ class _HomeState extends State<Home> {
         isAuth = false;
       });
     }
+
+    areChargesEnabled = await handleStripeConnectVerification(account);
+    print('areChargesEnabled: $areChargesEnabled');
+  }
+
+  /// Make sure the user has completed Stripe Connect onboarding.
+  ///
+  /// @account is the user signed in through Google.
+  /// @return bool of whether user has completed onboarding or not.
+  Future<bool> handleStripeConnectVerification(
+      GoogleSignInAccount account) async {
+    print('handleStripeConnectVerification ID: ${account.id}');
+
+    DocumentSnapshot doc = await stripeUsersRef.doc(account.id).get();
+    final stripeConnectId = doc.data().values.elementAt(0);
+    print('stripeConnectId: $stripeConnectId');
+
+    final http.Response response = await http.get(Uri.parse(
+        'https://us-central1-fluttershare-188bd.cloudfunctions.net/getStripeConnectUser?id=${account.id}'));
+
+    print('Response: $response');
+
+    var jsonResponse;
+    if (response.statusCode == 200) {
+      jsonResponse = StripeConnectAccount.fromJson(jsonDecode(response.body));
+    } else {
+      throw Exception('Failed to get response from getStripeConnectUser.');
+    }
+
+    print('jsonResponse: $jsonResponse');
+
+    // print('Retrieved ID: ${jsonResponse.id}');
+    // print('Enabled? ${jsonResponse.areChargesEnabled}');
+
+    return jsonResponse.areChargesEnabled;
   }
 
   configurePushNotifications() {

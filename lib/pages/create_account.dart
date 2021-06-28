@@ -44,7 +44,6 @@ class _CreateAccountState extends State<CreateAccount> {
     // to the Firebase function, createStripeConnectUser.
     // - Pass in user.id as a query parameter
     // final GoogleSignInAccount user = googleSignIn.currentUser;
-    print('user ID: ${widget.userId}');
     final http.Response response = await http.post(Uri.parse(
         'https://us-central1-fluttershare-188bd.cloudfunctions.net/createStripeConnectUser?id=${widget.userId}'));
 
