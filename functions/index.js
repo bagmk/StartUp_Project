@@ -239,26 +239,15 @@ exports.onCreateActivityFeedItem = functions.firestore.document('/feed/{userId}/
  * - Use Stripe account API to create an Express Conenect user.
  * - Use the 
  * 
- * @req contains the user ID
+ * @req contains the user ID.
  *  
  */
 exports.createStripeConnectUser = functions.https.onRequest(async (req, res) => {
-    console.log('Secret Key: ' + functions.config().stripe.secret_key);
-
     const account = await stripe.accounts.create({
         type: 'express',
     });
-    
-    console.log('Express account ID: ' + account.id);
-    console.log('Firebase user ID: ' + req.query.id);
 
-    // TODO: Add account.id to some part of the Firebase database
-    const connectData = {'connectId': account.id };
     const stripeUsersRes = admin.firestore().collection('stripeUsers').doc(req.query.id).set({'stripeConnectId' : account.id});
-
-    // const response = await db.collection('stripeConnect').doc(req.query.id).set(connectData);
-
-    console.log('response after adding to connect ID: ' + stripeUsersRes);
 
     const accountLinks = await stripe.accountLinks.create({
         account: account.id,
@@ -267,10 +256,19 @@ exports.createStripeConnectUser = functions.https.onRequest(async (req, res) => 
         type: 'account_onboarding',
     });
 
-    console.log('accountLinks: ' + accountLinks);
-    
-    res.send(accountLinks);
+    res.send(accountLinks);    
 });
+
+/**
+ * Get the Stripe Connect user information.
+ * 
+ * @req contains the user ID.
+ */
+exports.getStripeConnectUser = functions.https.onRequest(async (req, res) => {
+    const account = await stripe.accounts.retrieve(req.query.id);
+    res.send(account);
+});
+
 
 /**
  * Create new customer
