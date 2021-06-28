@@ -55,8 +55,6 @@ class _UploadState extends State<Upload>
       String location,
       String tag,
       String itemName}) {
-    print("post");
-    print(DateTime.now());
     postsRef
         .doc(widget.currentUser.id)
         .collection("userPosts")
@@ -119,6 +117,24 @@ class _UploadState extends State<Upload>
       description: captionController2.text,
       tag: captionController3.text,
       itemName: captionController1.text,
+    );
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Upload done"),
+          content: new Text("Your item is uploaded"),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text("Close"),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 
