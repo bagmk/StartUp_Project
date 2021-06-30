@@ -107,7 +107,13 @@ class _EditProfileState extends State<EditProfile> {
 
   logout() async {
     await googleSignIn.signOut();
-    Navigator.push(context, MaterialPageRoute(builder: (context) => Home()));
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(
+        builder: (BuildContext context) => Home(),
+      ),
+      (route) => false,
+    );
   }
 
   @override
