@@ -34,7 +34,6 @@ final openchatRef = FirebaseFirestore.instance.collection('openchatList');
 final buysellRef = FirebaseFirestore.instance.collection('buysellRef');
 final message = FirebaseFirestore.instance.collection('MessageRef');
 
-final DateTime timestamp = DateTime.now();
 final Reference storageRef = FirebaseStorage.instance.ref();
 
 User currentUser;
@@ -139,7 +138,7 @@ class _HomeState extends State<Home> {
         "email": user.email,
         "displayName": user.displayName,
         "bio": " ",
-        "timestamp": timestamp,
+        "timestamp": DateTime.now(),
       });
       //make new user their own follow to include their posts in their timeline
       await followersRef

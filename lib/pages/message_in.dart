@@ -61,7 +61,7 @@ class MessageInState extends State<MessageIn> {
     message.doc(messageId).collection("message").add({
       "username": currentUser.username,
       "comment": messageController.text,
-      "timestamp": timestamp,
+      "timestamp": DateTime.now(),
       "avatarUrl": currentUser.profileUrl,
       "userId": currentUser.id,
     });

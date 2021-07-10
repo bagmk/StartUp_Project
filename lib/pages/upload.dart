@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -15,8 +14,12 @@ import 'package:uuid/uuid.dart';
 
 class Upload extends StatefulWidget {
   final User currentUser;
+  final String itemName;
 
-  Upload({this.currentUser});
+  Upload({
+    this.currentUser,
+    this.itemName,
+  });
   @override
   _UploadState createState() => _UploadState();
 }
@@ -24,10 +27,13 @@ class Upload extends StatefulWidget {
 class _UploadState extends State<Upload>
     with AutomaticKeepAliveClientMixin<Upload> {
   File file;
+  final String itemName;
+
   bool isUploading = false;
   String postId = Uuid().v4();
   TextEditingController captionController1 = TextEditingController();
-  TextEditingController captionController = TextEditingController();
+  TextEditingController captionController2 = TextEditingController();
+  TextEditingController captionController3 = TextEditingController();
   TextEditingController locationController = TextEditingController();
   double posX;
   double posY;
@@ -39,13 +45,16 @@ class _UploadState extends State<Upload>
     return downloadUrl;
   }
 
+  _UploadState({this.itemName});
+
   createPostInFirestore(
       {String mediaUrl,
       double posX,
       double posY,
       String description,
       String location,
-      String tag}) {
+      String tag,
+      String itemName}) {
     postsRef
         .doc(widget.currentUser.id)
         .collection("userPosts")
@@ -53,6 +62,7 @@ class _UploadState extends State<Upload>
         .set({
       "postId": postId,
       "ownerId": widget.currentUser.id,
+      "item": itemName,
       "username": widget.currentUser.username,
       "mediaUrl": mediaUrl,
       "description": description,
@@ -60,13 +70,14 @@ class _UploadState extends State<Upload>
       "posX": posX,
       "posY": posY,
       "location": location,
-      "timestamp": timestamp,
+      "timestamp": DateTime.now(),
       "likes": {},
       "reports": {},
     });
     timelineLocalRef.doc('test').collection("userPosts").doc(postId).set({
       "postId": postId,
       "ownerId": widget.currentUser.id,
+      "item": itemName,
       "username": widget.currentUser.username,
       "mediaUrl": mediaUrl,
       "description": description,
@@ -74,13 +85,14 @@ class _UploadState extends State<Upload>
       "posX": posX,
       "posY": posY,
       "location": location,
-      "timestamp": timestamp,
+      "timestamp": DateTime.now(),
       "likes": {},
       "reports": {},
     });
     locationController.clear();
-    captionController.clear();
     captionController1.clear();
+    captionController2.clear();
+    captionController3.clear();
     setState(() {
       file = null;
       isUploading = false;
@@ -102,8 +114,27 @@ class _UploadState extends State<Upload>
       posX: posX,
       posY: posY,
       location: locationController.text,
-      description: captionController.text,
-      tag: captionController1.text,
+      description: captionController2.text,
+      tag: captionController3.text,
+      itemName: captionController1.text,
+    );
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Upload done"),
+          content: new Text("Your item is uploaded"),
+          actions: <Widget>[
+            new FlatButton(
+              child: new Text("Close"),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -213,7 +244,7 @@ class _UploadState extends State<Upload>
             onPressed: clearImage,
           ),
           title: Text(
-            "Caption Post",
+            "Descript Item",
             style: TextStyle(color: Colors.black),
           ),
           actions: [
@@ -251,16 +282,27 @@ class _UploadState extends State<Upload>
               padding: EdgeInsets.only(top: 10.0),
             ),
             ListTile(
-              leading: CircleAvatar(
-                backgroundImage:
-                    CachedNetworkImageProvider(widget.currentUser.profileUrl),
-              ),
+              leading: Icon(Icons.title, color: Colors.black, size: 20.0),
               title: Container(
                 width: 250.0,
                 child: TextField(
-                  controller: captionController,
+                  controller: captionController1,
                   decoration: InputDecoration(
-                    hintText: "Write a caption..",
+                    hintText: "Write item name",
+                    border: InputBorder.none,
+                  ),
+                ),
+              ),
+            ),
+            Divider(),
+            ListTile(
+              leading: Icon(Icons.short_text, color: Colors.black, size: 20.0),
+              title: Container(
+                width: 250.0,
+                child: TextField(
+                  controller: captionController2,
+                  decoration: InputDecoration(
+                    hintText: "Write a description..",
                     border: InputBorder.none,
                   ),
                 ),
@@ -272,7 +314,7 @@ class _UploadState extends State<Upload>
                 title: Container(
                   width: 250.0,
                   child: TextField(
-                    controller: captionController1,
+                    controller: captionController3,
                     decoration: InputDecoration(
                         hintText: "tag your item#", border: InputBorder.none),
                   ),

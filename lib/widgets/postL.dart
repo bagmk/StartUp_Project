@@ -248,7 +248,7 @@ class _PostLState extends State<PostL> {
         "userProfileImg": currentUser.profileUrl,
         "postId": postId,
         "mediaUrl": mediaUrl,
-        "timestamp": timestamp,
+        "timestamp": DateTime.now(),
       });
     }
   }
